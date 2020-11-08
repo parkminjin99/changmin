@@ -1,6 +1,5 @@
 # changmin
 ================ 최강창민 library ==========================
-#  Assignment1
 #
 #  Created by 최강창민 on 2020/10/11.
 #  Copyright © 2020 최강창민. All rights reserved.
