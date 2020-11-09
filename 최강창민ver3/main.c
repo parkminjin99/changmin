@@ -14,7 +14,7 @@
 int main(int argc, const char* argv[])
 {
     srand((unsigned int)time(NULL));
-    //BASIC_test(); // sage로 확인하지 않음 
+    BASIC_test(); // sage로 확인하지 않음 
 
     COMPARE_test();
     SHIFT_test();
@@ -23,7 +23,7 @@ int main(int argc, const char* argv[])
     ADD_test();
     SUB_test();
     MUL_test();
-    
 
+    SQU_test();
     return 0;
 }

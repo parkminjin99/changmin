@@ -33,4 +33,8 @@ void MUL_1Word(word* dst, const word* src1, const word* src2);
 void MULC(bigint** dst, const bigint* src1, const bigint* src2);
 void MUL(bigint** dst, const bigint* src1, const bigint* src2);
 
+void SQUC_1Word(word* dst, const word* src);
+void SQUC(bigint** dst, const bigint* src);
+void SQU(bigint** dst, const bigint* src);
+
 #endif /* operation_h */
