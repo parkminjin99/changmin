@@ -63,10 +63,10 @@ void COMPARE_test()
     int cnt = 0;
     while(cnt < MAX_COUNT)
     {
-        bi_gen_rand(&src1, NON_NEGATIVE, 5);
-        bi_gen_rand(&src2, NON_NEGATIVE, 5);
-        printf("comA = 0x" );             bi_show(src1, 16);
-        printf("comB = 0x" );             bi_show(src2, 16);
+        bi_gen_rand(&src1, rand()%2, 5);
+        bi_gen_rand(&src2, rand()%2, 5);
+        printf("comA = " );       bi_sage_show(src1, 16);    printf("\n");
+        printf("comB = " );       bi_sage_show(src2, 16);    printf("\n");
         if (1 == bi_compare(src1, src2))                printf("print(comA > comB)\n");
         else if (0 == bi_compare(src1, src2))           printf("print(comA  == comB)\n");
         else                                            printf("print(comA  < comB)\n");
@@ -86,10 +86,10 @@ void SHIFT_test()
     while(cnt < MAX_COUNT)
     {
         bi_gen_rand(&Lshift, NON_NEGATIVE, 5);
-        printf("Lshift = 0x" );             bi_show(Lshift, 16);
+        printf("Lshift = " );             bi_sage_show(Lshift, 16);     printf("\n");
         int lshift = rand()%(10*WORD_BITLEN);
         left_shift(Lshift, lshift);
-        printf("print(Lshift << %d == ",lshift);       bi_sage_show(Lshift, 16);
+        printf("print(Lshift << %d == ", lshift);       bi_sage_show(Lshift, 16);   printf(")\n");
         bi_delete(&Lshift);
         cnt++;
     }
@@ -99,10 +99,10 @@ void SHIFT_test()
     while(cnt < MAX_COUNT)
     {
         bi_gen_rand(&Rshift, NON_NEGATIVE, 5);
-        printf("Rshift = 0x");             bi_show(Rshift, 16);
+        printf("Rshift = 0x");             bi_sage_show(Rshift, 16);     printf("\n");
         int rshift = rand()%(5*WORD_BITLEN);
         right_shift(Rshift, rshift);
-        printf("print(Rshift >> %d == ",rshift);       bi_sage_show(Rshift, 16);
+        printf("print(Rshift >> %d == ",rshift);       bi_sage_show(Rshift, 16);   printf(")\n");
         bi_delete(&Rshift); 
         cnt++;
     }
@@ -117,10 +117,10 @@ void REDUCTION_test()
     while(cnt < MAX_COUNT)
     {
         bi_gen_rand(&A, NON_NEGATIVE, 10);
-        printf("A = 0x");               bi_show(A, 16);
+        printf("A = 0x");               bi_sage_show(A, 16);     printf("\n");
         int r = rand() % 10;
         reduction_2_r(A, r);
-        printf("print(A %% 2^%d == ", r);     bi_sage_show(A, 16);
+        printf("print(A %% 2^%d == ", r);     bi_sage_show(A, 16);   printf(")\n");
         bi_delete(&A);
         cnt++;
     }
@@ -145,6 +145,28 @@ void ADD_test()
 
         bi_delete(&src1);
         bi_delete(&src2);
+        bi_delete(&dst);
+        cnt++;
+    }
+}
+
+void ADD2_test()
+{
+    printf("\n");
+    //printf(" < bigint Addition > \n");
+    bigint* src = NULL;
+    bigint* dst = NULL;
+    int cnt = 0;
+    while(cnt < MAX_COUNT)
+    {
+        bi_gen_rand(&src, rand()%2, rand() % 10);
+        bi_gen_rand(&dst, rand()%2, rand() % 10);
+        printf("addA = ");       bi_sage_show(src, 16);    printf("\n");
+        printf("dst = ");        bi_sage_show(dst, 16);    printf("\n");
+        ADD2(&dst, src);
+        printf("print(addA + dst == ");       bi_sage_show(dst, 16);    printf(")\n");
+
+        bi_delete(&src);
         bi_delete(&dst);
         cnt++;
     }
@@ -185,8 +207,8 @@ void MUL_test()
     int cnt = 0;
     while(cnt < MAX_COUNT)
     {
-        bi_gen_rand(&src1, rand()%2, rand() % 10);
-        bi_gen_rand(&src2, rand()%2, rand() % 10);
+        bi_gen_rand(&src1, rand()%2, 10);
+        bi_gen_rand(&src2, rand()%2, 10);
         printf("mulA = ");          bi_sage_show(src1, 16);    printf("\n");
         printf("mulB = ");          bi_sage_show(src2, 16);    printf("\n");
 
@@ -212,8 +234,8 @@ void Karatsuba_test()
 
     while (cnt < MAX_COUNT)
     {
-        bi_gen_rand(&src1, rand()%2, rand() % 10);
-        bi_gen_rand(&src2, rand()%2, rand() % 10);
+        bi_gen_rand(&src1, NON_NEGATIVE, rand()%9);
+        bi_gen_rand(&src2, NON_NEGATIVE, rand()%9);
         printf("mulA = ");          bi_sage_show(src1, 16);    printf("\n");
         printf("mulB = ");          bi_sage_show(src2, 16);    printf("\n");
 
@@ -227,8 +249,6 @@ void Karatsuba_test()
     }
 }
 
-
-
 void SQU_test()
 {
     printf("\n");
@@ -238,10 +258,10 @@ void SQU_test()
     int cnt = 0;
     while(cnt < MAX_COUNT)
     {
-        bi_gen_rand(&src, NON_NEGATIVE, 4);
-        printf("squcA = 0x");          bi_show(src, 16);
+        bi_gen_rand(&src, rand()%2, rand() % 10);
+        printf("squcA = ");          bi_sage_show(src, 16);    printf("\n");
         SQU(&dst, src);   
-        printf("print(squcA * squcA == ");      bi_sage_show(dst, 16);
+        printf("print(squcA * squcA == ");      bi_sage_show(dst, 16);    printf(")\n");
         bi_delete(&src);
         bi_delete(&dst);
         cnt++;

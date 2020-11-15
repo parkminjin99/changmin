@@ -111,7 +111,6 @@ void ADDC(bigint** dst, const bigint* src1, const bigint* src2)
             carry = 0;
     }
     (*dst)->a[i] = carry;  // *수정*
-
     bi_refine(*dst);
 
 }
@@ -171,7 +170,6 @@ void ADD(bigint** dst, const bigint* src1, const bigint* src2)
     }
     else {
         //printf("#src2>src1\n");
-
         ADDC(dst, src2, src1);
     }
     bi_delete(&temp);
@@ -180,8 +178,9 @@ void ADD(bigint** dst, const bigint* src1, const bigint* src2)
 void ADD2(bigint** dst, const bigint* src)
 {
     bigint* temp = NULL;
-    bi_assign(&temp,*dst);
-    ADD(dst,temp,src);
+    bi_assign(&temp, *dst);
+    bi_delete(dst);
+    ADD(dst, temp, src);
     bi_delete(&temp);
 }
 
@@ -229,6 +228,7 @@ void subc(bigint** dst, const bigint* src1, const bigint* src2)    // src1>src2�
     {
         subABS(&(*dst)->a[i], &carry, &src1->a[i], &temp->a[i]);
     }
+    bi_refine(*dst);
     bi_delete(&temp);
 }
 
@@ -302,27 +302,26 @@ void SUB(bigint** dst, const bigint* src1, const bigint* src2)   //src1 과 src2�
     bi_delete(&temp);
 }
 
-
 void MUL_1Word(word* dst, const word* src1, const word* src2)
 {
     word A[2], B[2], temp[2], t;
-    A[1] = (*src1)>>(WORD_BITLEN/2);
-    A[0] = (*src1)&HALF_WORDBIT;
-    B[1] = (*src2)>>(WORD_BITLEN/2);
-    B[0] = (*src2)&HALF_WORDBIT;
+    A[1] = (*src1)>>(WORD_BITLEN/2); // A1 = src1 >> w/2
+    A[0] = (*src1)&HALF_WORDBIT;     // A0 = src1 & 2^(w/2)
+    B[1] = (*src2)>>(WORD_BITLEN/2); // B1 = src2 >> w/2
+    B[0] = (*src2)&HALF_WORDBIT;     // B0 = src2 & 2^(w/2)
 
     temp[1] = A[1]*B[0];
-    temp[0] = (A[0]*B[1])+(temp[1]);
-    if(temp[0] < temp[1])   temp[1] = 1;
+    temp[0] = (A[0]*B[1])+(temp[1]);        // temp0 = A1*B0 + A0*B1
+    if(temp[0] < temp[1])   temp[1] = 1;    // carry발생 시 temp1 = 1
     else temp[1] = 0;
 
-    dst[1] = A[1]*B[1];
-    dst[0] = A[0]*B[0];
+    dst[1] = A[1]*B[1]; // dst1 = A1*B1
+    dst[0] = A[0]*B[0]; // dst0 = A0*B0
     t = dst[0];
 
-    dst[0] += temp[0]<<(WORD_BITLEN/2);
-    dst[1] += (temp[1]<<(WORD_BITLEN/2)) + (temp[0]>>(WORD_BITLEN/2));
-    if(dst[0] < t)  dst[1]++;
+    dst[0] += temp[0]<<(WORD_BITLEN/2); // dst0 = A0*B0 + temp0<<w/2
+    dst[1] += (temp[1]<<(WORD_BITLEN/2)) + (temp[0]>>(WORD_BITLEN/2)); // dst1 = temp1<<w/2 + temp0>>w/2
+    if(dst[0] < t)  dst[1]++; // carry발생
 } 
 
 void MULC(bigint** dst, const bigint* src1, const bigint* src2)// schoolbook multiplication 
@@ -336,11 +335,11 @@ void MULC(bigint** dst, const bigint* src1, const bigint* src2)// schoolbook mul
     {
         for ( j = 0; j < m; j++)
         {
-            MUL_1Word(temp, &src1->a[i], &src2->a[j]);
-            temp_bigint->a[i+j] = temp[0];  
+            MUL_1Word(temp, &src1->a[i], &src2->a[j]); // temp = src1->a[i] * src2->a[j]
+            temp_bigint->a[i+j] = temp[0];   // temp_bigint = temp << (i+j)*w
             temp_bigint->a[i+j+1] = temp[1];
-            ADD2(dst,temp_bigint);
-            array_init(temp_bigint->a + i+j, 2);
+            ADD2(dst,temp_bigint); // dst += temp_bigint
+            array_init(temp_bigint->a + i+j, 2); // temp_bigint 초기화 
         }
     }
     bi_delete(&temp_bigint);
@@ -348,56 +347,36 @@ void MULC(bigint** dst, const bigint* src1, const bigint* src2)// schoolbook mul
 
 void MUL(bigint** dst, const bigint* src1, const bigint* src2) // schoolbook multiplication 
 {
-
-    if(bi_is_zero(src1) == TRUE || bi_is_zero(src2) == TRUE)
+    if(bi_is_zero(src1) == TRUE || bi_is_zero(src2) == TRUE) // src1 = 0 or src2 = 0
         bi_set_zero(dst);
-    else if (bi_is_one(src1) == TRUE)
-    {
+    else if (bi_is_one(src1) == TRUE) // src1 = 1
         bi_assign(dst, src2);       
-
-    }
-    else if(bi_is_minus_one(src1) == TRUE)
+    else if(bi_is_minus_one(src1) == TRUE) // src1 = -1
     {
         bi_assign(dst, src2);
         flip_sign(*dst);
     }
-    else if(bi_is_one(src2) == TRUE)
+    else if(bi_is_one(src2) == TRUE) // src2 = 1
         bi_assign(dst,src1);
-    else if(bi_is_minus_one(src2) == TRUE)
+    else if(bi_is_minus_one(src2) == TRUE) // src2 = -1
     {
         bi_assign(dst, src1);
         flip_sign(*dst);
     }
     else
     {
-        MULC(dst,src1,src2);
-
-        (*dst)->sign = get_sign(src1)^get_sign(src2);
+        MULC(dst,src1,src2); // dst = |src1|*|src2|
+        (*dst)->sign = get_sign(src1)^get_sign(src2); // dst의 부호 결정 
         // src1의 부호 1 0 1 0 
         // src2의 부호 1 0 0 1
         // dst의 부호  0 0 1 1 -> 양 양 음 음 
     }
-
-}
-
-void abattach(bigint** dst, const bigint* src1, const bigint* src2)
-{
-    bi_new(dst, get_wordlen(src1) , get_sign(src1));
-    int i;
-    for (i = 0; i < get_wordlen(src2); i++)
-        (*dst)->a[i] = src2->a[i];
-    for (i = get_wordlen(src2); i < get_wordlen(src1) ; i++)
-    {
-        (*dst)->a[i] = src1->a[i] ;
-    }
-    bi_refine(*dst);
-
 }
 
 void Karatsuba(bigint** dst, const bigint* src1, const bigint* src2, const int flag)
 {
     int temp = min(get_wordlen(src1), get_wordlen(src2));
-    if (flag >= temp)
+    if (flag >= temp)  // 설정 길이보다 wordlen이 작아지면 일반 mul
     {
         MUL(dst, src1, src2);
         return;
@@ -414,122 +393,55 @@ void Karatsuba(bigint** dst, const bigint* src1, const bigint* src2, const int f
     bigint* S0 = NULL;
     bigint* S1 = NULL;
     bigint* S = NULL;
+
+
+    l = (max(get_wordlen(src1), get_wordlen(src2)) + 1) >> 1;    // 전체 길이 절반만큼씩 나누기 위해 l 계산으로
+    bi_assign(&aco0, src1);         bi_assign(&aco1, src1);    // a를 두개 써야되서 2개로 할당
+    bi_assign(&bco0, src2);         bi_assign(&bco1, src2);       //b를 두개 써야되서 2개로 할당
+
+    right_shift(aco1, l * WORD_BITLEN);     reduction_2_r(aco0, l * WORD_BITLEN); // 복사한 a를 각각 shift랑 reduct(a1, a0 만들기)
+    right_shift(bco1, l * WORD_BITLEN);     reduction_2_r(bco0, l * WORD_BITLEN);  // 복사한 B를 각각 shift랑 reduct(b1,b0 만들기)
    
 
-    l = (max(get_wordlen(src1), get_wordlen(src2)) + 1) >> 1;    // 전체 word 길이 절반으로 
-    bi_assign(&aco0, src1);         bi_assign(&aco1, src1);    // a 두개 써야되서 2개 할당
-    bi_assign(&bco0, src2);         bi_assign(&bco1, bco0);     // b 도 두개 써야되서
+    Karatsuba(&t1, aco1, bco1, flag); //a1,b1으로 karatsuba 해서 t1생성
+    // printf("# t1:");  bi_show(t1, 16);
+    Karatsuba(&t0, aco0, bco0, flag); //a0,b0로 karatsuba 해서 t0생성
+    // printf("# t0:");  bi_show(t0, 16);
 
+    bi_assign(&tco1, t1);  // t1을 다시 써야해서 우선 복사
+    left_shift(tco1, 2 * l * WORD_BITLEN); // tco1 << 2lw
 
-    right_shift(aco1, l * WORD_BITLEN);     reduction_2_r(aco0, l * WORD_BITLEN);     // 복사한 a 2개 각각 shift랑 reduct
+    ADD(&R, tco1, t0); //tco1과 t0 더하여 R 생성 
 
-    right_shift(bco1, l * WORD_BITLEN);     reduction_2_r(bco0, l * WORD_BITLEN);    
-    //bi_show(aco0, 16);     bi_show(aco1, 16);      bi_show(bco0, 16);     bi_show(bco1, 16);   // 일단 잘들어갔나 보기 여기까지는 잘됨
+    //right_shift(tco1, 2 * l * WORD_BITLEN);  //  WINDOW는 해야되드라 
+    //printf("#R:");    bi_show(R, 16);
 
+    SUB(&S1, aco0, aco1); // a0와 a1을 빼서 s1에 할당
+    // printf("# aco0:"); bi_show(aco0, 16);
+    // printf("# aco1:"); bi_show(aco1, 16);
+    // printf("# s1:");   bi_show(S1, 16);
 
-    //printf("*******\n");
-    Karatsuba(&t1, aco1, bco1, flag);
-    // printf("# t1:");
-    // bi_show(t1, 16);
-    Karatsuba(&t0, aco0, bco0, flag);
-    // printf("# t0:");
-    // bi_show(t0, 16);
-    bi_assign(&tco1, t1);
-    left_shift(tco1, 2 * l * WORD_BITLEN);
-   
-    abattach(&R, tco1, t0);
-    right_shift(tco1, 2 * l * WORD_BITLEN);
-    // printf("#R:");
-    // bi_show(R, 16);
+    SUB(&S0, bco1, bco0);  // b0와 b1 빼서 s0에 할당
+    // printf("# bco0:"); bi_show(bco1, 16);
+    // printf("# bco0:"); bi_show(bco0, 16);
+    // printf("# s1:");   bi_show(S0, 16);
 
-    SUB(&S1, aco0, aco1);
-    // printf("# aco0:");
-    // bi_show(aco0, 16);
-    // printf("# aco1:");
+    int temp1 = get_sign(S1), temp0 = get_sign(S0); //s의 부호 결정을 위함
 
-    // bi_show(aco1, 16);
-    // printf("# s1:");
-    // bi_show(S1, 16);
-
-    SUB(&S0, bco1, bco0);
-    // printf("# bco0:");
-
-    // bi_show(bco1, 16);
-    // printf("# bco0:");
-
-    // bi_show(bco0, 16);
-    // printf("# s1:");
-
-    // bi_show(S0, 16);
-
-    int temp1 = 1, temp2 = 1;
-
-    if (S0->sign == NEGATIVE)
-    {
-        temp1 = 2;
-        S0->sign = NON_NEGATIVE;
-    }
-    if (S1->sign == NEGATIVE)
-    {
-        temp2 = 2;
-        S1->sign = NON_NEGATIVE;
-    }
+    if (get_sign(S1) == NEGATIVE)  
+        flip_sign(S1);
+    if (get_sign(S0) == NEGATIVE)   
+        flip_sign(S0);
     Karatsuba(&S, S1, S0, flag);
-    
-    // printf("# s:");
-    // bi_show(S, 16);
-
-    if (temp1 == 2)
-    {
-        S0->sign = NEGATIVE;
-    }
-    if (temp2 == 2)
-    {
-        S1->sign = NEGATIVE;
-    }
-
-    if ((temp1 * temp2) == 2)     //둘의 부호가 다르면 곱이 2나옴
-        S->sign = NEGATIVE;
-    else
-        S->sign = NON_NEGATIVE;
-
-    
-    //printf("**s**\n");
-    // printf("# s:");
-    // bi_show(S, 16);
-    // printf("# t1:");
-    // bi_show(t1, 16);
-
-    bigint* tmp1 = NULL;
-    bigint* tmp2 = NULL;
-
-    //ADDC2(S, t1);
-    ADD(&tmp1, S, t1);
-    //printf("**tmp1**\n");
-    // printf("# tmp1:");
-    // bi_show(tmp1, 16);
-    // printf("# t0:");
-    // bi_show(t0, 16);
-
-    //ADDC2(S, t0);
-    ADD(&tmp2, tmp1, t0);
-    // printf("# tmp2:");
-    // bi_show(tmp2, 16);
-
-    left_shift(tmp2, l * WORD_BITLEN);
-    // printf("# tmp2:");
-    // bi_show(tmp2, 16);
-
-    //ADDC2(R, S);
-    // printf("#R:");
-    // bi_show(R, 16);
-
-    ADD(dst, R, tmp2);
-    // printf("# dst:");
-    // bi_show(*dst, 16);
-
-    right_shift(tmp2, l * WORD_BITLEN);
-    //bi_assign(dst, R);           //RETURN R
+    if (temp1 != temp0)
+        flip_sign(S);
+   
+    ADD2(&S, t1); //s와 t1의 합을 s로
+    ADD2(&S, t0); //s와 t0의 합을 s로
+    //printf("# S:");    bi_show(S, 16);
+    left_shift(S, l * WORD_BITLEN);  // s shift
+    //printf("# S:");   bi_show(S, 16);
+    ADD(dst, R, S);    //  r과 s합을 dst로
 
 
     bi_delete(&aco0);
@@ -537,16 +449,14 @@ void Karatsuba(bigint** dst, const bigint* src1, const bigint* src2, const int f
     bi_delete(&bco0);
     bi_delete(&bco1);
     bi_delete(&t0);
-    bi_delete(&t1); 
+    bi_delete(&t1);
     bi_delete(&R);
     bi_delete(&S0);
     bi_delete(&S1);
-    bi_delete(&S); 
-    bi_delete(&tco1);//문제
-    bi_delete(&tmp1);
-    bi_delete(&tmp2);//문제
-
+    bi_delete(&S);
+    bi_delete(&tco1);
 }
+
 
 
 void SQUC_1Word(word* dst, const word* src)

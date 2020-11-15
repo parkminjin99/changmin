@@ -21,9 +21,10 @@ int main(int argc, const char* argv[])
     //REDUCTION_test();
 
     //ADD_test();
+    //ADD2_test();
     //SUB_test();
-    MUL_test();
-    //Karatsuba_test();
+    //MUL_test();
+    Karatsuba_test();
     //SQU_test();
     return 0;
 }
