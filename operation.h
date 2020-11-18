@@ -41,6 +41,7 @@ void MUL(bigint** dst, const bigint* src1, const bigint* src2);
 void SQUC_1Word(word* dst, const word* src);
 void SQUC(bigint** dst, const bigint* src);
 void SQU(bigint** dst, const bigint* src);
+void SQUCKaratsuba(bigint** dst, const bigint* src, const int flag);
 
 void LDA_2word(word* Q, const word* src11, const word* src10, const word* src2);
 void DIVCC(word* Q, bigint** R, const bigint* src1, const bigint* src2);

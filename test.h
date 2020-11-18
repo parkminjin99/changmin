@@ -10,7 +10,7 @@
 #ifndef test_h
 #define test_h
 
-#define MAX_COUNT 500 // 반복수행 횟수 
+#define MAX_COUNT 10 // 반복수행 횟수 
 
 void COMPARE_test();
 void SHIFT_test();
@@ -23,6 +23,7 @@ void MUL_test();
 void Karatsuba_test();
 
 void SQU_test();
+void SQUCKaratsuba_test();
 
 void LDA_2word_test();
 void DIV_test();

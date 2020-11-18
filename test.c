@@ -268,6 +268,27 @@ void SQU_test()
     }
 }
 
+void SQUCKaratsuba_test()
+{
+    printf("\n");
+    //printf(" < bigint Squaring > \n");
+    bigint* src = NULL;
+    bigint* dst = NULL;
+    int cnt = 0;
+    int flag = 2;
+    while (cnt < MAX_COUNT)
+    {
+        bi_gen_rand(&src, rand() % 2, rand() % 9);
+        printf("squcA = ");          bi_sage_show(src, 16);    printf("\n");
+        SQUCKaratsuba(dst, src, flag);
+        (&dst, src);
+        printf("print(squcA * squcA == ");      bi_sage_show(dst, 16);    printf(")\n");
+        bi_delete(&src);
+        bi_delete(&dst);
+        cnt++;
+    }
+}
+
 void LDA_2word_test()
 {
     printf("\n");
@@ -310,8 +331,8 @@ void DIV_test()
     int cnt = 0;
     while(cnt < MAX_COUNT)
     {
-        bi_gen_rand(&src1, NON_NEGATIVE, 20);
-        bi_gen_rand(&src2, NON_NEGATIVE, rand()%10);
+        bi_gen_rand(&src1, NON_NEGATIVE, 4);
+        bi_gen_rand(&src2, NON_NEGATIVE, rand()%2);
         //bi_set_by_string(&src1,NON_NEGATIVE,"3073ec6bc652e5f4bbc73481cd202525582a6e6a",16);
         //bi_set_by_string(&src2,NON_NEGATIVE,"275c1ea70fb49e10b9348c3b2a766b3d",16);
         printf("divA = ");          bi_sage_show(src1, 16);    printf("\n");
