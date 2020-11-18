@@ -26,7 +26,7 @@ int main(int argc, const char* argv[])
     //MUL_test();
     //Karatsuba_test();
     //SQU_test();
-    SQUCKaratsuba_test();
+    //SQUCKaratsuba_test();
     //LDA_2word_test();
     //DIV_test();
     return 0;
