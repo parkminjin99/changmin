@@ -24,7 +24,9 @@ int main(int argc, const char* argv[])
     //ADD2_test();
     //SUB_test();
     //MUL_test();
-    Karatsuba_test();
+    //Karatsuba_test();
     //SQU_test();
+    //LDA_2word_test();
+    DIV_test();
     return 0;
 }

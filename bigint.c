@@ -133,9 +133,25 @@ void bi_zeroize(bigint* x) // bigint 안의 배열을 0으로 초기화하는 함수
 
 void bi_assign(bigint** dst, const bigint* src) // bigint 구조체를 복사하는 함수
 {
-    if (FAIL == bi_new(dst, get_wordlen(src), get_sign(src)))
+    word* arr = (word*)malloc(sizeof(word)*get_wordlen(src));
+    array_copy(arr,src->a,get_wordlen(src));
+    //printf("assign = %02x\n", src->a[get_wordlen(src)-1]);
+    //bi_show(src,16);
+    int i, len = get_wordlen(src), sign = get_sign(src);
+    //printf("assign2 = %02x\n", src->a[get_wordlen(src)-1]);
+    if (FAIL == bi_new(dst, len, sign))
         return;
-    array_copy((*dst)->a, src->a, get_wordlen(src));
+    //printf("assign3 = %02x\n", src->a[get_wordlen(src)-1]);
+    //bi_show(src,16);
+    for (i = 0; i < get_wordlen(src); i++)
+    {
+        (*dst)->a[i] = arr[i];
+    }
+    //printf("%02x %02x\n", (*dst)->a[i], src->a[i]);
+    //printf("assign2 = %02x\n", src->a[get_wordlen(src)-1]);
+    //array_copy((*dst)->a, src->a, get_wordlen(src));
+    free(arr);
+    arr = NULL;
 }
 
 void bi_set_by_array(bigint** x, int sign, word* a, int wordlen)  // a와 sign 정보를 struct에 저장하기.
@@ -153,14 +169,16 @@ void bi_set_by_string(bigint** x, int sign, char* str, word base) // str = "1234
         if (FAIL == bi_new(x, (stln / (WORD_BITLEN + 1)) + 1, sign))
             return;
         for (int i = stln - 1; i >= 0; i--)   //  11110001       10001111 0001 1111
-        {
             (*x)->a[(stln - 1 - i) / WORD_BITLEN] ^= ((str[i] - '0') << ((stln - 1 - i) % WORD_BITLEN));
-        }
     }
     else if (base == 16)
     {
-        if (FAIL == bi_new(x, ((stln * 4) / (WORD_BITLEN + 1)) + 1, sign))
+        int len = (stln*4) / WORD_BITLEN;
+        if((stln*4)%WORD_BITLEN != 0)
+            len++;
+        if (FAIL == bi_new(x, len, sign))
             return;
+        printf("x->wordlen = %d\n", (*x)->wordlen);
         int tmp[16] = { '0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f' };
         for (int i = stln - 1; i >= 0; i--)   //  11110001       10001111 0001 1111
         {

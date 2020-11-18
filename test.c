@@ -12,7 +12,7 @@ void BASIC_test()
     bigint* x = NULL;
     bigint* y = NULL;
 #if WORD_BITLEN == 64
-    word arr[5] = { 0x1234567890abcdef, 0x1234567890abcdef, 0x1234567890abcdef, 0x1234567890abcdef, 0x1234567890abcdef }
+    word arr[5] = { 0x1234567890abcdef, 0x1234567890abcdef, 0x1234567890abcdef, 0x1234567890abcdef, 0x1234567890abcdef };
     bi_set_by_array(&x, NON_NEGATIVE, arr, 5);
     printf("bigint x = ");       bi_show(x, 16);
     bi_gen_rand(&y, NON_NEGATIVE, 5);
@@ -234,8 +234,8 @@ void Karatsuba_test()
 
     while (cnt < MAX_COUNT)
     {
-        bi_gen_rand(&src1, NON_NEGATIVE, rand()%9);
-        bi_gen_rand(&src2, NON_NEGATIVE, rand()%9);
+        bi_gen_rand(&src1, NON_NEGATIVE, 9);
+        bi_gen_rand(&src2, NON_NEGATIVE, 9);
         printf("mulA = ");          bi_sage_show(src1, 16);    printf("\n");
         printf("mulB = ");          bi_sage_show(src2, 16);    printf("\n");
 
@@ -268,7 +268,66 @@ void SQU_test()
     }
 }
 
+void LDA_2word_test()
+{
+    printf("\n");
+    //printf(" < bigint Squaring > \n");  
+    int cnt = 0;
+    while(cnt < 500)
+    {
+        //bi_gen_rand(&src1, NON_NEGATIVE, rand() % 10);
+        //bi_gen_rand(&src2, NON_NEGATIVE, rand() % 10);
+        //bi_set_by_string(&src1,NON_NEGATIVE,"888cd3a33724e9200e",16);
+        //bi_set_by_string(&src2,NON_NEGATIVE,"22b7",16);
+        //printf("divA = ");          bi_sage_show(src1, 16);    printf("\n");
+        //printf("divB = ");          bi_sage_show(src2, 16);    printf("\n");
+        word a1 = rand()&BITMASK;     word a0 = rand()&BITMASK;
+        word b = rand()&BITMASK;
+        //word a1 = 0x0e;     word a0 = 0xd4;
+        //word b = 0xfe;
+        word Q = 0;
+        if(a1 >= b)
+            continue;
+        if(a1 == 0)
+            continue;
+        printf("divA = 0x");      printf("%02x%02x\n",a1,a0);
+        printf("divB = 0x");      printf("%02x\n",b);
+        LDA_2word(&Q,&a1,&a0,&b);
+        printf("print(divA//divB == 0x");     printf("%02x",Q);     printf(")\n");
+        //printf("print(divA%%divB == ");     bi_sage_show(dstR, 16);     printf(")\n");
+        cnt++;
+    }
+}
+
 void DIV_test()
 {
-    
+    printf("\n");
+    //printf(" < bigint Squaring > \n");
+    bigint* src1 = NULL;  
+    bigint* src2 = NULL;  
+    bigint* dstQ = NULL;
+    bigint* dstR = NULL;     
+    int cnt = 0;
+    while(cnt < MAX_COUNT)
+    {
+        bi_gen_rand(&src1, NON_NEGATIVE, 20);
+        bi_gen_rand(&src2, NON_NEGATIVE, rand()%10);
+        //bi_set_by_string(&src1,NON_NEGATIVE,"3073ec6bc652e5f4bbc73481cd202525582a6e6a",16);
+        //bi_set_by_string(&src2,NON_NEGATIVE,"275c1ea70fb49e10b9348c3b2a766b3d",16);
+        printf("divA = ");          bi_sage_show(src1, 16);    printf("\n");
+        printf("divB = ");          bi_sage_show(src2, 16);    printf("\n");
+        if(INVALID == DIV(&dstQ, &dstR, src1, src2))
+            continue;
+        printf("print(divA//divB == ");     bi_sage_show(dstQ, 16);     printf(")\n");
+        printf("print(divA%%divB == ");     bi_sage_show(dstR, 16);     printf(")\n");
+        //printf("print(divA == ");       bi_sage_show(dstQ, 16);    
+        //printf(" * ");                  bi_sage_show(src2, 16);
+        //printf(" + ");                  bi_sage_show(dstR, 16);    printf(")\n");
+        bi_delete(&src1);
+        bi_delete(&src2);
+        bi_delete(&dstQ);
+        bi_delete(&dstR);
+        cnt++;
+    }
+    // 88 8c d3 a3 37 24 e9 20 0e
 }

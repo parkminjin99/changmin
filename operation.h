@@ -16,6 +16,7 @@
 
 #define max(x,y)( (x)>(y)?(x):(y) )
 #define min(x,y)( (x)<(y)?(x):(y) )
+#define get_j_th_bit(x,j) ((x>>j)&0x1)
 
 
 void left_shift(bigint* x, int r);      // bigint x를 r비트만큼 왼쪽으로 shift하는 함수
@@ -41,4 +42,8 @@ void SQUC_1Word(word* dst, const word* src);
 void SQUC(bigint** dst, const bigint* src);
 void SQU(bigint** dst, const bigint* src);
 
+void LDA_2word(word* Q, const word* src11, const word* src10, const word* src2);
+void DIVCC(word* Q, bigint** R, const bigint* src1, const bigint* src2);
+void DIVC(word* Q, bigint** R, const bigint* src1, const bigint* src2);
+int DIV(bigint** Q, bigint** R, const bigint* src1, const bigint* src2);
 #endif /* operation_h */

@@ -15,6 +15,11 @@ void array_init(word* a, int len) // 배열을 0으로 초기화하는 함수
 
 void array_copy(word* dst, const word* src, int len) // dst배열에 src배열을 복사하는 함수
 {
+    // for (int i = 0; i < len; i++)
+    // {
+    //     dst[i] = src[i];
+    // }
+    
     memcpy(dst, src, len * sizeof(word));
 }
 

@@ -29,6 +29,7 @@ void left_shift(bigint* x, int r) // bigint x를 r비트만큼 왼쪽으로 shift하는 함�
         x->a[get_wordlen(x) - n] = x->a[get_wordlen(x)- n - r / WORD_BITLEN] << (r%WORD_BITLEN);
         array_init(x->a, r / WORD_BITLEN);
     }
+    bi_refine(x);
 }
 
 void right_shift(bigint* x, int r) // bigint x를 r비트만큼 오른쪽으로 shift하는 함수
@@ -64,7 +65,8 @@ void reduction_2_r(bigint* x, int r) // bigint x의 x mod 2^r를 출력하는 함수
     }
     else    // r가 WORD_BITLEN의 배수가 아닌 경우
     {
-        word k = -1; // k = 2^(WORD_BITLEN)-1
+        word k = BITMASK;
+         // k = 2^(WORD_BITLEN)-1
         x->a[r / WORD_BITLEN] &= (k >> (WORD_BITLEN - r % WORD_BITLEN)); // x->a[r/WORD_BITLEN]의 하위 r%WORD_BITLEN비트만 남김
         array_init(x->a + r / WORD_BITLEN + 1, x->wordlen - r / WORD_BITLEN - 1);
         bi_refine(x);
@@ -114,15 +116,6 @@ void ADDC(bigint** dst, const bigint* src1, const bigint* src2)
     bi_refine(*dst);
 
 }
-
-// void ADDC2(bigint* dst, const bigint* src)
-// {
-//     int i;
-//     word carry = 0; // carry
-//     for (i = 0; i < get_wordlen(src); i++)
-//         ADD_ABc2(&dst->a[i], &carry, &src->a[i]); // 1워드 덧셈
-//     dst->a[i] = carry;
-// }
 
 void ADD(bigint** dst, const bigint* src1, const bigint* src2)
 {
@@ -373,6 +366,15 @@ void MUL(bigint** dst, const bigint* src1, const bigint* src2) // schoolbook mul
     }
 }
 
+void MUL2(bigint** dst, const bigint* src)
+{
+    bigint* temp = NULL;
+    bi_assign(&temp, *dst);
+    //bi_delete(dst);
+    MUL(dst, temp, src);
+    bi_delete(&temp);
+}
+
 void Karatsuba(bigint** dst, const bigint* src1, const bigint* src2, const int flag)
 {
     int temp = min(get_wordlen(src1), get_wordlen(src2));
@@ -518,4 +520,140 @@ void SQU(bigint** dst, const bigint* src)
     } 
     else
         SQUC(dst,src);
+}
+
+void LDA_2word(word* Q, const word* src11, const word* src10, const word* src2) // Q는 1워드, src1은 2워드, src2은 1워드
+{
+    int i;
+    word R = *src11;
+    *Q = 0;
+    for ( i = WORD_BITLEN-1; i >= 0; i--)
+    {
+        if(R >= (1<<(WORD_BITLEN-1)))
+        {
+            *Q += (1<<i);
+            R = (R<<1) + get_j_th_bit(*src10,i) - (*src2);
+        }
+        else
+        {
+            R = (R<<1) + get_j_th_bit(*src10,i);
+            if(R >= *src2)
+            {
+                *Q += (1<<i);
+                R -= (*src2);
+            }
+        }
+    }
+}
+
+void DIVCC(word* Q, bigint** R, const bigint* src1, const bigint* src2)
+{
+    bigint* temp = NULL;
+    int n = get_wordlen(src1), m = get_wordlen(src2);
+    //printf("src %x %x\n", src1->a[m-1], src2->a[m-1]);
+    *Q = 0;
+    if(n == m)
+    {
+        *Q = src1->a[m-1]/src2->a[m-1];
+       // printf("divcc Q = %02x\n", *Q);
+    }
+    else // n == m+1
+    {
+        if(src1->a[m] == src2->a[m-1])
+            *Q = BITMASK;
+        else
+        {
+            //printf("qlkerjhldkjfshldkjfhlksadj\n");
+            //printf("src = %02x %02x %02x\n", src1->a[m-1], src1->a[m], src2->a[m-1]);
+            LDA_2word(Q, &src1->a[m], &src1->a[m-1], &src2->a[m-1]);
+            //printf("*Q = %02x\n", *Q);
+        }
+    }
+    bi_new(&temp, 1, NON_NEGATIVE);
+    temp->a[0] = *Q;
+    //printf("temp = ");   bi_show(temp,16);
+    //printf("src2 = ");   bi_show(src2,16);
+    MUL2(&temp, src2); // temp = src2*Q
+    //printf("temp = ");   bi_show(temp,16);
+
+    SUB(R, src1, temp);  // R = src1 - src2*Q
+    //printf("*R = ");   bi_show(*R,16);
+    while(get_sign(*R) == NEGATIVE)
+    {
+        (*Q)--;
+        ADD2(R,src2);
+    }
+    bi_delete(&temp);
+}
+
+void DIVC(word* Q, bigint** R, const bigint* src1, const bigint* src2)
+{
+    if(bi_compare(src1,src2) == -1) // src1 < src2
+    {
+        *Q = 0;
+        bi_assign(R, src1);
+        return;
+    }
+    int k = 0;
+    while(1)
+    {
+        word mask = src2->a[get_wordlen(src2)-1]>>(WORD_BITLEN-1-k);
+        if((mask & 0x1) == 0x1)
+            break;
+        k++;
+    }
+    //printf("k= %d\n", k);
+
+    bigint* src1_temp = NULL;
+    bigint* src2_temp = NULL;
+    bi_assign(&src1_temp, src1);
+    bi_assign(&src2_temp, src2);
+
+    left_shift(src1_temp, k);
+    left_shift(src2_temp, k);
+    //printf("src1_temp =");      bi_show(src1_temp,16);
+    //printf("src2_temp =");      bi_show(src2_temp,16);
+    DIVCC(Q, R, src1_temp, src2_temp);
+    //printf("Q = %02x\n", *Q);
+    right_shift(*R,k);
+    //printf("*R = ");   bi_show(*R,16);
+    bi_delete(&src1_temp);
+    bi_delete(&src2_temp);
+}
+
+int DIV(bigint** Q, bigint** R, const bigint* src1, const bigint* src2)
+{
+    bigint* temp = NULL;
+    if(bi_is_zero(src2) == TRUE || get_sign(src2) == NEGATIVE)
+        return INVALID;
+    if(bi_compare(src1,src2) == -1) // src1 < src2
+    {
+        bi_set_zero(Q);
+        bi_assign(R,src1);
+        return VALID;
+    }
+    //bi_set_zero(Q);
+    bi_new(Q, get_wordlen(src1), get_sign(src1));
+    bi_set_zero(R);
+    int i, n = get_wordlen(src1);
+    for ( i = n - 1; i >= 0; i--)
+    {
+        left_shift(*R,WORD_BITLEN);
+        //bi_show(*R,16);
+        (*R)->a[0] = src1->a[i]; // R = RW + src1->a[i] 
+        //bi_show(*R,16);
+        //printf("%02x\n", (*R)->a[get_wordlen(*R)-1]);
+        bi_assign(&temp, *R);
+        //printf("dsfsdf");   bi_show(temp,16);
+        //bi_delete(R);
+
+        //printf("\ni=%d\n", i);
+        //bi_show(temp,16);
+        DIVC(&(*Q)->a[i], R, temp, src2);
+        //printf("(*Q)->a[%d] = %02x\n", i,(*Q)->a[i]);
+        bi_delete(&temp);
+    }
+    bi_refine(*Q);
+    // 0x3073ec6bc652e5f4bbc73481cd202525 58 2a 6e 6a
+    return VALID;
 }

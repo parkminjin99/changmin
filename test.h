@@ -24,4 +24,7 @@ void Karatsuba_test();
 
 void SQU_test();
 
+void LDA_2word_test();
+void DIV_test();
+
 #endif /* test_h */
