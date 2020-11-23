@@ -14,6 +14,7 @@ void left_shift(bigint* x, int r) // bigint x를 r비트만큼 왼쪽으로 shift하는 함�
     if (r % WORD_BITLEN == 0) // r가 WORD_BITLEN의 배수인 경우
     {
         x->wordlen += r/WORD_BITLEN;
+        x->a = (word*)realloc(x->a, sizeof(word) * get_wordlen(x));
         array_copy(x->a + (r / WORD_BITLEN), x->a, x->wordlen - (r / WORD_BITLEN));
         array_init(x->a, r / WORD_BITLEN);
     }
@@ -21,7 +22,7 @@ void left_shift(bigint* x, int r) // bigint x를 r비트만큼 왼쪽으로 shift하는 함�
     {
         x->wordlen += r / WORD_BITLEN + 1;
         x->a = (word*)realloc(x->a, sizeof(word) * get_wordlen(x));
-     
+
         int n = get_wordlen(x) - r / WORD_BITLEN; // n은 shift했을 때 0이 아닌 부분의 길이
         x->a[get_wordlen(x)-1] = (x->a[get_wordlen(x) - 1 - r / WORD_BITLEN - 1] >> (WORD_BITLEN - r % WORD_BITLEN));
         for (i = get_wordlen(x) - 2; i > get_wordlen(x) - n; i--)
@@ -525,9 +526,7 @@ void SQU(bigint** dst, const bigint* src)
 void SQUCKaratsuba(bigint** dst, const bigint* src, const int flag)
 {
     if (flag >= get_wordlen(src))
-    {
         SQU(dst, src);
-    }
     int l = (get_wordlen(src) + 1) >> 1;
 
     bigint* A1 = NULL;
@@ -550,7 +549,7 @@ void SQUCKaratsuba(bigint** dst, const bigint* src, const int flag)
     Karatsuba(&S, A1, A0, flag);
 
     left_shift(S, l * WORD_BITLEN + 1);
-    ADD(&dst, R, S);
+    ADD(dst, R, S);
 
     bi_delete(&A1);
     bi_delete(&A0);

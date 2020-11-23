@@ -10,7 +10,7 @@
 #ifndef test_h
 #define test_h
 
-#define MAX_COUNT 10 // 반복수행 횟수 
+#define MAX_COUNT 100 // 반복수행 횟수 
 
 void COMPARE_test();
 void SHIFT_test();

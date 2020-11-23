@@ -85,7 +85,7 @@ void SHIFT_test()
     //printf(" < bigint left shift >\n");
     while(cnt < MAX_COUNT)
     {
-        bi_gen_rand(&Lshift, NON_NEGATIVE, 5);
+        bi_gen_rand(&Lshift, NON_NEGATIVE, 15);
         printf("Lshift = " );             bi_sage_show(Lshift, 16);     printf("\n");
         int lshift = rand()%(10*WORD_BITLEN);
         left_shift(Lshift, lshift);
@@ -98,7 +98,7 @@ void SHIFT_test()
     //printf(" < bigint right shift >\n");
     while(cnt < MAX_COUNT)
     {
-        bi_gen_rand(&Rshift, NON_NEGATIVE, 5);
+        bi_gen_rand(&Rshift, NON_NEGATIVE, 15);
         printf("Rshift = 0x");             bi_sage_show(Rshift, 16);     printf("\n");
         int rshift = rand()%(5*WORD_BITLEN);
         right_shift(Rshift, rshift);
@@ -234,8 +234,8 @@ void Karatsuba_test()
 
     while (cnt < MAX_COUNT)
     {
-        bi_gen_rand(&src1, NON_NEGATIVE, 9);
-        bi_gen_rand(&src2, NON_NEGATIVE, 9);
+        bi_gen_rand(&src1, NON_NEGATIVE, 20);
+        bi_gen_rand(&src2, NON_NEGATIVE, 20);
         printf("mulA = ");          bi_sage_show(src1, 16);    printf("\n");
         printf("mulB = ");          bi_sage_show(src2, 16);    printf("\n");
 
@@ -280,8 +280,7 @@ void SQUCKaratsuba_test()
     {
         bi_gen_rand(&src, rand() % 2, rand() % 9);
         printf("squcA = ");          bi_sage_show(src, 16);    printf("\n");
-        SQUCKaratsuba(dst, src, flag);
-        (&dst, src);
+        SQUCKaratsuba(&dst, src, flag);
         printf("print(squcA * squcA == ");      bi_sage_show(dst, 16);    printf(")\n");
         bi_delete(&src);
         bi_delete(&dst);
