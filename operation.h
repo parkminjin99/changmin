@@ -47,4 +47,9 @@ void LDA_2word(word* Q, const word* src11, const word* src10, const word* src2);
 void DIVCC(word* Q, bigint** R, const bigint* src1, const bigint* src2);
 void DIVC(word* Q, bigint** R, const bigint* src1, const bigint* src2);
 int DIV(bigint** Q, bigint** R, const bigint* src1, const bigint* src2);
+
+void L2R(bigint** R, const bigint* base, const bigint* power, const int modn);
+void R2L(bigint** R, const bigint* base, const bigint* power, const int modn);
+void Montgomery(bigint** R, const bigint* base, const bigint* power, const int modn);
+
 #endif /* operation_h */

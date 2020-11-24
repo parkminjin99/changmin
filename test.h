@@ -28,4 +28,8 @@ void SQUCKaratsuba_test();
 void LDA_2word_test();
 void DIV_test();
 
+void L2R_test();
+void R2L_test();
+void Montgomery_test();
+
 #endif /* test_h */

@@ -351,3 +351,93 @@ void DIV_test()
     }
     // 88 8c d3 a3 37 24 e9 20 0e
 }
+
+
+void L2R_test()
+{
+    printf("\n");
+    bigint* base = NULL;
+    bigint* power = NULL;
+    bigint* dst = NULL;
+    int cnt = 0;
+    int modn = 16;
+    while (cnt < MAX_COUNT)
+    {
+        bi_gen_rand(&base, NON_NEGATIVE, 1);
+        bi_gen_rand(&power, NON_NEGATIVE, 3);
+        
+        printf("base = ");          bi_sage_show(base, 16);    printf("\n");
+        printf("power = ");          bi_sage_show(power, 16);    printf("\n");
+        printf("modn = %d \n", modn);
+        L2R(&dst, base, power, modn);
+
+        printf("print((base ** power) %% (2**modn) == ");      bi_sage_show(dst, 16);    printf(")\n");
+
+        bi_delete(&base);
+        bi_delete(&power);
+        bi_delete(&dst);
+        cnt++;
+    }
+}
+
+
+void R2L_test()
+{
+    printf("\n");
+    bigint* base = NULL;
+    bigint* power = NULL;
+    bigint* dst = NULL;
+    int cnt = 0;
+    int modn = 16;
+    while (cnt < MAX_COUNT)
+    {
+        bi_gen_rand(&base, NON_NEGATIVE, 1);
+        bi_gen_rand(&power, NON_NEGATIVE, 3);
+
+        printf("base = ");          bi_sage_show(base, 16);    printf("\n");
+        printf("power = ");          bi_sage_show(power, 16);    printf("\n");
+        printf("modn = %d \n", modn);
+        R2L(&dst, base, power, modn);
+
+        printf("print((base ** power) %% (2**modn) == ");      bi_sage_show(dst, 16);    printf(")\n");
+
+        bi_delete(&base);
+        bi_delete(&power);
+        bi_delete(&dst);
+        cnt++;
+    }
+}
+
+void Montgomery_test()
+{
+    printf("\n");
+    bigint* base = NULL;
+    bigint* power = NULL;
+    bigint* dst = NULL;
+    int cnt = 0;
+    int modn = 16;
+
+    //printf("t = [1, base]\n");
+    //printf("e=power.bits()\n");
+    //printf("for i in range(len(e) - 1, -1, -1):\n");
+    //printf("    t[1- e[i]] = t[0] * t[1]\n");
+    //printf("    t[e[i]] = t[e[i]]^2\n");
+
+    while (cnt < MAX_COUNT)
+    {
+        bi_gen_rand(&base, NON_NEGATIVE, 1);
+        bi_gen_rand(&power, NON_NEGATIVE, 3);
+
+        printf("base = ");          bi_sage_show(base, 16);    printf("\n");
+        printf("power = ");          bi_sage_show(power, 16);    printf("\n");
+        printf("modn = %d \n", modn);
+        Montgomery(&dst, base, power, modn);
+
+        printf("print((base ** power) %% (2**modn) == ");      bi_sage_show(dst, 16);    printf(")\n");
+
+        bi_delete(&base);
+        bi_delete(&power);
+        bi_delete(&dst);
+        cnt++;
+    }
+}

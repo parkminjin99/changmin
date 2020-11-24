@@ -230,7 +230,7 @@ int get_jth_bit(const bigint* x, const int j)  //아래에서 j번째
     int jword, jbit;
     jword = j / WORD_BITLEN;
     jbit = j % WORD_BITLEN;
-    return ((x->a[jword]) >> jbit) ^ 0x1;
+    return ((x->a[jword]) >> jbit) & 0x1;
 }
 
 int get_sign(const bigint* x)     // 가독성
@@ -284,6 +284,8 @@ int bi_is_one(const bigint* x)     //1인지 확인
 
 int bi_is_zero(const bigint* x)       //0인지 확인
 {
+    if (get_wordlen(x) == 0)
+        return TRUE;
     if ((get_sign(x) == 1) || (x->a[0] != 0x0))
         return FALSE;
     for (int j = get_wordlen(x) - 1; j > 0; j--)

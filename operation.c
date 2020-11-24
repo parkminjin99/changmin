@@ -698,3 +698,124 @@ int DIV(bigint** Q, bigint** R, const bigint* src1, const bigint* src2)
     // 0x3073ec6bc652e5f4bbc73481cd202525 58 2a 6e 6a
     return VALID;
 }
+
+
+void L2R(bigint** R, const bigint* base, const bigint* power, const int modn)
+{
+    bigint* t = NULL;
+    bigint* tmp1 = NULL;
+    bigint* tmp2 = NULL;
+
+    int ni;
+
+    bi_set_one(&t);
+    int len = get_wordlen(power);
+
+    for (int j = (len * WORD_BITLEN) - 1; j >= 0; j--)
+    {
+        SQU(&tmp1, t);
+        ni = get_jth_bit(power, j);
+        if (ni == 1)
+        {
+            MUL(&tmp2, tmp1, base);
+            bi_delete(&t);
+            bi_assign(&t, tmp2);
+        }
+        else 
+        {
+            bi_delete(&t);
+            bi_assign(&t, tmp1);
+        }
+        reduction_2_r(t, modn);
+
+        bi_delete(&tmp1);
+        bi_delete(&tmp2);
+    }
+    bi_assign(R, t);
+    bi_delete(&t);
+
+}
+
+void R2L(bigint** R, const bigint* base, const bigint* power, const int modn)
+{
+    bigint* t0 = NULL;
+    bigint* t1 = NULL;
+    bigint* tmp1 = NULL;
+    bigint* tmp2 = NULL;
+    int ni;
+
+    bi_set_one(&t0);     //t0를 1로 설정
+    bi_assign(&t1, base);  //t1을 x로 설정
+    
+    int len = get_wordlen(power);
+    for (int j = 0; j < len * WORD_BITLEN; j++)
+    {
+        ni = get_jth_bit(power, j);
+        if (ni == 1)
+        {
+            MUL(&tmp1, t0, t1);
+            bi_delete(&t0);
+            bi_assign(&t0, tmp1);
+        }
+        SQU(&tmp2, t1);
+        bi_delete(&t1);
+        bi_assign(&t1, tmp2);
+
+        reduction_2_r(t0, modn);
+        reduction_2_r(t1, modn);
+
+        bi_delete(&tmp1);
+        bi_delete(&tmp2);
+    }
+    bi_assign(R, t0);
+    bi_delete(&t0);
+    bi_delete(&t1);
+
+}
+
+
+void Montgomery(bigint** R, const bigint* base, const bigint* power, const int modn)
+{
+    bigint* t0 = NULL;
+    bigint* t1 = NULL;
+    bigint* tmp1 = NULL;
+    bigint* tmp2 = NULL;
+    int ni;
+
+    bi_set_one(&t0);     //t0를 1로 설정
+    bi_assign(&t1, base);  //t1을 x로 설정
+
+    int len = get_wordlen(power);
+    for (int j = (len * WORD_BITLEN) - 1; j >= 0; j--)
+    {
+        ni = get_jth_bit(power, j);
+        if (ni == 1)
+        {
+            MUL(&tmp1, t0, t1);
+            bi_delete(&t0);
+            bi_assign(&t0, tmp1);
+            SQU(&tmp2, t1);
+            bi_delete(&t1);
+            bi_assign(&t1, tmp2);
+        }
+        else
+        {
+            MUL(&tmp1, t0, t1);
+            bi_delete(&t1);
+            bi_assign(&t1, tmp1);
+            SQU(&tmp2, t0);
+            bi_delete(&t0);
+            bi_assign(&t0, tmp2);
+        }
+
+        reduction_2_r(t0, modn);
+        reduction_2_r(t1, modn);
+
+        bi_delete(&tmp1);
+        bi_delete(&tmp2);
+    }
+    bi_assign(R, t0);
+    bi_delete(&t0);
+    bi_delete(&t1);
+
+}
