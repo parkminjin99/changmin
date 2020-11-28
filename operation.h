@@ -32,9 +32,9 @@ void ADD2(bigint** dst, const bigint* src);
 void subABS(word* dst, int* carry, const word* src1, const word* src2);    // src1과 src2, carry를 입력받아 1word에 대한 뺄셈의 절댓값을 출력
 void subc(bigint** dst, const bigint* src1, const bigint* src2);    // src1>src2로 입력받아 둘의 차를 dst에 저장
 void SUB(bigint** dst, const bigint* src1, const bigint* src2);   //src1 과 src2를 비교하여 subc로 이동시키는 함수
-void Karatsuba(bigint** dst, const bigint* src1, const bigint* src2, const int flag);
+void Karatsuba(bigint** dst, const bigint* src1, const bigint* src2, const int flag);   
 
-void MUL_1Word(word* dst, const word* src1, const word* src2);
+void MUL_1Word(word* dst, const word* src1, const word* src2);  
 void MULC(bigint** dst, const bigint* src1, const bigint* src2);
 void MUL(bigint** dst, const bigint* src1, const bigint* src2);
 
@@ -43,8 +43,10 @@ void SQUC(bigint** dst, const bigint* src);
 void SQU(bigint** dst, const bigint* src);
 void SQUCKaratsuba(bigint** dst, const bigint* src, const int flag);
 
+int NAIVE_div(bigint** Q, bigint** R, bigint* src1, bigint* src2);      
+int Binary_Long_Div(bigint** Q, bigint** R, bigint* src1, bigint* src2);
 void LDA_2word(word* Q, const word* src11, const word* src10, const word* src2);
-void DIVCC(word* Q, bigint** R, const bigint* src1, const bigint* src2);
+void DIVCC(word* Q, bigint** R, const bigint* src1, const bigint* src2); 
 void DIVC(word* Q, bigint** R, const bigint* src1, const bigint* src2);
 int DIV(bigint** Q, bigint** R, const bigint* src1, const bigint* src2);
 

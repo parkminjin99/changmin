@@ -47,73 +47,31 @@ void bi_sage_show(const bigint* x, const int base)
     //printf(")\n");
 }
 
-/********************************
-bi_new
-구조체에 저장되어있는 bignum을 원하는 진수(2,10,16)로 출력하는 함수 
-*********************************/
-
-void bi_show(const bigint* x, const int base)    // x: 출력할 bignum, base: 출력할 진수(2,10,16)중 하나.
+void bi_show(const bigint* x, const int base)
 {
     int i, j;
-    
-    if(bi_is_zero(x) == TRUE)                   // 저장되어있는 bignum이 0이면 진수에 상관없이 0으로 출력
+    if(bi_is_zero(x) == TRUE)
     {
         printf("0\n");
         return;
     }
-    if (get_sign(x) == NEGATIVE)                //저장되어있는 bignum의 부호가 NEGATIVE이면 숫자이전에 '-' 출력
+    if (get_sign(x) == NEGATIVE)
         printf("-");
-    if (base == 16)                             // 16진수인 경우 
+    if (base == 16)
     {
         for (i = get_wordlen(x) - 1; i >= 0; i--)
             for (j = WORD_BITLEN - 4; j >= 0; j = j - 4)
                 printf("%x", ((x->a[i]) >> j) & 0xf);
     }
-    else if (base == 2)                          // 2진수인 경우
+    else if (base == 2)
     {
         for (int i = get_wordlen(x) - 1; i >= 0; i--)
             for (int j = WORD_BITLEN - 1; j >= 0; j--)
                 printf("%x", ((x->a[i]) >> j) & 0x1);
     }
-    else                                          // 10진수인 경우
+    else // base = 10
     {
-        char str[1000];
-        int tmp;
-        int ca=0,be=0;
-        int k = 0;
 
-        for (int i = get_wordlen(x) - 1; i >= 0; i--)
-        {
-            for (int j = WORD_BITLEN - 1; j >= 0; j--)
-            {
-                str[k] = ((x->a[i]) >> j) & 0x1;
-                //printf("%x", ((x->a[i]) >> j) & 0x1);
-                k++;
-            }
-        }
-
-        for (i = 0; i < get_wordlen(x) ; i++)
-            for (j = 0; j <= WORD_BITLEN - 4; j = j + 4)
-            {
-                tmp = ((x->a[i]) >> j) & 0xf;
-                if (tmp >= 10)
-                {
-                    tmp = tmp - 10;
-                    ca = 1;
-                }
-                tmp += be;
-                if (tmp >= 10)
-                {
-                    tmp = tmp - 10;
-                    ca = 1;
-                }
-                str[k] = tmp;
-                k++;
-                be = ca;
-                ca = 0;
-            }
-        for(int i=k-1;i>-0;i--)
-            printf("%d", str[i]);
     }
     printf("\n");
 }
@@ -230,13 +188,13 @@ void bi_set_by_string(bigint** x, int sign, char* str, word base) // str = "1234
                 if (str[i] == tmp[j])
                     break;
             }
-            (*x)->a[4 * (stln - 1 - i) / WORD_BITLEN] ^= ((j) << (4 * (stln - 1 - i) % WORD_BITLEN));
+            (*x)->a[4 * (stln - 1 - i) / WORD_BITLEN] ^= ((word)(j) << (4 * (stln - 1 - i) % WORD_BITLEN));
         }
     }
     else // base = 10
     {
     }
-    
+
 }
 void bi_gen_rand(bigint** x, int sign, int wordlen)
 {
@@ -251,24 +209,12 @@ void bi_gen_rand(bigint** x, int sign, int wordlen)
     //    (*x)->sign = NON_NEGATIVE;
 }
 
-/**********************
-get_wordlen
-저장되어있는 bignum의 word길이를 출력해주는 함수.
-출력은 int형으로 진행.
-**********************/
-
-int get_wordlen(const bigint* x)  
+int get_wordlen(const bigint* x)  // refine 해주고 해준 길이를 리턴
 {
-    return x->wordlen;             //구조체의 wordlen에 저장된 값을 리턴.
+    return x->wordlen;
 }
 
-/**********************
-get_bitlen
-저장되어있는 bignum의 bit길이를 출력해주는 함수.
-가독성을 위한 함수로 출력은 int형으로 진행.
-**********************/
-
-int get_bitlen(const bigint* x)            // 마지막 워드의 비트만 비교..  ??
+int get_bitlen(const bigint* x)            // 마지막 워드의 비트만 비교..
 {
     word last = x->a[get_wordlen(x) - 1];
     for (int i = WORD_BITLEN - 1; i > 0; i--)
@@ -279,13 +225,6 @@ int get_bitlen(const bigint* x)            // 마지막 워드의 비트만 비교..  ??
     return FAIL;
 }
 
-/**********************
-get_jth_bit
-저장되어있는 bignum의 j번째 bit를 출력해주는 함수.
-여기서 j번째는 하위비트를 1번째로 보고 계산.
-출력은 int형으로 진행.
-**********************/
-
 int get_jth_bit(const bigint* x, const int j)  //아래에서 j번째
 {
     int jword, jbit;
@@ -294,52 +233,22 @@ int get_jth_bit(const bigint* x, const int j)  //아래에서 j번째
     return ((x->a[jword]) >> jbit) & 0x1;
 }
 
-/**********************
-get_sign
-저장되어있는 bignum의 부호를 출력해주는 함수.
-가독성을 위한 함수로 출력은 int형으로 진행. 
-NEGATIVE인경우 1, NON_NEGATIVE인 경우 0 리턴.
-**********************/
-
-int get_sign(const bigint* x)     
+int get_sign(const bigint* x)     // 가독성
 {
     return x->sign;
 }
 
-/**********************
-get_sign
-저장되어있는 bignum의 부호를 바꾸어주는 함수.
-NEGATIVE인경우 1, NON_NEGATIVE인 경우 0 으로 저장되기 때문에 
-XOR 1을 통해 부호를 변경하는 것이 가능하다.
-**********************/
-
-void flip_sign(bigint* x)    
+void flip_sign(bigint* x)    // 1^1 =0, 0^1 =1   근데 포인터인지 이중포인터인지?
 {
     x->sign = 0x1 ^ (x->sign);
 }
 
-/**********************
-bi_set_one
-입력받은 주소에 해당하는 bignum을 양수 1로 설정하는 함수.
-지수승 연산등에서 1을 사용하기에 편의를 위함.
-입력을 bignum의 주소로 받음.
-word길이를 1, 부호는 NON_NEGATIVE, 저장된 값은 1로 설정
-**********************/
-
-void bi_set_one(bigint** x)     
+void bi_set_one(bigint** x)     //있던거
 {
     if (FAIL == bi_new(x, 1, NON_NEGATIVE))
         return;
     (*x)->a[0] = 0x1;
 }
-
-/**********************
-bi_set_zero
-입력받은 주소에 해당하는 bignum을 양수 0으로 설정하는 함수. (0은 편의상 양수로 설정.)
-FOR문 등에서 0이 필요한 경우가 있기에 편의를 위함.
-입력을 bignum의 주소로 받음.
-word길이를 1, 부호는 NON_NEGATIVE, 저장된 값은 0로 설정
-**********************/
 
 void bi_set_zero(bigint** x)   //있던거
 {
@@ -347,15 +256,6 @@ void bi_set_zero(bigint** x)   //있던거
         return;
     (*x)->a[0] = 0x0;
 }
-
-
-/**********************
-bi_is_minus_one
-입력받은 bignum이 -1인지 확인하는 함수
-        필요한 경우가 있기에 편의를 위함.
-입력을 bignum을 받아서 숫자를 저장하는 x->a이 1이고 부호가 NEGATIVE인지 확인한다.
-맞으면 TRUE, 틀리면 FALSE를 리턴
-**********************/
 
 int bi_is_minus_one(const bigint* x)
 {
@@ -367,15 +267,7 @@ int bi_is_minus_one(const bigint* x)
     return TRUE;
 }
 
-/**********************
-bi_is_one
-입력받은 bignum이 1인지 확인하는 함수
-        필요한 경우가 있기에 편의를 위함.
-입력을 bignum을 받아서 숫자를 저장하는 x->a이 1이고 부호가 NON_NEGATIVE인지 확인한다.
-맞으면 TRUE, 틀리면 FALSE를 리턴
-**********************/
-
-int bi_is_one(const bigint* x)     
+int bi_is_one(const bigint* x)     //1인지 확인
 {
     if ((get_sign(x) == NEGATIVE) || (x->a[0] != 0x1))
     {
@@ -389,15 +281,8 @@ int bi_is_one(const bigint* x)
     return TRUE;
 }
 
-/**********************
-bi_is_zero
-입력받은 bignum이 0인지 확인하는 함수
-        필요한 경우가 있기에 편의를 위함.
-입력을 bignum을 받아서 숫자를 저장하는 x->a이 0이고 부호가 NON_NEGATIVE인지 확인한다.
-맞으면 TRUE, 틀리면 FALSE를 리턴
-**********************/
 
-int bi_is_zero(const bigint* x)      
+int bi_is_zero(const bigint* x)       //0인지 확인
 {
     if (get_wordlen(x) == 0)
         return TRUE;

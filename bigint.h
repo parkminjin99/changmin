@@ -1,11 +1,11 @@
 #pragma once
-//
+//  
 //  bigint.h
 //  Changmin's library
-//
+//  
 //  Created by 최강창민 on 2020/11/09.
 //  Copyright 2020 최강창민. All rights reserved.
-//
+//  
 
 #ifndef bigint_h
 #define bigint_h
@@ -14,7 +14,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define WORD_BITLEN 8
+#define WORD_BITLEN 32
 
 #if WORD_BITLEN == 64
 typedef unsigned long long word;
@@ -47,6 +47,7 @@ typedef struct {
     int wordlen;
     word* a;
 } bigint;
+
 void bi_sage_show(const bigint* x, const int base);
 void bi_show(const bigint* x, const int base);
 void bi_delete(bigint** x);                                     // bigint 구조체의 메모리를 해제하는 함수

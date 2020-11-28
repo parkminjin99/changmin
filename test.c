@@ -56,25 +56,77 @@ void BASIC_test()
 
 void COMPARE_test()
 {
-    printf("\n");
-    //printf(" < bigint compare > \n");
+    printf("\n #< bigint compare > \n");
     bigint* src1 = NULL;
     bigint* src2 = NULL;
     int cnt = 0;
+    printf("while(True):\n");
+    printf("    case=0\n");
     while(cnt < MAX_COUNT)
     {
         bi_gen_rand(&src1, rand()%2, 5);
         bi_gen_rand(&src2, rand()%2, 5);
-        printf("comA = " );       bi_sage_show(src1, 16);    printf("\n");
-        printf("comB = " );       bi_sage_show(src2, 16);    printf("\n");
-        if (1 == bi_compare(src1, src2))                printf("print(comA > comB)\n");
-        else if (0 == bi_compare(src1, src2))           printf("print(comA  == comB)\n");
-        else                                            printf("print(comA  < comB)\n");
+        printf("    comA = " );       bi_sage_show(src1, 16);    printf("\n");
+        printf("    comB = " );       bi_sage_show(src2, 16);    printf("\n");
+        if (1 == bi_compare(src1, src2)) 
+        { 
+            printf("    if comA<=comB:\n");
+            printf("        print( 'False!!')\n");
+            printf("        break\n");
+        }
+        else if (0 == bi_compare(src1, src2)) 
+        { 
+            printf("    if comA!=comB:\n");
+            printf("        print( 'False!!')\n");
+            printf("        break\n");
+
+        }
+        else
+        {
+            printf("    if comA>=comB:\n");
+            printf("        print( 'False!!')\n");
+            printf("        break\n");;
+        }
         bi_delete(&src1);
         bi_delete(&src2);
         cnt++;
+        printf("    case=case+1\n");
+
     }
+    
+    printf("    print('true!!')\n");
+    printf("    break\n");
+    printf("\nif case!=%d:\n",MAX_COUNT);
+    printf("    print('error in ',end='')\n");
+    printf("    print(case+1)\n");
+    printf("    print('error case A = ',end='')\n");
+    printf("    print(comA)\n");
+    printf("    print('error case B = ',end='')\n");
+    printf("    print(comB)\n");
+
 }
+
+// void COMPARE_test()
+// {
+//     printf("\n");
+//     //printf(" < bigint compare > \n");
+//     bigint* src1 = NULL;
+//     bigint* src2 = NULL;
+//     int cnt = 0;
+//     while(cnt < MAX_COUNT)
+//     {
+//         bi_gen_rand(&src1, rand()%2, 5);
+//         bi_gen_rand(&src2, rand()%2, 5);
+//         printf("comA = " );       bi_sage_show(src1, 16);    printf("\n");
+//         printf("comB = " );       bi_sage_show(src2, 16);    printf("\n");
+//         if (1 == bi_compare(src1, src2))                printf("print(comA > comB)\n");
+//         else if (0 == bi_compare(src1, src2))           printf("print(comA  == comB)\n");
+//         else                                            printf("print(comA  < comB)\n");
+//         bi_delete(&src1);
+//         bi_delete(&src2);
+//         cnt++;
+//     }
+// }
 
 void SHIFT_test()
 {
@@ -85,7 +137,7 @@ void SHIFT_test()
     //printf(" < bigint left shift >\n");
     while(cnt < MAX_COUNT)
     {
-        bi_gen_rand(&Lshift, NON_NEGATIVE, 15);
+        bi_gen_rand(&Lshift, NON_NEGATIVE, rand()%30);
         printf("Lshift = " );             bi_sage_show(Lshift, 16);     printf("\n");
         int lshift = rand()%(10*WORD_BITLEN);
         left_shift(Lshift, lshift);
@@ -98,9 +150,9 @@ void SHIFT_test()
     //printf(" < bigint right shift >\n");
     while(cnt < MAX_COUNT)
     {
-        bi_gen_rand(&Rshift, NON_NEGATIVE, 15);
-        printf("Rshift = 0x");             bi_sage_show(Rshift, 16);     printf("\n");
-        int rshift = rand()%(5*WORD_BITLEN);
+        bi_gen_rand(&Rshift, NON_NEGATIVE, rand()%30);
+        printf("Rshift = ");             bi_sage_show(Rshift, 16);     printf("\n");
+        int rshift = rand()%(10*WORD_BITLEN);
         right_shift(Rshift, rshift);
         printf("print(Rshift >> %d == ",rshift);       bi_sage_show(Rshift, 16);   printf(")\n");
         bi_delete(&Rshift); 
@@ -116,8 +168,8 @@ void REDUCTION_test()
     int cnt = 0;
     while(cnt < MAX_COUNT)
     {
-        bi_gen_rand(&A, NON_NEGATIVE, 10);
-        printf("A = 0x");               bi_sage_show(A, 16);     printf("\n");
+        bi_gen_rand(&A, NON_NEGATIVE, rand()%30);
+        printf("A = ");               bi_sage_show(A, 16);     printf("\n");
         int r = rand() % 10;
         reduction_2_r(A, r);
         printf("print(A %% 2^%d == ", r);     bi_sage_show(A, 16);   printf(")\n");
@@ -136,8 +188,8 @@ void ADD_test()
     int cnt = 0;
     while(cnt < MAX_COUNT)
     {
-        bi_gen_rand(&src1, rand()%2, rand() % 10);
-        bi_gen_rand(&src2, rand()%2, rand() % 10);
+        bi_gen_rand(&src1, rand()%2, rand() % 30);
+        bi_gen_rand(&src2, rand()%2, rand() % 30);
         printf("addA = ");       bi_sage_show(src1, 16);    printf("\n");
         printf("addB = ");       bi_sage_show(src2, 16);    printf("\n");
         ADD(&dst, src1, src2);
@@ -159,8 +211,8 @@ void ADD2_test()
     int cnt = 0;
     while(cnt < MAX_COUNT)
     {
-        bi_gen_rand(&src, rand()%2, rand() % 10);
-        bi_gen_rand(&dst, rand()%2, rand() % 10);
+        bi_gen_rand(&src, rand()%2, rand() % 30);
+        bi_gen_rand(&dst, rand()%2, rand() % 30);
         printf("addA = ");       bi_sage_show(src, 16);    printf("\n");
         printf("dst = ");        bi_sage_show(dst, 16);    printf("\n");
         ADD2(&dst, src);
@@ -182,8 +234,8 @@ void SUB_test()
     int cnt = 0;
     while (cnt < MAX_COUNT)
     {
-        bi_gen_rand(&src1, rand()%2, rand() % 10);
-        bi_gen_rand(&src2, rand()%2, rand() % 10);
+        bi_gen_rand(&src1, rand()%2, rand() % 30);
+        bi_gen_rand(&src2, rand()%2, rand() % 30);
         printf("subA = ");          bi_sage_show(src1, 16);    printf("\n");
         printf("subB = ");          bi_sage_show(src2, 16);    printf("\n");
 
@@ -207,8 +259,8 @@ void MUL_test()
     int cnt = 0;
     while(cnt < MAX_COUNT)
     {
-        bi_gen_rand(&src1, rand()%2, 10);
-        bi_gen_rand(&src2, rand()%2, 10);
+        bi_gen_rand(&src1, rand()%2, rand()%30);
+        bi_gen_rand(&src2, rand()%2, rand()%30);
         printf("mulA = ");          bi_sage_show(src1, 16);    printf("\n");
         printf("mulB = ");          bi_sage_show(src2, 16);    printf("\n");
 
@@ -288,32 +340,90 @@ void SQUCKaratsuba_test()
     }
 }
 
+void NAIVE_div_test()
+{
+    printf("\n");
+    //printf(" < bigint NAIVE Division Algo > \n");
+    bigint* src1 = NULL;  
+    bigint* src2 = NULL;  
+    bigint* dstQ = NULL;
+    bigint* dstR = NULL;     
+    int cnt = 0;
+    while(cnt < MAX_COUNT)
+    {
+        bi_gen_rand(&src1, NON_NEGATIVE, 3);
+        bi_gen_rand(&src2, NON_NEGATIVE, rand()%3);
+        //bi_set_by_string(&src1,NON_NEGATIVE,"3073ec6bc652e5f4bbc73481cd202525582a6e6a",16);
+        //bi_set_by_string(&src2,NON_NEGATIVE,"275c1ea70fb49e10b9348c3b2a766b3d",16);
+        printf("divA = ");          bi_sage_show(src1, 16);    printf("\n");
+        printf("divB = ");          bi_sage_show(src2, 16);    printf("\n");
+        if(INVALID == NAIVE_div(&dstQ, &dstR, src1, src2))
+            continue;
+        printf("print(divA//divB == ");     bi_sage_show(dstQ, 16);     printf(")\n");
+        printf("print(divA%%divB == ");     bi_sage_show(dstR, 16);     printf(")\n");
+        //printf("print(divA == ");       bi_sage_show(dstQ, 16);    
+        //printf(" * ");                  bi_sage_show(src2, 16);
+        //printf(" + ");                  bi_sage_show(dstR, 16);    printf(")\n");
+        bi_delete(&src1);
+        bi_delete(&src2);
+        bi_delete(&dstQ);
+        bi_delete(&dstR);
+        cnt++;
+    }
+}
+
+void Binary_Long_Div_test()
+{
+    printf("\n");
+    //printf(" < bigint Long Division Algo > \n");
+    bigint* src1 = NULL;  
+    bigint* src2 = NULL;  
+    bigint* dstQ = NULL;
+    bigint* dstR = NULL;     
+    int cnt = 0;
+    while(cnt < MAX_COUNT)
+    {
+        bi_gen_rand(&src1, NON_NEGATIVE, 10);
+        bi_gen_rand(&src2, NON_NEGATIVE, rand()%5);
+        //bi_set_by_string(&src1,NON_NEGATIVE,"3073ec6bc652e5f4bbc73481cd202525582a6e6a",16);
+        //bi_set_by_string(&src2,NON_NEGATIVE,"275c1ea70fb49e10b9348c3b2a766b3d",16);
+        printf("divA = ");          bi_sage_show(src1, 16);    printf("\n");
+        printf("divB = ");          bi_sage_show(src2, 16);    printf("\n");
+        if(INVALID == Binary_Long_Div(&dstQ, &dstR, src1, src2))
+            continue;
+        printf("print(divA//divB == ");     bi_sage_show(dstQ, 16);     printf(")\n");
+        printf("print(divA%%divB == ");     bi_sage_show(dstR, 16);     printf(")\n");
+        //printf("print(divA == ");       bi_sage_show(dstQ, 16);    
+        //printf(" * ");                  bi_sage_show(src2, 16);
+        //printf(" + ");                  bi_sage_show(dstR, 16);    printf(")\n");
+        bi_delete(&src1);
+        bi_delete(&src2);
+        bi_delete(&dstQ);
+        bi_delete(&dstR);
+        cnt++;
+    }
+}
+
 void LDA_2word_test()
 {
     printf("\n");
-    //printf(" < bigint Squaring > \n");  
+    //printf(" < bigint LDA > \n");  
     int cnt = 0;
-    while(cnt < 500)
+    while(cnt < MAX_COUNT)
     {
-        //bi_gen_rand(&src1, NON_NEGATIVE, rand() % 10);
-        //bi_gen_rand(&src2, NON_NEGATIVE, rand() % 10);
-        //bi_set_by_string(&src1,NON_NEGATIVE,"888cd3a33724e9200e",16);
-        //bi_set_by_string(&src2,NON_NEGATIVE,"22b7",16);
-        //printf("divA = ");          bi_sage_show(src1, 16);    printf("\n");
-        //printf("divB = ");          bi_sage_show(src2, 16);    printf("\n");
         word a1 = rand()&BITMASK;     word a0 = rand()&BITMASK;
         word b = rand()&BITMASK;
-        //word a1 = 0x0e;     word a0 = 0xd4;
-        //word b = 0xfe;
+        //word a1 = 0x424e90bb340006ff;     word a0 = 0xd4;
+        //word b = 0x6713ee8a;
         word Q = 0;
         if(a1 >= b)
             continue;
         if(a1 == 0)
             continue;
-        printf("divA = 0x");      printf("%02x%02x\n",a1,a0);
-        printf("divB = 0x");      printf("%02x\n",b);
+        printf("divA = 0x");      printf("%016llx%016llx\n",a1,a0);
+        printf("divB = 0x");      printf("%016llx\n",b);
         LDA_2word(&Q,&a1,&a0,&b);
-        printf("print(divA//divB == 0x");     printf("%02x",Q);     printf(")\n");
+        printf("print(divA//divB == 0x");     printf("%llx",Q);     printf(")\n");
         //printf("print(divA%%divB == ");     bi_sage_show(dstR, 16);     printf(")\n");
         cnt++;
     }
@@ -331,7 +441,7 @@ void DIV_test()
     while(cnt < MAX_COUNT)
     {
         bi_gen_rand(&src1, NON_NEGATIVE, 4);
-        bi_gen_rand(&src2, NON_NEGATIVE, rand()%2);
+        bi_gen_rand(&src2, NON_NEGATIVE, 2);
         //bi_set_by_string(&src1,NON_NEGATIVE,"3073ec6bc652e5f4bbc73481cd202525582a6e6a",16);
         //bi_set_by_string(&src2,NON_NEGATIVE,"275c1ea70fb49e10b9348c3b2a766b3d",16);
         printf("divA = ");          bi_sage_show(src1, 16);    printf("\n");
@@ -349,7 +459,6 @@ void DIV_test()
         bi_delete(&dstR);
         cnt++;
     }
-    // 88 8c d3 a3 37 24 e9 20 0e
 }
 
 
