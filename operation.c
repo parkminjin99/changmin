@@ -1,74 +1,74 @@
-//
+ï»¿//
 //  operation.c
 //  Changmin's library
 //
-//  Created by ÃÖ°­Ã¢¹Î on 2020/11/09.
-//  Copyright 2020 ÃÖ°­Ã¢¹Î. All rights reserved.
+//  Created by ìµœê°•ì°½ë¯¼ on 2020/11/09.
+//  Copyright 2020 ìµœê°•ì°½ë¯¼. All rights reserved.
 //
 
 #include "operation.h"
 
-void left_shift(bigint* x, int r) // bigint x¸¦ rºñÆ®¸¸Å­ ¿ŞÂÊÀ¸·Î shiftÇÏ´Â ÇÔ¼ö
+void left_shift(bigint* x, int r) // bigint xë¥¼ rë¹„íŠ¸ë§Œí¼ ì™¼ìª½ìœ¼ë¡œ shiftí•˜ëŠ” í•¨ìˆ˜
 {
     int i;
-    if (r % WORD_BITLEN == 0) // r°¡ WORD_BITLENÀÇ ¹è¼öÀÎ °æ¿ì
+    if (r % WORD_BITLEN == 0) // rê°€ WORD_BITLENì˜ ë°°ìˆ˜ì¸ ê²½ìš°
     {
         x->wordlen += r/WORD_BITLEN;
         x->a = (word*)realloc(x->a, sizeof(word) * get_wordlen(x));
         array_copy(x->a + (r / WORD_BITLEN), x->a, x->wordlen - (r / WORD_BITLEN));
         array_init(x->a, r / WORD_BITLEN);
     }
-    else // rÀÌ WORD_BITLENÀÇ ¹è¼ö°¡ ¾Æ´Ñ °æ¿ì
+    else // rì´ WORD_BITLENì˜ ë°°ìˆ˜ê°€ ì•„ë‹Œ ê²½ìš°
     {
         x->wordlen += r / WORD_BITLEN + 1;
         x->a = (word*)realloc(x->a, sizeof(word) * get_wordlen(x));
 
-        int n = get_wordlen(x) - r / WORD_BITLEN; // nÀº shiftÇßÀ» ¶§ 0ÀÌ ¾Æ´Ñ ºÎºĞÀÇ ±æÀÌ
+        int n = get_wordlen(x) - r / WORD_BITLEN; // nì€ shiftí–ˆì„ ë•Œ 0ì´ ì•„ë‹Œ ë¶€ë¶„ì˜ ê¸¸ì´
         x->a[get_wordlen(x)-1] = (x->a[get_wordlen(x) - 1 - r / WORD_BITLEN - 1] >> (WORD_BITLEN - r % WORD_BITLEN));
         for (i = get_wordlen(x) - 2; i > get_wordlen(x) - n; i--)
-            x->a[i] = (x->a[i - r/WORD_BITLEN - 1] >> (WORD_BITLEN - r % WORD_BITLEN)) | (x->a[i - r / WORD_BITLEN] << (r % WORD_BITLEN)); // x->a[i]´Â x->a[i-1]ÀÇ »óÀ§ r%WORD_BITLENºñÆ®¿Í x->a[i]ÀÇ ÇÏÀ§ WORD_BITLEN-r%WORD_BITLENºñÆ®·Î ±¸¼º
+            x->a[i] = (x->a[i - r/WORD_BITLEN - 1] >> (WORD_BITLEN - r % WORD_BITLEN)) | (x->a[i - r / WORD_BITLEN] << (r % WORD_BITLEN)); // x->a[i]ëŠ” x->a[i-1]ì˜ ìƒìœ„ r%WORD_BITLENë¹„íŠ¸ì™€ x->a[i]ì˜ í•˜ìœ„ WORD_BITLEN-r%WORD_BITLENë¹„íŠ¸ë¡œ êµ¬ì„±
         x->a[get_wordlen(x) - n] = x->a[get_wordlen(x)- n - r / WORD_BITLEN] << (r%WORD_BITLEN);
         array_init(x->a, r / WORD_BITLEN);
     }
     bi_refine(x);
 }
 
-void right_shift(bigint* x, int r) // bigint x¸¦ rºñÆ®¸¸Å­ ¿À¸¥ÂÊÀ¸·Î shiftÇÏ´Â ÇÔ¼ö
+void right_shift(bigint* x, int r) // bigint xë¥¼ rë¹„íŠ¸ë§Œí¼ ì˜¤ë¥¸ìª½ìœ¼ë¡œ shiftí•˜ëŠ” í•¨ìˆ˜
 {
-    if (r >= get_wordlen(x) * WORD_BITLEN) // rÀÌ x->wordlen*WORD_BITLENº¸´Ù Å©°Å³ª °°Àº °æ¿ì
+    if (r >= get_wordlen(x) * WORD_BITLEN) // rì´ x->wordlen*WORD_BITLENë³´ë‹¤ í¬ê±°ë‚˜ ê°™ì€ ê²½ìš°
         bi_zeroize(x);
-    else if (r % WORD_BITLEN == 0) // rÀÌ WORD_BITLENÀÇ ¹è¼öÀÎ °æ¿ì
+    else if (r % WORD_BITLEN == 0) // rì´ WORD_BITLENì˜ ë°°ìˆ˜ì¸ ê²½ìš°
     {
         array_copy(x->a, x->a + (r / WORD_BITLEN), get_wordlen(x) - (r / WORD_BITLEN));
         array_init(x->a + (get_wordlen(x) - (r / WORD_BITLEN)), r / WORD_BITLEN);
         bi_refine(x);
     }
-    else // rÀÌ WORD_BITLENÀÇ ¹è¼ö°¡ ¾Æ´Ñ °æ¿ì
+    else // rì´ WORD_BITLENì˜ ë°°ìˆ˜ê°€ ì•„ë‹Œ ê²½ìš°
     {
         int i;
-        int n = get_wordlen(x) - r / WORD_BITLEN; // nÀº shiftÇßÀ» ¶§ 0ÀÌ ¾Æ´Ñ ºÎºĞÀÇ ±æÀÌ
+        int n = get_wordlen(x) - r / WORD_BITLEN; // nì€ shiftí–ˆì„ ë•Œ 0ì´ ì•„ë‹Œ ë¶€ë¶„ì˜ ê¸¸ì´
         for (i = 0; i < n - 1; i++)
-            x->a[i] = (x->a[i + 1 + r/WORD_BITLEN] << (WORD_BITLEN - r % WORD_BITLEN)) | (x->a[i + r / WORD_BITLEN] >> (r % WORD_BITLEN)); // x->a[i]´Â x->a[i+1]ÀÇ ÇÏÀ§ r%WORD_BITLENºñÆ®¿Í x->a[i]ÀÇ »óÀ§ WORD_BITLEN-r%WORD_BITLENºñÆ®·Î ±¸¼º
+            x->a[i] = (x->a[i + 1 + r/WORD_BITLEN] << (WORD_BITLEN - r % WORD_BITLEN)) | (x->a[i + r / WORD_BITLEN] >> (r % WORD_BITLEN)); // x->a[i]ëŠ” x->a[i+1]ì˜ í•˜ìœ„ r%WORD_BITLENë¹„íŠ¸ì™€ x->a[i]ì˜ ìƒìœ„ WORD_BITLEN-r%WORD_BITLENë¹„íŠ¸ë¡œ êµ¬ì„±
         x->a[n - 1] = x->a[n - 1 + r / WORD_BITLEN] >> (r % WORD_BITLEN);
         array_init(x->a + (get_wordlen(x) - r / WORD_BITLEN), r / WORD_BITLEN);
         bi_refine(x);
     }
 }
 
-void reduction_2_r(bigint* x, int r) // bigint xÀÇ x mod 2^r¸¦ Ãâ·ÂÇÏ´Â ÇÔ¼ö
+void reduction_2_r(bigint* x, int r) // bigint xì˜ x mod 2^rë¥¼ ì¶œë ¥í•˜ëŠ” í•¨ìˆ˜
 {
-    if (r >= (get_wordlen(x) * WORD_BITLEN)) // r°¡ x->wordlen*WORD_BITLENº¸´Ù Å©°Å³ª °°Àº °æ¿ì
+    if (r >= (get_wordlen(x) * WORD_BITLEN)) // rê°€ x->wordlen*WORD_BITLENë³´ë‹¤ í¬ê±°ë‚˜ ê°™ì€ ê²½ìš°
         return;
-    else if (r % WORD_BITLEN == 0) // r°¡ WORD_BITLENÀÇ ¹è¼öÀÎ °æ¿ì
+    else if (r % WORD_BITLEN == 0) // rê°€ WORD_BITLENì˜ ë°°ìˆ˜ì¸ ê²½ìš°
     {
         array_init(x->a + r / WORD_BITLEN, x->wordlen - r / WORD_BITLEN);
         bi_refine(x);
     }
-    else    // r°¡ WORD_BITLENÀÇ ¹è¼ö°¡ ¾Æ´Ñ °æ¿ì
+    else    // rê°€ WORD_BITLENì˜ ë°°ìˆ˜ê°€ ì•„ë‹Œ ê²½ìš°
     {
         word k = BITMASK;
          // k = 2^(WORD_BITLEN)-1
-        x->a[r / WORD_BITLEN] &= (k >> (WORD_BITLEN - r % WORD_BITLEN)); // x->a[r/WORD_BITLEN]ÀÇ ÇÏÀ§ r%WORD_BITLENºñÆ®¸¸ ³²±è
+        x->a[r / WORD_BITLEN] &= (k >> (WORD_BITLEN - r % WORD_BITLEN)); // x->a[r/WORD_BITLEN]ì˜ í•˜ìœ„ r%WORD_BITLENë¹„íŠ¸ë§Œ ë‚¨ê¹€
         array_init(x->a + r / WORD_BITLEN + 1, x->wordlen - r / WORD_BITLEN - 1);
         bi_refine(x);
     }
@@ -77,10 +77,10 @@ void ADD_ABc(word* dst, word* carry, const word* src1, const word* src2)
 {
     word new_carry = 0;
     *dst = (*src1) + (*src2);
-    if (*dst < *src1) // carry ¹ß»ı
+    if (*dst < *src1) // carry ë°œìƒ
         new_carry = 1;
     *dst += *carry;
-    if (*dst < *carry) // carry ¹ß»ı
+    if (*dst < *carry) // carry ë°œìƒ
         new_carry += 1;
     *carry = new_carry;
 }
@@ -89,10 +89,10 @@ void ADD_ABc2(word* dst, word* carry, const word* src)
 {
     word new_carry = 0;
     *dst += *src;
-    if (*dst < *src) // carry ¹ß»ı
+    if (*dst < *src) // carry ë°œìƒ
         new_carry = 1;
     *dst += *carry;
-    if (*dst < *carry) // carry ¹ß»ı
+    if (*dst < *carry) // carry ë°œìƒ
         new_carry += 1;
     *carry = new_carry;
 }
@@ -103,17 +103,17 @@ void ADDC(bigint** dst, const bigint* src1, const bigint* src2)
     int i;
     word carry = 0; // carry
     for (i = 0; i < get_wordlen(src2); i++){
-        ADD_ABc(&(*dst)->a[i], &carry, &src1->a[i], &src2->a[i]); // 1¿öµå µ¡¼À
+        ADD_ABc(&(*dst)->a[i], &carry, &src1->a[i], &src2->a[i]); // 1ì›Œë“œ ë§ì…ˆ
     }
-    for (i = get_wordlen(src2); i < get_wordlen(src1); i++)    // *¼öÁ¤*
+    for (i = get_wordlen(src2); i < get_wordlen(src1); i++)    // *ìˆ˜ì •*
     {
         (*dst)->a[i] = src1->a[i] + carry;
-        if ((*dst)->a[i] < carry && carry == 1) // carry ¹ß»ı
+        if ((*dst)->a[i] < carry && carry == 1) // carry ë°œìƒ
             carry = 1;
         else
             carry = 0;
     }
-    (*dst)->a[i] = carry;  // *¼öÁ¤*
+    (*dst)->a[i] = carry;  // *ìˆ˜ì •*
     bi_refine(*dst);
 
 }
@@ -140,9 +140,9 @@ void ADD(bigint** dst, const bigint* src1, const bigint* src2)
         flip_sign(temp);
         SUB(dst, src1, temp);
         
-        //flip_sign(src2);       // *¼öÁ¤*
-        //SUB(dst, src1, src2); // *¼öÁ¤*
-        //flip_sign(src2);       // *¼öÁ¤*
+        //flip_sign(src2);       // *ìˆ˜ì •*
+        //SUB(dst, src1, src2); // *ìˆ˜ì •*
+        //flip_sign(src2);       // *ìˆ˜ì •*
 
     }
     else if ((get_sign(src1) == NEGATIVE) && (get_sign(src2) == NON_NEGATIVE)) // src1 < 0, src2 >= 0
@@ -152,9 +152,9 @@ void ADD(bigint** dst, const bigint* src1, const bigint* src2)
         flip_sign(temp);
         SUB(dst, src2, temp);
         
-        //flip_sign(src1);       // *¼öÁ¤*
-        //SUB(dst, src2, src1); // *¼öÁ¤*
-        //flip_sign(src1);       // *¼öÁ¤*
+        //flip_sign(src1);       // *ìˆ˜ì •*
+        //SUB(dst, src2, src1); // *ìˆ˜ì •*
+        //flip_sign(src1);       // *ìˆ˜ì •*
 
     }
     else if (get_wordlen(src1) >= get_wordlen(src2))
@@ -178,7 +178,26 @@ void ADD2(bigint** dst, const bigint* src)
     bi_delete(&temp);
 }
 
-void subABS(word* dst, int* carry, const word* src1, const word* src2)    // src1°ú src2, carry¸¦ ÀÔ·Â¹Ş¾Æ 1word¿¡ ´ëÇÑ »¬¼ÀÀÇ Àı´ñ°ªÀ» Ãâ·Â
+//==========SUBTRACTION===================================================
+/*****subABS(A, b, B)*****************
+Input: A, B (1 word), b âˆˆ {0, 1}
+Output: b âˆˆ {0, 1}, C âˆˆ (1 word) such that A âˆ’ B = âˆ’bW + C
+------------------------------------------------------------------
+1: C â† A - b
+2: if A < b then        
+3:      b â† 1
+4: else
+5:      b â† 0
+6: end if
+7: if C < B then
+8:      b â† b + 1
+9: end if
+10: C â† C - B
+11: return b, C
+**********************/
+
+
+void subABS(word* dst, int* carry, const word* src1, const word* src2)    // src1ê³¼ src2, carryë¥¼ ì…ë ¥ë°›ì•„ 1wordì— ëŒ€í•œ ëº„ì…ˆì˜ ì ˆëŒ“ê°’ì„ ì¶œë ¥
 {
     *dst = (*src1) - (*carry);
 
@@ -194,22 +213,34 @@ void subABS(word* dst, int* carry, const word* src1, const word* src2)    // src
 
 }
 
-void subc(bigint** dst, const bigint* src1, const bigint* src2)    // src1>src2·Î ÀÔ·Â¹Ş¾Æ µÑÀÇ Â÷¸¦ dst¿¡ ÀúÀå
+/********subc(A, B)***A â‰¥ B > 0*******************
+Input: A = [Wnâˆ’1, Wn), B = [Wmâˆ’1, Wm), (A â‰¥ B > 0),
+Output: A âˆ’ B = Câˆˆ [0, Wn)
+1: Bj â† 0 for j = m, m + 1, . . . , n âˆ’ 1
+2: b â† 0
+3: for j = 0 to n âˆ’ 1 do
+4:       b, Cj â† SUBAbB(Aj, b, Bj)
+5: end for
+6: l â† min{j : Cnâˆ’1 = Cnâˆ’2 = Â· Â· Â· = Cj = 0}
+7: return  C
+*******************************/
+
+void subc(bigint** dst, const bigint* src1, const bigint* src2)    // src1>src2ë¡œ ì…ë ¥ë°›ì•„ ë‘˜ì˜ ì°¨ë¥¼ dstì— ì €ì¥
 {
     int new_wordlen = get_wordlen(src1);
     int y_wordlen = get_wordlen(src2);
 
-    bi_new(dst, new_wordlen, NON_NEGATIVE);  //z´Â src1, src2Áß ±ä±æÀÌ·Î ¿ì¼± ÇÒ´ç
+    bi_new(dst, new_wordlen, NON_NEGATIVE);  //zëŠ” src1, src2ì¤‘ ê¸´ê¸¸ì´ë¡œ ìš°ì„  í• ë‹¹
 
     bigint* temp = NULL;
-    bi_assign(&temp, src2); //src2¸¦ º¯ÇüÇØ¾ß ÇÏ´Â °æ¿ì 
+    bi_assign(&temp, src2); //src2ë¥¼ ë³€í˜•í•´ì•¼ í•˜ëŠ” ê²½ìš° 
 
     int carry = 0;
     //bi_show(temp, 16);
-    if (get_wordlen(src1) != get_wordlen(temp))     // src1, src2 ±æÀÌ ´Ù¸£¸é
+    if (get_wordlen(src1) != get_wordlen(temp))     // src1, src2 ê¸¸ì´ ë‹¤ë¥´ë©´
     {
         temp->wordlen = new_wordlen;
-        temp->a = (word*)realloc(temp->a, sizeof(word) * new_wordlen);       // scr2 ÀçÇÒ´ç
+        temp->a = (word*)realloc(temp->a, sizeof(word) * new_wordlen);       // scr2 ì¬í• ë‹¹
         //bi_show(temp, 16);
         //printf("=\n");
         for (int i = new_wordlen; i > y_wordlen; i--)
@@ -226,7 +257,36 @@ void subc(bigint** dst, const bigint* src1, const bigint* src2)    // src1>src2·
     bi_delete(&temp);
 }
 
-void SUB(bigint** dst, const bigint* src1, const bigint* src2)   //src1 °ú src2¸¦ ºñ±³ÇÏ¿© subc·Î ÀÌµ¿½ÃÅ°´Â ÇÔ¼ö
+/*********SUB(A, B) w**************
+Input: A, B âˆˆ Z
+Output: A âˆ’ B âˆˆ Z
+1: if A = 0 then
+2:      return âˆ’B
+3: end if
+4: if B = 0 then
+5:      return A
+6: end if
+7: if A = B then
+8:      return 0
+9: end if
+10: if 0 < B â‰¤ A then
+11:     return SUBC(A, B)
+12: else if 0 < A < B then
+13:     return âˆ’SUBC(B, A)
+14: end if
+15: if 0 > A â‰¥ B then
+16:     return SUBC(|B|, |A|)
+17: else if 0 > B > A then
+18:     return âˆ’SUBC(|A|, |B|)
+19: end if
+20: if A > 0 and B < 0 then
+21:     return ADD(A, |B|)
+22: else . 
+23:     return âˆ’ADD(|A|, B)
+24: end if
+****************************/
+
+void SUB(bigint** dst, const bigint* src1, const bigint* src2)   //src1 ê³¼ src2ë¥¼ ë¹„êµí•˜ì—¬ subcë¡œ ì´ë™ì‹œí‚¤ëŠ” í•¨ìˆ˜
 {
     bigint* temp = NULL;
     if(bi_is_zero(src1) == TRUE && bi_is_zero(src2) == TRUE)
@@ -235,7 +295,7 @@ void SUB(bigint** dst, const bigint* src1, const bigint* src2)   //src1 °ú src2¸
     }
     else if (TRUE == bi_is_zero(src1))  //  src1=0
     {
-        bi_assign(dst, src2); // bigint ±¸Á¶Ã¼¸¦ º¹»çÇÏ´Â ÇÔ¼ö
+        bi_assign(dst, src2); // bigint êµ¬ì¡°ì²´ë¥¼ ë³µì‚¬í•˜ëŠ” í•¨ìˆ˜
         flip_sign(*dst);
         //printf("#src1=0\n");
     }
@@ -279,7 +339,7 @@ void SUB(bigint** dst, const bigint* src1, const bigint* src2)   //src1 °ú src2¸
         flip_sign(temp);
         ADD(dst, src1, temp);
         //flip_sign(src2);
-        //ADD(dst, src1, src2); // *¼öÁ¤*
+        //ADD(dst, src1, src2); // *ìˆ˜ì •*
         //flip_sign(src2);
     }
     else                           // src2>0>src1
@@ -289,7 +349,7 @@ void SUB(bigint** dst, const bigint* src1, const bigint* src2)   //src1 °ú src2¸
         flip_sign(temp);
         ADD(dst, temp, src2);
         //flip_sign(src1);
-        //ADD(dst, src1, src2); // *¼öÁ¤*
+        //ADD(dst, src1, src2); // *ìˆ˜ì •*
         //flip_sign(src1);
         flip_sign(*dst);
     }
@@ -306,7 +366,7 @@ void MUL_1Word(word* dst, const word* src1, const word* src2)
 
     temp[1] = A[1]*B[0];
     temp[0] = (A[0]*B[1])+(temp[1]);        // temp0 = A1*B0 + A0*B1
-    if(temp[0] < temp[1])   temp[1] = 1;    // carry¹ß»ı ½Ã temp1 = 1
+    if(temp[0] < temp[1])   temp[1] = 1;    // carryë°œìƒ ì‹œ temp1 = 1
     else temp[1] = 0;
 
     dst[1] = A[1]*B[1]; // dst1 = A1*B1
@@ -315,7 +375,7 @@ void MUL_1Word(word* dst, const word* src1, const word* src2)
 
     dst[0] += temp[0]<<(WORD_BITLEN/2); // dst0 = A0*B0 + temp0<<w/2
     dst[1] += (temp[1]<<(WORD_BITLEN/2)) + (temp[0]>>(WORD_BITLEN/2)); // dst1 = temp1<<w/2 + temp0>>w/2
-    if(dst[0] < t)  dst[1]++; // carry¹ß»ı
+    if(dst[0] < t)  dst[1]++; // carryë°œìƒ
 } 
 
 void MULC(bigint** dst, const bigint* src1, const bigint* src2)// schoolbook multiplication 
@@ -333,7 +393,7 @@ void MULC(bigint** dst, const bigint* src1, const bigint* src2)// schoolbook mul
             temp_bigint->a[i+j] = temp[0];   // temp_bigint = temp << (i+j)*w
             temp_bigint->a[i+j+1] = temp[1];
             ADD2(dst,temp_bigint); // dst += temp_bigint
-            array_init(temp_bigint->a + i+j, 2); // temp_bigint ÃÊ±âÈ­ 
+            array_init(temp_bigint->a + i+j, 2); // temp_bigint ì´ˆê¸°í™” 
         }
     }
     bi_delete(&temp_bigint);
@@ -360,10 +420,10 @@ void MUL(bigint** dst, const bigint* src1, const bigint* src2) // schoolbook mul
     else
     {
         MULC(dst,src1,src2); // dst = |src1|*|src2|
-        (*dst)->sign = get_sign(src1)^get_sign(src2); // dstÀÇ ºÎÈ£ °áÁ¤ 
-        // src1ÀÇ ºÎÈ£ 1 0 1 0 
-        // src2ÀÇ ºÎÈ£ 1 0 0 1
-        // dstÀÇ ºÎÈ£  0 0 1 1 -> ¾ç ¾ç À½ À½ 
+        (*dst)->sign = get_sign(src1)^get_sign(src2); // dstì˜ ë¶€í˜¸ ê²°ì • 
+        // src1ì˜ ë¶€í˜¸ 1 0 1 0 
+        // src2ì˜ ë¶€í˜¸ 1 0 0 1
+        // dstì˜ ë¶€í˜¸  0 0 1 1 -> ì–‘ ì–‘ ìŒ ìŒ 
     }
 }
 
@@ -379,16 +439,16 @@ void MUL2(bigint** dst, const bigint* src)
 void Karatsuba(bigint** dst, const bigint* src1, const bigint* src2, const int flag)
 {
     int temp = min(get_wordlen(src1), get_wordlen(src2));
-    if (flag >= temp)  // ¼³Á¤ ±æÀÌº¸´Ù wordlenÀÌ ÀÛ¾ÆÁö¸é ÀÏ¹İ mul
+    if (flag >= temp)  // ì„¤ì • ê¸¸ì´ë³´ë‹¤ wordlenì´ ì‘ì•„ì§€ë©´ ì¼ë°˜ mul
     {
         MUL(dst, src1, src2);
         return;
     }
     int l;
-    bigint* aco0 = NULL;    //a ÇÏÀ§ Àı¹İ
-    bigint* aco1 = NULL;    //a »óÀ§ Àı¹İ
-    bigint* bco0 = NULL;    //b ÇÏÀ§ Àı¹İ
-    bigint* bco1 = NULL;    //b »óÀ§ Àı¹İ
+    bigint* aco0 = NULL;    //a í•˜ìœ„ ì ˆë°˜
+    bigint* aco1 = NULL;    //a ìƒìœ„ ì ˆë°˜
+    bigint* bco0 = NULL;    //b í•˜ìœ„ ì ˆë°˜
+    bigint* bco1 = NULL;    //b ìƒìœ„ ì ˆë°˜
     bigint* t0 = NULL;
     bigint* t1 = NULL;
     bigint* tco1 = NULL;
@@ -398,38 +458,24 @@ void Karatsuba(bigint** dst, const bigint* src1, const bigint* src2, const int f
     bigint* S = NULL;
 
 
-    l = (max(get_wordlen(src1), get_wordlen(src2)) + 1) >> 1;    // ÀüÃ¼ ±æÀÌ Àı¹İ¸¸Å­¾¿ ³ª´©±â À§ÇØ l °è»êÀ¸·Î
-    bi_assign(&aco0, src1);         bi_assign(&aco1, src1);    // a¸¦ µÎ°³ ½á¾ßµÇ¼­ 2°³·Î ÇÒ´ç
-    bi_assign(&bco0, src2);         bi_assign(&bco1, src2);       //b¸¦ µÎ°³ ½á¾ßµÇ¼­ 2°³·Î ÇÒ´ç
+    l = (max(get_wordlen(src1), get_wordlen(src2)) + 1) >> 1;    // ì „ì²´ ê¸¸ì´ ì ˆë°˜ë§Œí¼ì”© ë‚˜ëˆ„ê¸° ìœ„í•´ l ê³„ì‚°ìœ¼ë¡œ
+    bi_assign(&aco0, src1);         bi_assign(&aco1, src1);    // aë¥¼ ë‘ê°œ ì¨ì•¼ë˜ì„œ 2ê°œë¡œ í• ë‹¹
+    bi_assign(&bco0, src2);         bi_assign(&bco1, src2);       //bë¥¼ ë‘ê°œ ì¨ì•¼ë˜ì„œ 2ê°œë¡œ í• ë‹¹
 
-    right_shift(aco1, l * WORD_BITLEN);     reduction_2_r(aco0, l * WORD_BITLEN); // º¹»çÇÑ a¸¦ °¢°¢ shift¶û reduct(a1, a0 ¸¸µé±â)
-    right_shift(bco1, l * WORD_BITLEN);     reduction_2_r(bco0, l * WORD_BITLEN);  // º¹»çÇÑ B¸¦ °¢°¢ shift¶û reduct(b1,b0 ¸¸µé±â)
+    right_shift(aco1, l * WORD_BITLEN);     reduction_2_r(aco0, l * WORD_BITLEN); // ë³µì‚¬í•œ aë¥¼ ê°ê° shiftë‘ reduct(a1, a0 ë§Œë“¤ê¸°)
+    right_shift(bco1, l * WORD_BITLEN);     reduction_2_r(bco0, l * WORD_BITLEN);  // ë³µì‚¬í•œ Bë¥¼ ê°ê° shiftë‘ reduct(b1,b0 ë§Œë“¤ê¸°)
    
-
-    Karatsuba(&t1, aco1, bco1, flag); //a1,b1À¸·Î karatsuba ÇØ¼­ t1»ı¼º
-    // printf("# t1:");  bi_show(t1, 16);
-    Karatsuba(&t0, aco0, bco0, flag); //a0,b0·Î karatsuba ÇØ¼­ t0»ı¼º
-    // printf("# t0:");  bi_show(t0, 16);
-
-    bi_assign(&tco1, t1);  // t1À» ´Ù½Ã ½á¾ßÇØ¼­ ¿ì¼± º¹»ç
+    Karatsuba(&t1, aco1, bco1, flag); //a1,b1ìœ¼ë¡œ karatsuba í•´ì„œ t1ìƒì„±
+    Karatsuba(&t0, aco0, bco0, flag); //a0,b0ë¡œ karatsuba í•´ì„œ t0ìƒì„±
+    
+    bi_assign(&tco1, t1);  // t1ì„ ë‹¤ì‹œ ì¨ì•¼í•´ì„œ ìš°ì„  ë³µì‚¬
     left_shift(tco1, 2 * l * WORD_BITLEN); // tco1 << 2lw
 
-    ADD(&R, tco1, t0); //tco1°ú t0 ´õÇÏ¿© R »ı¼º 
-
-    //right_shift(tco1, 2 * l * WORD_BITLEN);  //  WINDOW´Â ÇØ¾ßµÇµå¶ó 
-    //printf("#R:");    bi_show(R, 16);
-
-    SUB(&S1, aco0, aco1); // a0¿Í a1À» »©¼­ s1¿¡ ÇÒ´ç
-    // printf("# aco0:"); bi_show(aco0, 16);
-    // printf("# aco1:"); bi_show(aco1, 16);
-    // printf("# s1:");   bi_show(S1, 16);
-
-    SUB(&S0, bco1, bco0);  // b0¿Í b1 »©¼­ s0¿¡ ÇÒ´ç
-    // printf("# bco0:"); bi_show(bco1, 16);
-    // printf("# bco0:"); bi_show(bco0, 16);
-    // printf("# s1:");   bi_show(S0, 16);
-
-    int temp1 = get_sign(S1), temp0 = get_sign(S0); //sÀÇ ºÎÈ£ °áÁ¤À» À§ÇÔ
+    ADD(&R, tco1, t0); //tco1ê³¼ t0 ë”í•˜ì—¬ R ìƒì„± 
+    SUB(&S1, aco0, aco1); // a0ì™€ a1ì„ ë¹¼ì„œ s1ì— í• ë‹¹
+    SUB(&S0, bco1, bco0);  // b0ì™€ b1 ë¹¼ì„œ s0ì— í• ë‹¹
+   
+    int temp1 = get_sign(S1), temp0 = get_sign(S0); //sì˜ ë¶€í˜¸ ê²°ì •ì„ ìœ„í•¨
 
     if (get_sign(S1) == NEGATIVE)  
         flip_sign(S1);
@@ -439,12 +485,10 @@ void Karatsuba(bigint** dst, const bigint* src1, const bigint* src2, const int f
     if (temp1 != temp0)
         flip_sign(S);
    
-    ADD2(&S, t1); //s¿Í t1ÀÇ ÇÕÀ» s·Î
-    ADD2(&S, t0); //s¿Í t0ÀÇ ÇÕÀ» s·Î
-    //printf("# S:");    bi_show(S, 16);
+    ADD2(&S, t1); //sì™€ t1ì˜ í•©ì„ së¡œ
+    ADD2(&S, t0); //sì™€ t0ì˜ í•©ì„ së¡œ
     left_shift(S, l * WORD_BITLEN);  // s shift
-    //printf("# S:");   bi_show(S, 16);
-    ADD(dst, R, S);    //  r°ú sÇÕÀ» dst·Î
+    ADD(dst, R, S);    //  rê³¼ sí•©ì„ dstë¡œ
 
 
     bi_delete(&aco0);
@@ -541,7 +585,7 @@ void SQUCKaratsuba(bigint** dst, const bigint* src, const int flag)
 
     bi_assign(&A1, src);
     bi_assign(&A0, src);
-    right_shift(A1, l * WORD_BITLEN);  reduction_2_r(A0, l * WORD_BITLEN);   //A1Àº »óÀ§ºñÆ®, A0´Â ÇÏÀ§ LW
+    right_shift(A1, l * WORD_BITLEN);  reduction_2_r(A0, l * WORD_BITLEN);   //A1ì€ ìƒìœ„ë¹„íŠ¸, A0ëŠ” í•˜ìœ„ LW
 
     SQUCKaratsuba(&t1, A1, flag);
     SQUCKaratsuba(&t0, A0, flag);
@@ -563,7 +607,7 @@ void SQUCKaratsuba(bigint** dst, const bigint* src, const int flag)
 
 }
 
-void LDA_2word(word* Q, const word* src11, const word* src10, const word* src2) // Q´Â 1¿öµå, src1Àº 2¿öµå, src2Àº 1¿öµå
+void LDA_2word(word* Q, const word* src11, const word* src10, const word* src2) // QëŠ” 1ì›Œë“œ, src1ì€ 2ì›Œë“œ, src2ì€ 1ì›Œë“œ
 {
     int i;
     word R = *src11;
@@ -699,6 +743,17 @@ int DIV(bigint** Q, bigint** R, const bigint* src1, const bigint* src2)
     return VALID;
 }
 
+/**********************************
+ë‹¤ìŒì˜ í•¨ìˆ˜ L2R, R2L, MongomeryëŠ” x^n mod N ì— ëŒ€í•œ ì—°ì‚°ì„ ì§„í–‰í•˜ëŠ” í•¨ìˆ˜ì´ë‹¤. 
+
+ê°ê°ì˜ í•¨ìˆ˜ëŠ” (bigint** R, const bigint* base, const bigint* power, const int modn)ë¥¼ ì…ë ¥ìœ¼ë¡œ ë°›ëŠ”ë‹¤.
+ì´ë•Œ Rì€ ì¶œë ¥ë˜ëŠ” ê°’ìœ¼ë¡œ, ê° í•¨ìˆ˜ ë‚´ë¶€ì—ì„œ ê°’ì„ ë§Œë“¤ê²Œ ëœë‹¤. 
+baseëŠ” xì— í•´ë‹¹í•˜ëŠ” ê°’ìœ¼ë¡œ, ë§Œë“¤ì–´ì§„ ê°’ì„ ì…ë ¥ë°›ëŠ”ë‹¤. 
+powerëŠ” nì— í•´ë‹¹í•˜ëŠ” ê°’ìœ¼ë¡œ, ë§Œë“¤ì–´ì§„ ê°’ì„ ì…ë ¥ë°›ëŠ”ë‹¤. 
+modnì€ Nì— í•´ë‹¹í•˜ëŠ” ê°’ìœ¼ë¡œ, ë§Œë“¤ì–´ì§„ ê°’ì„ ì…ë ¥ë°›ëŠ”ë‹¤.
+*********************************/
+
+
 
 void L2R(bigint** R, const bigint* base, const bigint* power, const int modn)
 {
@@ -744,8 +799,8 @@ void R2L(bigint** R, const bigint* base, const bigint* power, const int modn)
     bigint* tmp2 = NULL;
     int ni;
 
-    bi_set_one(&t0);     //t0¸¦ 1·Î ¼³Á¤
-    bi_assign(&t1, base);  //t1À» x·Î ¼³Á¤
+    bi_set_one(&t0);     //t0ë¥¼ 1ë¡œ ì„¤ì •
+    bi_assign(&t1, base);  //t1ì„ xë¡œ ì„¤ì •
     
     int len = get_wordlen(power);
     for (int j = 0; j < len * WORD_BITLEN; j++)
@@ -770,7 +825,7 @@ void R2L(bigint** R, const bigint* base, const bigint* power, const int modn)
     bi_assign(R, t0);
     bi_delete(&t0);
     bi_delete(&t1);
-
+    
 }
 
 
@@ -782,8 +837,8 @@ void Montgomery(bigint** R, const bigint* base, const bigint* power, const int m
     bigint* tmp2 = NULL;
     int ni;
 
-    bi_set_one(&t0);     //t0¸¦ 1·Î ¼³Á¤
-    bi_assign(&t1, base);  //t1À» x·Î ¼³Á¤
+    bi_set_one(&t0);     //t0ë¥¼ 1ë¡œ ì„¤ì •
+    bi_assign(&t1, base);  //t1ì„ xë¡œ ì„¤ì •
 
     int len = get_wordlen(power);
     for (int j = (len * WORD_BITLEN) - 1; j >= 0; j--)
