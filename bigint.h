@@ -14,7 +14,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define WORD_BITLEN 32
+#define WORD_BITLEN 64
 
 #if WORD_BITLEN == 64
 typedef unsigned long long word;

@@ -18,7 +18,9 @@
 // flint_printf("\n");
 // gcc -Wall -O2 *.c -I /usr/local/include/flint/ -lflint -lmpfr -lgmp -lpthread
 
-int wordlen = 100;
+int wordlen = 32; // 512-> 8, 1024 -> 16, 2048 -> 32, 3072 -> 48, 4096 -> 64
+// RSA PARAMETER는 표나 그래프? 넣구
+// PARAMETER 크기별로 비교? -> 그래프만 넣고 할수는 있을것같은데... // 
 double result_c, result_f;
 
 void CM()
@@ -40,15 +42,14 @@ void CM()
         cnt++;
     }
     end1 = clock(); 
-    result_c = (double)(end1 - start1)/(double)CLOCKS_PER_SEC;
+    result_c = (double)(end1 - start1);
 }
 
 void FLINT()
 {
-    fmpz_t x,y,z;
+    fmpz_t x,y;
     fmpz_init(x);
     fmpz_init(y);
-    fmpz_init(z);
     FLINT_TEST_INIT(state);
 
     int cnt = 0;
@@ -61,17 +62,15 @@ void FLINT()
         cnt++;
     }
     end2 = clock(); 
-    result_f = (double)(end2 - start2)/ (double)CLOCKS_PER_SEC;
+    result_f = (double)(end2 - start2);
 
     fmpz_clear(x);
     fmpz_clear(y);
-    fmpz_clear(z);
     FLINT_TEST_CLEANUP(state);
 }
 
 void ADD_FLINTvsCM()
 {
-
     bigint* src1 = NULL;
     bigint* src2 = NULL;
     bigint* dst = NULL;
@@ -99,7 +98,6 @@ void ADD_FLINTvsCM()
     fmpz_init(y);
     fmpz_init(z);
     FLINT_TEST_INIT(state);
-
     cnt = 0;
     clock_t start3, end3;
     double result3;
