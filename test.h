@@ -3,14 +3,14 @@
 //  test.h
 //  Changmin's library
 //
-//  Created by ÃÖ°­Ã¢¹Î on 2020/11/09.
-//  Copyright 2020 ÃÖ°­Ã¢¹Î. All rights reserved.
+//  Created by ï¿½Ö°ï¿½Ã¢ï¿½ï¿½ on 2020/11/09.
+//  Copyright 2020 ï¿½Ö°ï¿½Ã¢ï¿½ï¿½. All rights reserved.
 //
 
 #ifndef test_h
 #define test_h
 
-#define MAX_COUNT 100000 // ¹Ýº¹¼öÇà È½¼ö 
+#define MAX_COUNT 10000 // ï¿½Ýºï¿½ï¿½ï¿½ï¿½ï¿½ È½ï¿½ï¿½ 
 
 void COMPARE_test();
 void SHIFT_test();

@@ -1,7 +1,7 @@
 //
 //  array.c
 //  Changmin's library
-//
+// 
 //  Created by �ְ�â�� on 2020/11/09.
 //  Copyright 2020 �ְ�â��. All rights reserved.
 //

@@ -304,221 +304,409 @@ void Karatsuba_test()
 void SQU_test()
 {
     printf("\n");
-    //printf(" < bigint Squaring > \n");
-    bigint* src = NULL;    
-    bigint* dst = NULL;     
+    printf(" #< bigint Squaring > \n");
+    bigint* src = NULL;
+    bigint* dst = NULL;
     int cnt = 0;
-    while(cnt < MAX_COUNT)
+
+    printf("while(True):\n");
+    printf("    case=0\n");
+    while (cnt < MAX_COUNT)
     {
-        bi_gen_rand(&src, rand()%2, rand() % 10);
-        printf("squcA = ");          bi_sage_show(src, 16);    printf("\n");
-        SQU(&dst, src);   
-        printf("print(squcA * squcA == ");      bi_sage_show(dst, 16);    printf(")\n");
+        bi_gen_rand(&src, rand() % 2, rand() % 10);
+        printf("    squcA = ");          bi_sage_show(src, 16);    printf("\n");
+        SQU(&dst, src);
+        printf("    cal = ");    bi_sage_show(dst, 16);    printf("\n");
+        printf("    if squcA * squcA != cal");
+        printf("        print( 'False!!')\n");
+        printf("        break\n");
         bi_delete(&src);
         bi_delete(&dst);
         cnt++;
+        printf("    case=case+1\n");
     }
+    printf("    print('true!!')\n");
+    printf("    break\n");
+    printf("\nif case!=%d:\n", MAX_COUNT);
+    printf("    print('error in ',end='')\n");
+    printf("    print(case+1)\n");
+    printf("    print('error case squcA = ',end='')\n");
+    printf("    print(squcA)\n");
+    printf("    print('error case cal = ',end='')\n");
+    printf("    print(cal)\n");
+    printf("    print('error case real = ',end='')\n");
+    printf("    print(squcA * squcA)\n");
 }
 
 void SQUCKaratsuba_test()
 {
     printf("\n");
-    //printf(" < bigint Squaring > \n");
+    printf(" #< bigint karatsuba Squaring > \n");
     bigint* src = NULL;
     bigint* dst = NULL;
     int cnt = 0;
     int flag = 2;
+
+    printf("while(True):\n");
+    printf("    case=0\n");
+
     while (cnt < MAX_COUNT)
     {
         bi_gen_rand(&src, rand() % 2, rand() % 9);
-        printf("squcA = ");          bi_sage_show(src, 16);    printf("\n");
+        printf("    squcA = ");          bi_sage_show(src, 16);    printf("\n");
         SQUCKaratsuba(&dst, src, flag);
-        printf("print(squcA * squcA == ");      bi_sage_show(dst, 16);    printf(")\n");
+        printf("    cal = ");    bi_sage_show(dst, 16);    printf("\n");
+        printf("    if squcA * squcA != cal");
+        printf("        print( 'False!!')\n");
+        printf("        break\n");
         bi_delete(&src);
         bi_delete(&dst);
         cnt++;
+        printf("    case=case+1\n");
     }
+    printf("    print('true!!')\n");
+    printf("    break\n");
+    printf("\nif case!=%d:\n", MAX_COUNT);
+    printf("    print('error in ',end='')\n");
+    printf("    print(case+1)\n");
+    printf("    print('error case squcA = ',end='')\n");
+    printf("    print(squcA)\n");
+    printf("    print('error case cal = ',end='')\n");
+    printf("    print(cal)\n");
+    printf("    print('error case real = ',end='')\n");
+    printf("    print(squcA * squcA)\n");
 }
 
 void NAIVE_div_test()
 {
     printf("\n");
-    //printf(" < bigint NAIVE Division Algo > \n");
-    bigint* src1 = NULL;  
-    bigint* src2 = NULL;  
+    printf(" #< bigint NAIVE Division Algo > \n");
+    bigint* src1 = NULL;
+    bigint* src2 = NULL;
     bigint* dstQ = NULL;
-    bigint* dstR = NULL;     
+    bigint* dstR = NULL;
     int cnt = 0;
-    while(cnt < MAX_COUNT)
+    printf("while(True):\n");
+    printf("    case=0\n");
+    while (cnt < MAX_COUNT)
     {
         bi_gen_rand(&src1, NON_NEGATIVE, 3);
-        bi_gen_rand(&src2, NON_NEGATIVE, rand()%3);
+        bi_gen_rand(&src2, NON_NEGATIVE, rand() % 3);
         //bi_set_by_string(&src1,NON_NEGATIVE,"3073ec6bc652e5f4bbc73481cd202525582a6e6a",16);
         //bi_set_by_string(&src2,NON_NEGATIVE,"275c1ea70fb49e10b9348c3b2a766b3d",16);
-        printf("divA = ");          bi_sage_show(src1, 16);    printf("\n");
-        printf("divB = ");          bi_sage_show(src2, 16);    printf("\n");
-        if(INVALID == NAIVE_div(&dstQ, &dstR, src1, src2))
+        printf("    divA = ");          bi_sage_show(src1, 16);    printf("\n");
+        printf("    divB = ");          bi_sage_show(src2, 16);    printf("\n");
+        if (INVALID == NAIVE_div(&dstQ, &dstR, src1, src2))
             continue;
-        printf("print(divA//divB == ");     bi_sage_show(dstQ, 16);     printf(")\n");
-        printf("print(divA%%divB == ");     bi_sage_show(dstR, 16);     printf(")\n");
-        //printf("print(divA == ");       bi_sage_show(dstQ, 16);    
-        //printf(" * ");                  bi_sage_show(src2, 16);
-        //printf(" + ");                  bi_sage_show(dstR, 16);    printf(")\n");
+        printf("    Q = ");     bi_sage_show(dstQ, 16);     printf("\n");
+        printf("    R = ");     bi_sage_show(dstR, 16);     printf("\n");
+        printf("    if divB*Q+R != divA:\n");
+        printf("        print( 'False!!')\n");
+        printf("        break\n");
         bi_delete(&src1);
         bi_delete(&src2);
         bi_delete(&dstQ);
         bi_delete(&dstR);
         cnt++;
+        printf("    case=case+1\n");
     }
+
+    printf("    print('true!!')\n");
+    printf("    break\n");
+    printf("\nif case!=%d:\n", MAX_COUNT);
+    printf("    print('error in ',end='')\n");
+    printf("    print(case+1)\n");
+    printf("    print('error case divA = ',end='')\n");
+    printf("    print(divA)\n");
+    printf("    print('error case divB = ',end='')\n");
+    printf("    print(divB)\n");
+    printf("    print('error case cal Q = ',end='')\n");
+    printf("    print(Q)\n");
+    printf("    print('error case cal R = ',end='')\n");
+    printf("    print(R)\n");
+    printf("    print('error case real Q= ',end='')\n");
+    printf("    print(divA//divB)\n");
+    printf("    print('error case real R= ',end='')\n");
+    printf("    print(divA%%divB)\n");
 }
 
 void Binary_Long_Div_test()
 {
     printf("\n");
-    //printf(" < bigint Long Division Algo > \n");
-    bigint* src1 = NULL;  
-    bigint* src2 = NULL;  
+    printf(" #< bigint Long Division Algo > \n");
+    bigint* src1 = NULL;
+    bigint* src2 = NULL;
     bigint* dstQ = NULL;
-    bigint* dstR = NULL;     
+    bigint* dstR = NULL;
     int cnt = 0;
-    while(cnt < MAX_COUNT)
+    printf("while(True):\n");
+    printf("    case=0\n");
+
+    while (cnt < MAX_COUNT)
     {
         bi_gen_rand(&src1, NON_NEGATIVE, 10);
-        bi_gen_rand(&src2, NON_NEGATIVE, rand()%5);
+        bi_gen_rand(&src2, NON_NEGATIVE, rand() % 5);
         //bi_set_by_string(&src1,NON_NEGATIVE,"3073ec6bc652e5f4bbc73481cd202525582a6e6a",16);
         //bi_set_by_string(&src2,NON_NEGATIVE,"275c1ea70fb49e10b9348c3b2a766b3d",16);
-        printf("divA = ");          bi_sage_show(src1, 16);    printf("\n");
-        printf("divB = ");          bi_sage_show(src2, 16);    printf("\n");
-        if(INVALID == Binary_Long_Div(&dstQ, &dstR, src1, src2))
+        printf("    divA = ");          bi_sage_show(src1, 16);    printf("\n");
+        printf("    divB = ");          bi_sage_show(src2, 16);    printf("\n");
+        if (INVALID == Binary_Long_Div(&dstQ, &dstR, src1, src2))
             continue;
-        printf("print(divA//divB == ");     bi_sage_show(dstQ, 16);     printf(")\n");
-        printf("print(divA%%divB == ");     bi_sage_show(dstR, 16);     printf(")\n");
-        //printf("print(divA == ");       bi_sage_show(dstQ, 16);    
-        //printf(" * ");                  bi_sage_show(src2, 16);
-        //printf(" + ");                  bi_sage_show(dstR, 16);    printf(")\n");
+        printf("    Q = ");     bi_sage_show(dstQ, 16);     printf("\n");
+        printf("    R = ");     bi_sage_show(dstR, 16);     printf("\n");
+
+        printf("    if divB*Q+R != divA:\n");
+        printf("        print( 'False!!')\n");
+        printf("        break\n");
+
         bi_delete(&src1);
         bi_delete(&src2);
         bi_delete(&dstQ);
         bi_delete(&dstR);
         cnt++;
+        printf("    case=case+1\n");
+
     }
+    printf("    print('true!!')\n");
+    printf("    break\n");
+    printf("\nif case!=%d:\n", MAX_COUNT);
+    printf("    print('error in ',end='')\n");
+    printf("    print(case+1)\n");
+    printf("    print('error case divA = ',end='')\n");
+    printf("    print(divA)\n");
+    printf("    print('error case divB = ',end='')\n");
+    printf("    print(divB)\n");
+    printf("    print('error case cal Q = ',end='')\n");
+    printf("    print(Q)\n");
+    printf("    print('error case cal R = ',end='')\n");
+    printf("    print(R)\n");
+    printf("    print('error case real Q= ',end='')\n");
+    printf("    print(divA//divB)\n");
+    printf("    print('error case real R= ',end='')\n");
+    printf("    print(divA%%divB)\n");
 }
+
 void DIV_test()
 {
     printf("\n");
     //printf(" < bigint Squaring > \n");
-    bigint* src1 = NULL;  
-    bigint* src2 = NULL;  
+    bigint* src1 = NULL;
+    bigint* src2 = NULL;
     bigint* dstQ = NULL;
-    bigint* dstR = NULL;     
+    bigint* dstR = NULL;
     int cnt = 0;
-    while(cnt < MAX_COUNT)
+
+    printf("while(True):\n");
+    printf("    case=0\n");
+
+    while (cnt < MAX_COUNT)
     {
-        bi_gen_rand(&src1, NON_NEGATIVE, 20);
-        bi_gen_rand(&src2, NON_NEGATIVE, 10);
-        printf("divA = ");          bi_sage_show(src1, 16);    printf("\n");
-        printf("divB = ");          bi_sage_show(src2, 16);    printf("\n");
-        if(INVALID == DIV(&dstQ, &dstR, src1, src2))
-        {
-            bi_delete(&src1);       bi_delete(&src2);
+        bi_gen_rand(&src1, NON_NEGATIVE, 4);
+        bi_gen_rand(&src2, NON_NEGATIVE, 2);
+        //bi_set_by_string(&src1,NON_NEGATIVE,"3073ec6bc652e5f4bbc73481cd202525582a6e6a",16);
+        //bi_set_by_string(&src2,NON_NEGATIVE,"275c1ea70fb49e10b9348c3b2a766b3d",16);
+        printf("    divA = ");          bi_sage_show(src1, 16);    printf("\n");
+        printf("    divB = ");          bi_sage_show(src2, 16);    printf("\n");
+        if (INVALID == DIV(&dstQ, &dstR, src1, src2))
             continue;
-        }
-        printf("print(divA//divB == ");     bi_sage_show(dstQ, 16);     printf(")\n");
-        printf("print(divA%%divB == ");     bi_sage_show(dstR, 16);     printf(")\n");
+
+        printf("    Q = ");     bi_sage_show(dstQ, 16);     printf("\n");
+        printf("    R = ");     bi_sage_show(dstR, 16);     printf("\n");
+
+        printf("    if divB*Q+R != divA:\n");
+        printf("        print( 'False!!')\n");
+        printf("        break\n");
+
         bi_delete(&src1);
         bi_delete(&src2);
         bi_delete(&dstQ);
         bi_delete(&dstR);
         cnt++;
+        printf("    case=case+1\n");
     }
+    printf("    print('true!!')\n");
+    printf("    break\n");
+    printf("\nif case!=%d:\n", MAX_COUNT);
+    printf("    print('error in ',end='')\n");
+    printf("    print(case+1)\n");
+    printf("    print('error case divA = ',end='')\n");
+    printf("    print(divA)\n");
+    printf("    print('error case divB = ',end='')\n");
+    printf("    print(divB)\n");
+    printf("    print('error case cal Q = ',end='')\n");
+    printf("    print(Q)\n");
+    printf("    print('error case cal R = ',end='')\n");
+    printf("    print(R)\n");
+    printf("    print('error case real Q= ',end='')\n");
+    printf("    print(divA//divB)\n");
+    printf("    print('error case real R= ',end='')\n");
+    printf("    print(divA%%divB)\n");
 }
 
 
 void L2R_test()
 {
-    printf("\n");
+    printf("\n #< bignum L2R > \n");
     bigint* base = NULL;
     bigint* power = NULL;
     bigint* dst = NULL;
     int cnt = 0;
-    int modn = 16;
+    int modn = 50;
+    printf("def exp(base, power,mod): \n");
+    printf("   t = [1, base]\n");
+    printf("   e = power.bits()\n");
+    printf("   for i in range(len(e) - 1, -1, -1): \n");
+    printf("       t[1- e[i]] = (t[0] * t[1])%%(2**mod) \n");
+    printf("       t[e[i]] = (t[e[i]]^2)%%(2**mod) \n");
+    printf("   return t[0]\n \n");
+
+    printf("while(True):\n");
+    printf("    case=0\n");
     while (cnt < MAX_COUNT)
     {
-        bi_gen_rand(&base, NON_NEGATIVE, 1);
-        bi_gen_rand(&power, NON_NEGATIVE, 3);
-        
-        printf("base = ");          bi_sage_show(base, 16);    printf("\n");
-        printf("power = ");          bi_sage_show(power, 16);    printf("\n");
-        printf("modn = %d \n", modn);
-        L2R(&dst, base, power, modn);
+        bi_gen_rand(&base, NON_NEGATIVE, 11);
+        bi_gen_rand(&power, NON_NEGATIVE, 20);
 
-        printf("print((base ** power) %% (2**modn) == ");      bi_sage_show(dst, 16);    printf(")\n");
+        printf("    base = ");          bi_sage_show(base, 16);    printf("\n");
+        printf("    power = ");          bi_sage_show(power, 16);    printf("\n");
+        printf("    modn = %d \n", modn);
+        L2R(&dst, base, power, modn);
+        printf("    cal = ");            bi_sage_show(dst, 16);    printf("\n");
+
+        printf("    if cal != exp(base, power,modn):\n");
+        printf("        print( 'False!!')\n");
+        printf("        break\n");
 
         bi_delete(&base);
         bi_delete(&power);
         bi_delete(&dst);
         cnt++;
+        printf("    case=case+1\n");
     }
+
+    printf("    print('true!!')\n");
+    printf("    break\n");
+    printf("\nif case!=%d:\n", MAX_COUNT);
+    printf("    print('error in ',end='')\n");
+    printf("    print(case+1)\n");
+    printf("    print('error case base = ',end='')\n");
+    printf("    print(base)\n");
+    printf("    print('error case power = ',end='')\n");
+    printf("    print(power)\n");
+    printf("    print('error case cal = ',end='')\n");
+    printf("    print(cal)\n");
+    printf("    print('error case real = ',end='')\n");
+    printf("    print(exp(base, power,modn))\n");
 }
 
 
 void R2L_test()
 {
-    printf("\n");
+    printf("\n #< bignum R2L > \n");
     bigint* base = NULL;
     bigint* power = NULL;
     bigint* dst = NULL;
     int cnt = 0;
-    int modn = 16;
+    int modn = 50;
+    printf("def exp(base, power,mod): \n");
+    printf("   t = [1, base]\n");
+    printf("   e = power.bits()\n");
+    printf("   for i in range(len(e) - 1, -1, -1): \n");
+    printf("       t[1- e[i]] = (t[0] * t[1])%%(2**mod) \n");
+    printf("       t[e[i]] = (t[e[i]]^2)%%(2**mod) \n");
+    printf("   return t[0]\n \n");
+
+    printf("while(True):\n");
+    printf("    case=0\n");
     while (cnt < MAX_COUNT)
     {
-        bi_gen_rand(&base, NON_NEGATIVE, 1);
-        bi_gen_rand(&power, NON_NEGATIVE, 3);
+        bi_gen_rand(&base, NON_NEGATIVE, 11);
+        bi_gen_rand(&power, NON_NEGATIVE, 20);
 
-        printf("base = ");          bi_sage_show(base, 16);    printf("\n");
-        printf("power = ");          bi_sage_show(power, 16);    printf("\n");
-        printf("modn = %d \n", modn);
+        printf("    base = ");          bi_sage_show(base, 16);    printf("\n");
+        printf("    power = ");          bi_sage_show(power, 16);    printf("\n");
+        printf("    modn = %d \n", modn);
         R2L(&dst, base, power, modn);
+        printf("    cal = ");            bi_sage_show(dst, 16);    printf("\n");
 
-        printf("print((base ** power) %% (2**modn) == ");      bi_sage_show(dst, 16);    printf(")\n");
+        printf("    if cal != exp(base, power,modn):\n");
+        printf("        print( 'False!!')\n");
+        printf("        break\n");
 
         bi_delete(&base);
         bi_delete(&power);
         bi_delete(&dst);
         cnt++;
+        printf("    case=case+1\n");
     }
+
+    printf("    print('true!!')\n");
+    printf("    break\n");
+    printf("\nif case!=%d:\n", MAX_COUNT);
+    printf("    print('error in ',end='')\n");
+    printf("    print(case+1)\n");
+    printf("    print('error case base = ',end='')\n");
+    printf("    print(base)\n");
+    printf("    print('error case power = ',end='')\n");
+    printf("    print(power)\n");
+    printf("    print('error case cal = ',end='')\n");
+    printf("    print(cal)\n");
+    printf("    print('error case real = ',end='')\n");
+    printf("    print(exp(base, power,modn))\n");
 }
 
 void Montgomery_test()
 {
-    printf("\n");
+    printf("\n #< bignum Montgomery > \n");
     bigint* base = NULL;
     bigint* power = NULL;
     bigint* dst = NULL;
     int cnt = 0;
-    int modn = 16;
+    int modn = 50;
+    printf("def exp(base, power,mod): \n");
+    printf("   t = [1, base]\n");
+    printf("   e = power.bits()\n");
+    printf("   for i in range(len(e) - 1, -1, -1): \n");
+    printf("       t[1- e[i]] = (t[0] * t[1])%%(2**mod) \n");
+    printf("       t[e[i]] = (t[e[i]]^2)%%(2**mod) \n");
+    printf("   return t[0]\n \n");
 
-    //printf("t = [1, base]\n");
-    //printf("e=power.bits()\n");
-    //printf("for i in range(len(e) - 1, -1, -1):\n");
-    //printf("    t[1- e[i]] = t[0] * t[1]\n");
-    //printf("    t[e[i]] = t[e[i]]^2\n");
-
+    printf("while(True):\n");
+    printf("    case=0\n");
     while (cnt < MAX_COUNT)
     {
-        bi_gen_rand(&base, NON_NEGATIVE, 1);
-        bi_gen_rand(&power, NON_NEGATIVE, 3);
+        bi_gen_rand(&base, NON_NEGATIVE, 11);
+        bi_gen_rand(&power, NON_NEGATIVE, 20);
 
-        printf("base = ");          bi_sage_show(base, 16);    printf("\n");
-        printf("power = ");          bi_sage_show(power, 16);    printf("\n");
-        printf("modn = %d \n", modn);
+        printf("    base = ");          bi_sage_show(base, 16);    printf("\n");
+        printf("    power = ");          bi_sage_show(power, 16);    printf("\n");
+        printf("    modn = %d \n", modn);
         Montgomery(&dst, base, power, modn);
+        printf("    cal = ");            bi_sage_show(dst, 16);    printf("\n");
 
-        printf("print((base ** power) %% (2**modn) == ");      bi_sage_show(dst, 16);    printf(")\n");
+        printf("    if cal != exp(base, power,modn):\n");
+        printf("        print( 'False!!')\n");
+        printf("        break\n");
 
         bi_delete(&base);
         bi_delete(&power);
         bi_delete(&dst);
         cnt++;
+        printf("    case=case+1\n");
     }
+
+    printf("    print('true!!')\n");
+    printf("    break\n");
+    printf("\nif case!=%d:\n", MAX_COUNT);
+    printf("    print('error in ',end='')\n");
+    printf("    print(case+1)\n");
+    printf("    print('error case base = ',end='')\n");
+    printf("    print(base)\n");
+    printf("    print('error case power = ',end='')\n");
+    printf("    print(power)\n");
+    printf("    print('error case cal = ',end='')\n");
+    printf("    print(cal)\n");
+    printf("    print('error case real = ',end='')\n");
+    printf("    print(exp(base, power,modn))\n");
+    
 }

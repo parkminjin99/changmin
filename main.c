@@ -2,8 +2,8 @@
 //  main.c
 //  Changmin's library
 //
-//  Created by ÃÖ°­Ã¢¹Î on 2020/11/09.
-//  Copyright 2020 ÃÖ°­Ã¢¹Î. All rights reserved.
+//  Created by ï¿½Ö°ï¿½Ã¢ï¿½ï¿½ on 2020/11/09.
+//  Copyright 2020 ï¿½Ö°ï¿½Ã¢ï¿½ï¿½. All rights reserved.
 //
 
 //README
@@ -14,7 +14,7 @@
 int main(int argc, const char* argv[])
 {
     srand((unsigned int)time(NULL));
-    //BASIC_test(); // sage·Î È®ÀÎÇÏÁö ¾ÊÀ½ 
+    //BASIC_test(); // sageï¿½ï¿½ È®ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 
 
     //COMPARE_test();
     //SHIFT_test();
@@ -39,12 +39,19 @@ int main(int argc, const char* argv[])
 
     CM();
     FLINT();
-    ADD_FLINTvsCM();
-    SUB_FLINTvsCM();
-    MUL_FLINTvsCM();
+    //ADD_FLINTvsCM();
+    //SUB_FLINTvsCM();
+    //MUL_FLINTvsCM();
     //Kara_flag();
-    MULvsKara();
-    MULvsSQU();
+    //MULvsKara();
+    //MULvsSQU();
+    CM_single();
+    //SQUvsKara();
+    //NAIVEvsBINARYLONGvsMULTIDIV();
+    //DIV_FLINTvsCM();
+    FLINT_tri();
+    EXPMOD_FLINTvsCM();
+    //EXPMOD_test();
 
     return 0;
 }

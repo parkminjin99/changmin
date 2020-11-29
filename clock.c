@@ -19,13 +19,14 @@
 // gcc -Wall -O2 *.c -I /usr/local/include/flint/ -lflint -lmpfr -lgmp -lpthread
 
 int wordlen = 16; // 512-> 8, 1024 -> 16, 2048 -> 32, 3072 -> 48, 4096 -> 64
-// RSA PARAMETER´Â Ç¥³ª ±×·¡ÇÁ? ³Ö±¸
-// PARAMETER Å©±âº°·Î ºñ±³? -> ±×·¡ÇÁ¸¸ ³Ö°í ÇÒ¼ö´Â ÀÖÀ»°Í°°Àºµ¥... // 
-// wordlen -> karatsuba¹üÀ§(8-100) ->  4¾¿Áõ°¡!
+// RSA PARAMETERï¿½ï¿½ Ç¥ï¿½ï¿½ ï¿½×·ï¿½ï¿½ï¿½? ï¿½Ö±ï¿½
+// PARAMETER Å©ï¿½âº°ï¿½ï¿½ ï¿½ï¿½? -> ï¿½×·ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö°ï¿½ ï¿½Ò¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í°ï¿½ï¿½ï¿½ï¿½ï¿½... // 
+// wordlen -> karatsubaï¿½ï¿½ï¿½ï¿½(8-100) ->  4ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½!
 
-// isoÆÄÀÏ? bin Å©±â ºñ±³ ? 
+// isoï¿½ï¿½ï¿½ï¿½? bin Å©ï¿½ï¿½ ï¿½ï¿½ ? 
 
 double result_c, result_f;
+double result_single_c, result_tri_f;
 
 void CM()
 {
@@ -217,10 +218,10 @@ void MUL_FLINTvsCM()
     FLINT_TEST_CLEANUP(state);
 }
 
-// flag¿¡ µû¸¥ karatsuba -> ¸ðµç wordlen¿¡ ´ëÇØ 
-// ÇØ´ç wordlen¿¡ ´ëÇØ 1/4ÀÌ³ª 1/8
+// flagï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ karatsuba -> ï¿½ï¿½ï¿½ wordlenï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 
+// ï¿½Ø´ï¿½ wordlenï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 1/4ï¿½Ì³ï¿½ 1/8
 
-void Kara_flag() // flag¿¡ µû¶ó ¼³Á¤ 
+void Kara_flag() // flagï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 
 {
     bigint* src1 = NULL;
     bigint* src2 = NULL;
@@ -230,10 +231,10 @@ void Kara_flag() // flag¿¡ µû¶ó ¼³Á¤
     clock_t start, end; 
     double result;
     while(flag < (wordlen/2)) 
-    // flag <- wordlen ¾îµð±îÁö?
+    // flag <- wordlen ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½?
     // RSA
-    // 10, 12, 14, 50 -> 20¹ø 
-    // wordlen(10~50, 1´ÜÀ§? 2´ÜÀ§??) -> flag¿¡ ´ëÇØ  
+    // 10, 12, 14, 50 -> 20ï¿½ï¿½ 
+    // wordlen(10~50, 1ï¿½ï¿½ï¿½ï¿½? 2ï¿½ï¿½ï¿½ï¿½??) -> flagï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½  
     {
         cnt = 0;
         start = clock();
@@ -255,7 +256,7 @@ void Kara_flag() // flag¿¡ µû¶ó ¼³Á¤
 
 }
 
-void MULvsKara() // °ö¼À: schoolbook vs. Karatsuba
+void MULvsKara() // ï¿½ï¿½ï¿½ï¿½: schoolbook vs. Karatsuba
 {
     bigint* src1 = NULL;
     bigint* src2 = NULL;
@@ -337,48 +338,314 @@ void MULvsSQU()
     printf("[MUL vs SQU | CM] %f %f\n", result_mul, result_squ);
 }
 //////////////////////////////////////////////////////////////////////////////////////////
-void SQUvsKara() // Á¦°ö: schoolbook vs. Karatsuba
+void CM_single()
 {
+    bigint* src = NULL;
+    int cnt = 0;
+
+    clock_t start1, end1;
+    start1 = clock();
+    while (cnt < MAX_COUNT)
+    {
+        bi_gen_rand(&src, rand() % 2, wordlen);
+        bi_delete(&src);
+        cnt++;
+    }
+    end1 = clock();
+    result_single_c = (double)(end1 - start1);
+}
+
+
+void SQUvsKara() // ï¿½ï¿½ï¿½ï¿½: schoolbook vs. Karatsuba
+{
+    bigint* src = NULL;
+    bigint* dst = NULL;
+    int cnt , wordlen = 100;
+        
+    cnt = 0;
+    clock_t startsqu, endsqu;
+    double resultsqu;
+    startsqu = clock();
+    while (cnt < MAX_COUNT)
+    {
+        bi_gen_rand(&src, rand() % 2, wordlen);
+        SQU(&dst, src);
+        bi_delete(&src);
+        bi_delete(&dst);
+        cnt++;
+        //printf("%d\n",cnt);
+    }
+    endsqu = clock();
+    resultsqu = (double)(endsqu - startsqu - result_single_c)/CLOCKS_PER_SEC;
+    //printf("squaring = %f\n", (resultsqu - result_single_c) / CLOCKS_PER_SEC);
+
+
+    cnt = 0;
+    clock_t startka, endka;
+    int flag = 2;  // ï¿½Ì°Å´ï¿½ ï¿½Ä¿ï¿½ ï¿½Ù½Ã¼ï¿½ï¿½ï¿½
+    double resultka;
+    startka = clock();
+    while (cnt < MAX_COUNT)
+    {
+        bi_gen_rand(&src, rand() % 2, wordlen);
+        SQUCKaratsuba(&dst, src, flag);
+        bi_delete(&src);
+        bi_delete(&dst);
+        cnt++;
+    }
+    endka = clock();
+    resultka = (double)(endka - startka - result_single_c)/CLOCKS_PER_SEC;
+    //printf("karatsuba squaring = %f\n", (resultka - result_single_c) / CLOCKS_PER_SEC);
+    printf("[SQU vs Karatsuba | CM] %f %f",resultsqu,resultka);
 
 }
 
 void NAIVEvsBINARYLONGvsMULTIDIV() // Naive vs. binary long vs. multi-precision long
 {
+    bigint* src1 = NULL;
+    bigint* src2 = NULL;
+    bigint* dstQ = NULL;
+    bigint* dstR = NULL;
+    int cnt , wordlen = 100;
 
+    cnt = 0;
+    clock_t startnai, endnai;
+    double resultnai;
+    startnai = clock();
+    while (cnt < MAX_COUNT)
+    {
+        bi_gen_rand(&src1, rand() % 2, wordlen);
+        bi_gen_rand(&src2, rand() % 2, wordlen);
+
+        if(VALID==NAIVE_div(&dstQ, &dstR, src1, src2))
+            cnt++;
+        bi_delete(&src1);
+        bi_delete(&src2);
+        bi_delete(&dstQ);
+        bi_delete(&dstR);
+    }
+    endnai = clock();
+    resultnai = (double)(endnai - startnai - result_c) / CLOCKS_PER_SEC;
+    //printf("NAIVE_DIV = %f\n", (resultnai - result_c) / CLOCKS_PER_SEC);
+
+
+    cnt = 0;
+    clock_t startbin, endbin;
+    double resultbin;
+    startbin = clock();
+    while (cnt < MAX_COUNT)
+    {
+        bi_gen_rand(&src1, rand() % 2, wordlen);
+        bi_gen_rand(&src2, rand() % 2, wordlen);
+
+        if (VALID == Binary_Long_Div(&dstQ, &dstR, src1, src2))
+            cnt++;
+        bi_delete(&src1);
+        bi_delete(&src2);
+        bi_delete(&dstQ);
+        bi_delete(&dstR);
+    }
+    endbin = clock();
+    resultbin = (double)(endbin - startbin - result_c) / CLOCKS_PER_SEC;
+    //printf("binary_long_DIV = %f\n", (resultbin - result_c) / CLOCKS_PER_SEC);
+
+
+    cnt = 0;
+    clock_t startmul, endmul;
+    double resultmul;
+    startmul = clock();
+    while (cnt < MAX_COUNT)
+    {
+        bi_gen_rand(&src1, rand() % 2, wordlen);
+        bi_gen_rand(&src2, rand() % 2, wordlen);
+
+        if (VALID == DIV(&dstQ, &dstR, src1, src2))
+            cnt++;
+        bi_delete(&src1);
+        bi_delete(&src2);
+        bi_delete(&dstQ);
+        bi_delete(&dstR);
+    }
+    endmul = clock();
+    resultmul = (double)(endmul - startmul - result_c) / CLOCKS_PER_SEC;
+    //printf("multi_precision_DIV = %f\n", (resultmul - result_c) / CLOCKS_PER_SEC);
+    printf("[NAIVE vs Binary vs Multi | CM] %f %f %f",resultnai, resultbin, resultmul);
 }
 
 void DIV_FLINTvsCM()
 {
+    bigint* src1 = NULL;
+    bigint* src2 = NULL;
+    bigint* dstQ = NULL;
+    bigint* dstR = NULL;
 
+    int cnt = 0;
+
+    clock_t startc, endc;
+    double resultc;
+    startc = clock();
+
+    while (cnt < MAX_COUNT)
+    {
+        bi_gen_rand(&src1, NON_NEGATIVE, wordlen);
+        bi_gen_rand(&src2, NON_NEGATIVE, wordlen);
+        if (VALID == DIV(&dstQ, &dstR, src1, src2))
+            cnt++;
+        bi_delete(&src1);
+        bi_delete(&src2);
+        bi_delete(&dstQ);
+        bi_delete(&dstR);
+    }
+    endc = clock();
+    resultc = (double)(endc - startc - result_c) / CLOCKS_PER_SEC;
+    //printf("CM DIV = %f\n", (resultc - result_c) / CLOCKS_PER_SEC);
+
+
+    fmpz_t f, s, g, h;
+    fmpz_init(f);
+    fmpz_init(s);
+    fmpz_init(g);
+    fmpz_init(h);
+    FLINT_TEST_INIT(state);
+    cnt = 0;
+
+    clock_t startf, endf;
+    double resultf;
+    startf = clock();
+    while (cnt < MAX_COUNT)
+    {
+        fmpz_randtest(g, state, wordlen * WORD_BITLEN);
+        do {
+            fmpz_randtest(h, state, wordlen * WORD_BITLEN);
+        } while (fmpz_is_zero(h));
+
+        fmpz_fdiv_qr(f, s, g, h);
+        cnt++;
+    }
+    endf = clock();
+    resultf = (double)(endf - startf - result_f) / CLOCKS_PER_SEC;
+    printf("[DIV | CM vs FLINT] %f %f",resultc, resultf);
+    //printf("FLINT DIV = %f\n", (resultf - result_f) / CLOCKS_PER_SEC);
+    fmpz_clear(f);
+    fmpz_clear(s);
+    fmpz_clear(g);
+    fmpz_clear(h);
+
+    FLINT_TEST_CLEANUP(state);
+}
+
+
+void FLINT_tri()
+{
+    fmpz_t x, y, z;
+    fmpz_init(x);
+    fmpz_init(y);
+    fmpz_init(z);
+
+    FLINT_TEST_INIT(state);
+
+    int cnt = 0;
+    clock_t start2, end2;
+    start2 = clock();
+    while (cnt < MAX_COUNT)
+    {
+        fmpz_randtest(x, state, wordlen * WORD_BITLEN);
+        fmpz_randtest(y, state, wordlen * WORD_BITLEN);
+        fmpz_randtest(z, state, wordlen * WORD_BITLEN);
+
+        cnt++;
+    }
+    end2 = clock();
+    result_tri_f = (double)(end2 - start2);
+
+    fmpz_clear(x);
+    fmpz_clear(y);
+    fmpz_clear(z);
+
+    FLINT_TEST_CLEANUP(state);
 }
 
 void EXPMOD_FLINTvsCM()
 {
+    bigint* base = NULL;
+    bigint* power = NULL;
+    bigint* dst = NULL;
+    int cnt = 0, wordlen = 100;
+    int modn = 50;
 
+    cnt = 0;
+    clock_t startc, endc;
+    double resultc;
+    startc = clock();
+    while (cnt < MAX_COUNT)
+    {
+        bi_gen_rand(&base, rand() % 2, wordlen);
+        bi_gen_rand(&power, rand() % 2, wordlen);
+        L2R(&dst, base, power, modn);
+        bi_delete(&base);
+        bi_delete(&power);
+        bi_delete(&dst);
+        cnt++;
+        printf("%d\n",cnt);
+    }
+    endc = clock();
+    resultc = (double)(endc - startc -result_c) / CLOCKS_PER_SEC;
+    //printf("CM expmod = %f\n", (resultc - result_c) / CLOCKS_PER_SEC);
+
+
+    fmpz_t f, g, e, m;
+    fmpz_init(f);
+    fmpz_init(g);
+    fmpz_init(e);
+    fmpz_init(m);
+
+    FLINT_TEST_INIT(state);
+    cnt = 0;
+
+    clock_t startf, endf;
+    double resultf;
+    startf = clock();
+    while (cnt < MAX_COUNT)
+    {
+        fmpz_randtest(g, state, wordlen * WORD_BITLEN);
+        fmpz_randtest(e, state, wordlen * WORD_BITLEN);
+        fmpz_randtest(m, state, wordlen * WORD_BITLEN);
+        fmpz_powm(f, g, e, m);  
+        cnt++;
+    }
+    endf = clock();
+    resultf = (double)(endf - startf - result_c) / CLOCKS_PER_SEC;
+    //printf("FLINT expmod = %f\n", (resultf-result_c) / CLOCKS_PER_SEC);
+    printf("[EXPMOD | CM vs FLINT] %f %f",resultc, resultf);
+    fmpz_clear(f);
+    fmpz_clear(g);
+    fmpz_clear(e);
+    fmpz_clear(m);
+    FLINT_TEST_CLEANUP(state);
 }
 
-void EXPMOD_test() // »çÀü°è»ê???
+void EXPMOD_test() // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½???
 {
 
 }
-// ÀúÀåÇÒ °ø°£..
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½..
 
-// time.c // ¾ÏÈ£¾Ë°í¸®µëÆÄ¶ó¹ÌÅÍº° ¼Óµµºñ±³ -> 1024, 2048ºñÆ®
-// void mod_test() // »çÀü°è»ê???
-// ±×·¡ÇÁ???? -> Ç¥??? -> overleaf 
+// time.c // ï¿½ï¿½È£ï¿½Ë°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¶ï¿½ï¿½ï¿½Íºï¿½ ï¿½Óµï¿½ï¿½ï¿½ -> 1024, 2048ï¿½ï¿½Æ®
+// void mod_test() // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½???
+// ï¿½×·ï¿½ï¿½ï¿½???? -> Ç¥??? -> overleaf 
 
-// 1 : time.c Æ² Á¦ÀÛ & ÁÖ¼®  -> ÀÌ°Å ¼öÁ¤ÇÏ±â 
-// 2 : sage while¹® Á¦ÀÛ & ÁÖ¼® -> Ãâ·ÂÇÒ¶§ while()
+// 1 : time.c Æ² ï¿½ï¿½ï¿½ï¿½ & ï¿½Ö¼ï¿½  -> ï¿½Ì°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï±ï¿½ 
+// 2 : sage whileï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ & ï¿½Ö¼ï¿½ -> ï¿½ï¿½ï¿½ï¿½Ò¶ï¿½ while()
 
-// °øÅë : ¹Ý¹Ý ³ª´«°Å ÄÚµå Á¦ÀÛ 
+// ï¿½ï¿½ï¿½ï¿½ : ï¿½Ý¹ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Úµï¿½ ï¿½ï¿½ï¿½ï¿½ 
 
-///////////////// ±Ý¹æ µÉµí? ÀÏ¿äÀÏ 2½Ã ////////////////////////
+///////////////// ï¿½Ý¹ï¿½ ï¿½Éµï¿½? ï¿½Ï¿ï¿½ï¿½ï¿½ 2ï¿½ï¿½ ////////////////////////
 
-// 1: overleaf¿¡´Ù°¡ °á°ú ÀÛ¼º(¾ÏÈ£¾Ë°í¸®µëÆÄ¶ó¹ÌÅÍº° ¼Óµµºñ±³ -> 1024, 2048ºñÆ®)
-// 2: overleaf ¸Å´º¾ó ÀÛ¼º & readmeÀÛ¼º 
+// 1: overleafï¿½ï¿½ï¿½Ù°ï¿½ ï¿½ï¿½ï¿½ ï¿½Û¼ï¿½(ï¿½ï¿½È£ï¿½Ë°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¶ï¿½ï¿½ï¿½Íºï¿½ ï¿½Óµï¿½ï¿½ï¿½ -> 1024, 2048ï¿½ï¿½Æ®)
+// 2: overleaf ï¿½Å´ï¿½ï¿½ï¿½ ï¿½Û¼ï¿½ & readmeï¿½Û¼ï¿½ 
 
-/////////////////////// È­,¼ö¿¡ ³¡³ª¾ß ÇÔ ////////////////////////
+/////////////////////// È­,ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ////////////////////////
 
-// test code ÃæºÐÈ÷ Á¦°øÇÏ°í ÀÖ´Â°¡ -> º¸°í¼­ appendix¿¡ ºÙÀÌ±â 
+// test code ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½Ö´Â°ï¿½ -> ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ appendixï¿½ï¿½ ï¿½ï¿½ï¿½Ì±ï¿½ 
 
-// ÀÏ¿äÀÏ¿¡´Â Àû¾îµµ ¿µ»ó Âï¾î¾ß... -> 15ºÐ...¤Ð 
+// ï¿½Ï¿ï¿½ï¿½Ï¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½îµµ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½... -> 15ï¿½ï¿½...ï¿½ï¿½ 
