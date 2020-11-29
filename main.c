@@ -40,5 +40,11 @@ int main(int argc, const char* argv[])
     CM();
     FLINT();
     ADD_FLINTvsCM();
+    SUB_FLINTvsCM();
+    MUL_FLINTvsCM();
+    //Kara_flag();
+    MULvsKara();
+    MULvsSQU();
+
     return 0;
 }

@@ -24,8 +24,8 @@ void right_shift(bigint* x, int r);     // bigint x를 r비트만큼 오른쪽으로 shift
 void reduction_2_r(bigint* x, int r);   // bigint x의 x mod 2^r를 출력하는 함수
 
 void ADD_ABc(word* dst, word* carry, const word* src1, const word* src2);
+void ADD_ABc2(word* dst, word* carry, const word* src);
 void ADDC(bigint** dst, const bigint* src1, const bigint* src2);
-//void ADDC2(bigint* dst, const bigint* src);
 void ADD(bigint** dst, const bigint* src1, const bigint* src2);
 void ADD2(bigint** dst, const bigint* src);
 
@@ -47,7 +47,7 @@ int NAIVE_div(bigint** Q, bigint** R, bigint* src1, bigint* src2);
 int Binary_Long_Div(bigint** Q, bigint** R, bigint* src1, bigint* src2);
 void LDA_2word(word* Q, const word* src11, const word* src10, const word* src2);
 void DIVCC(word* Q, bigint** R, const bigint* src1, const bigint* src2); 
-void DIVC(word* Q, bigint** R, const bigint* src1, const bigint* src2);
+void DIVC(word* Q, bigint** R, const bigint* src1, const bigint* src2, const int k);
 int DIV(bigint** Q, bigint** R, const bigint* src1, const bigint* src2);
 
 void L2R(bigint** R, const bigint* base, const bigint* power, const int modn);

@@ -11,7 +11,7 @@ void SUB_FLINTvsCM();
 void MUL_FLINTvsCM();
 void Kara_flag(); // flag¿¡ µû¶ó ¼³Á¤ 
 void MULvsKara(); // °ö¼À: schoolbook vs. Karatsuba
-void MULvsSQU();
+void MULvsSQU();  // °ö¼À vs Á¦°ö
 //////////////////////////////////////////////////////////////////////////////////////////
 void SQUvsKara();
 void NAIVEvsBINARYLONGvsMULTIDIV();

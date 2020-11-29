@@ -18,16 +18,19 @@
 // flint_printf("\n");
 // gcc -Wall -O2 *.c -I /usr/local/include/flint/ -lflint -lmpfr -lgmp -lpthread
 
-int wordlen = 32; // 512-> 8, 1024 -> 16, 2048 -> 32, 3072 -> 48, 4096 -> 64
+int wordlen = 16; // 512-> 8, 1024 -> 16, 2048 -> 32, 3072 -> 48, 4096 -> 64
 // RSA PARAMETER는 표나 그래프? 넣구
 // PARAMETER 크기별로 비교? -> 그래프만 넣고 할수는 있을것같은데... // 
+// wordlen -> karatsuba범위(8-100) ->  4씩증가!
+
+// iso파일? bin 크기 비교 ? 
+
 double result_c, result_f;
 
 void CM()
 {
     bigint* src1 = NULL;
     bigint* src2 = NULL;
-    bigint* dst = NULL;
     int cnt = 0;
 
     clock_t start1, end1;
@@ -38,7 +41,6 @@ void CM()
         bi_gen_rand(&src2, rand()%2, wordlen);
         bi_delete(&src1);
         bi_delete(&src2);
-        bi_delete(&dst);
         cnt++;
     }
     end1 = clock(); 
@@ -77,7 +79,8 @@ void ADD_FLINTvsCM()
 
     int cnt = 0; 
     clock_t start, end; 
-    double result;
+    double result_ac, result_af;
+
     start = clock();
     while(cnt < MAX_COUNT)
     {
@@ -90,18 +93,16 @@ void ADD_FLINTvsCM()
         cnt++;
     }
     end = clock(); 
-    result = (double)(end - start);
-    printf("CM add = %f\n", (result-result_c) / CLOCKS_PER_SEC);
+    result_ac = (double)(end - start - result_c)/(double)CLOCKS_PER_SEC;
 
     fmpz_t x,y,z;
     fmpz_init(x);
     fmpz_init(y);
     fmpz_init(z);
     FLINT_TEST_INIT(state);
+    
     cnt = 0;
-    clock_t start3, end3;
-    double result3;
-    start3 = clock();
+    start = clock();
     while(cnt < MAX_COUNT)
     {
         fmpz_randtest(x, state, wordlen*WORD_BITLEN);
@@ -109,9 +110,10 @@ void ADD_FLINTvsCM()
         fmpz_add(z,x,y);
         cnt++;
     }
-    end3 = clock(); 
-    result3 = (double)(end3 - start3);
-    printf("FLINT add = %f\n", (result3-result_f)/CLOCKS_PER_SEC);
+    end = clock(); 
+    result_af = (double)(end - start - result_f)/(double)CLOCKS_PER_SEC;
+    printf("[ADD | CM vs FLINT] %f %f\n", result_ac, result_af);
+
     fmpz_clear(x);
     fmpz_clear(y);
     fmpz_clear(z);
@@ -120,27 +122,219 @@ void ADD_FLINTvsCM()
 
 void SUB_FLINTvsCM()
 {
+    bigint* src1 = NULL;
+    bigint* src2 = NULL;
+    bigint* dst = NULL;
 
+    int cnt = 0; 
+    clock_t start, end; 
+    double result_sc, result_sf;
+
+    start = clock();
+    while(cnt < MAX_COUNT)
+    {
+        bi_gen_rand(&src1, rand()%2, wordlen);
+        bi_gen_rand(&src2, rand()%2, wordlen);
+        SUB(&dst, src1, src2);
+        bi_delete(&src1);
+        bi_delete(&src2);
+        bi_delete(&dst);
+        cnt++;
+    }
+    end = clock(); 
+    result_sc = (double)(end - start - result_c) / (double)CLOCKS_PER_SEC;
+
+    fmpz_t x,y,z;
+    fmpz_init(x);
+    fmpz_init(y);
+    fmpz_init(z);
+    FLINT_TEST_INIT(state);
+
+    cnt = 0;
+    start = clock();
+    while(cnt < MAX_COUNT)
+    {
+        fmpz_randtest(x, state, wordlen*WORD_BITLEN);
+        fmpz_randtest(y, state, wordlen*WORD_BITLEN);
+        fmpz_sub(z,x,y);
+        cnt++;
+    }
+    end = clock(); 
+    result_sf = (double)(end - start - result_f) / (double)CLOCKS_PER_SEC;
+    printf("[SUB | CM vs FLINT] %f %f\n", result_sc, result_sf);
+    fmpz_clear(x);
+    fmpz_clear(y);
+    fmpz_clear(z);
+    FLINT_TEST_CLEANUP(state);
 }
 
 void MUL_FLINTvsCM()
 {
+    bigint* src1 = NULL;
+    bigint* src2 = NULL;
+    bigint* dst = NULL;
 
+    int cnt = 0; 
+    clock_t start, end; 
+    double result_mc, result_mf;
+
+    start = clock();
+    while(cnt < MAX_COUNT)
+    {
+        bi_gen_rand(&src1, rand()%2, wordlen);
+        bi_gen_rand(&src2, rand()%2, wordlen);
+        //MUL(&dst, src1, src2);
+        Karatsuba(&dst, src1, src2, 6);
+        bi_delete(&src1);
+        bi_delete(&src2);
+        bi_delete(&dst);
+        cnt++;
+    }
+    end = clock(); 
+    result_mc = (double)(end - start - result_c)/(double)CLOCKS_PER_SEC;
+
+    fmpz_t x,y,z;
+    fmpz_init(x);
+    fmpz_init(y);
+    fmpz_init(z);
+    FLINT_TEST_INIT(state);
+
+    cnt = 0;
+    start = clock();
+    while(cnt < MAX_COUNT)
+    {
+        fmpz_randtest(x, state, wordlen*WORD_BITLEN);
+        fmpz_randtest(y, state, wordlen*WORD_BITLEN);
+        fmpz_mul(z,x,y);
+        cnt++;
+    }
+    end = clock(); 
+    result_mf = (double)(end - start - result_f)/(double)CLOCKS_PER_SEC;
+    printf("[MUL | CM vs FLINT] %f %f\n", result_mc, result_mf);
+    fmpz_clear(x);
+    fmpz_clear(y);
+    fmpz_clear(z);
+    FLINT_TEST_CLEANUP(state);
 }
+
+// flag에 따른 karatsuba -> 모든 wordlen에 대해 
+// 해당 wordlen에 대해 1/4이나 1/8
 
 void Kara_flag() // flag에 따라 설정 
 {
+    bigint* src1 = NULL;
+    bigint* src2 = NULL;
+    bigint* dst = NULL;
+
+    int cnt = 0, flag = 2; 
+    clock_t start, end; 
+    double result;
+    while(flag < (wordlen/2)) 
+    // flag <- wordlen 어디까지?
+    // RSA
+    // 10, 12, 14, 50 -> 20번 
+    // wordlen(10~50, 1단위? 2단위??) -> flag에 대해  
+    {
+        cnt = 0;
+        start = clock();
+        while(cnt < MAX_COUNT)
+        {
+            bi_gen_rand(&src1, rand()%2, wordlen);
+            bi_gen_rand(&src2, rand()%2, wordlen);
+            Karatsuba(&dst, src1, src2, flag);
+            bi_delete(&src1);
+            bi_delete(&src2);
+            bi_delete(&dst);
+            cnt++;
+        }
+        end = clock(); 
+        result = (double)(end - start - result_c) / (double)CLOCKS_PER_SEC;
+        printf("[Karatsuba | CM] %f (flag = %d)\n", result, flag);
+        flag++;
+    }
 
 }
 
 void MULvsKara() // 곱셈: schoolbook vs. Karatsuba
 {
+    bigint* src1 = NULL;
+    bigint* src2 = NULL;
+    bigint* dst = NULL;
 
+    int cnt = 0; 
+    clock_t start, end; 
+    double result_mul, result_kara;
+
+    start = clock();
+    while(cnt < MAX_COUNT)
+    {
+        bi_gen_rand(&src1, rand()%2, wordlen);
+        bi_gen_rand(&src2, rand()%2, wordlen);
+        MUL(&dst, src1, src2);
+        bi_delete(&src1);
+        bi_delete(&src2);
+        bi_delete(&dst);
+        cnt++;
+    }
+    end = clock(); 
+    result_mul = (double)(end - start - result_c)/(double)CLOCKS_PER_SEC;
+
+    cnt = 0; 
+    start = clock();
+    while(cnt < MAX_COUNT)
+    {
+        bi_gen_rand(&src1, rand()%2, wordlen);
+        bi_gen_rand(&src2, rand()%2, wordlen);
+        Karatsuba(&dst, src1, src2, 6);
+        bi_delete(&src1);
+        bi_delete(&src2);
+        bi_delete(&dst);
+        cnt++;
+    }
+    end = clock(); 
+    result_kara = (double)(end - start - result_c)/(double)CLOCKS_PER_SEC;
+    printf("[MUL vs Karatsuba | CM] %f %f\n", result_mul, result_kara);
 }
 
 void MULvsSQU() 
 {
+    bigint* src1 = NULL;
+    bigint* src2 = NULL;
+    bigint* dst = NULL;
 
+    int cnt = 0; 
+    clock_t start, end; 
+    double result_mul, result_squ;
+
+    start = clock();
+    while(cnt < MAX_COUNT)
+    {
+        bi_gen_rand(&src1, rand()%2, wordlen);
+        bi_gen_rand(&src2, rand()%2, wordlen);
+        MUL(&dst, src1, src1);
+        bi_delete(&src1);
+        bi_delete(&src2);
+        bi_delete(&dst);
+        cnt++;
+    }
+    end = clock(); 
+    result_mul = (double)(end - start - result_c)/(double)CLOCKS_PER_SEC;
+
+    cnt = 0; 
+    start = clock();
+    while(cnt < MAX_COUNT)
+    {
+        bi_gen_rand(&src1, rand()%2, wordlen);
+        bi_gen_rand(&src2, rand()%2, wordlen);
+        SQU(&dst, src1);
+        bi_delete(&src1);
+        bi_delete(&src2);
+        bi_delete(&dst);
+        cnt++;
+    }
+    end = clock(); 
+    result_squ = (double)(end - start - result_c)/(double)CLOCKS_PER_SEC;
+    printf("[MUL vs SQU | CM] %f %f\n", result_mul, result_squ);
 }
 //////////////////////////////////////////////////////////////////////////////////////////
 void SQUvsKara() // 제곱: schoolbook vs. Karatsuba

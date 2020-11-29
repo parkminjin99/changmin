@@ -133,25 +133,10 @@ void bi_zeroize(bigint* x) // bigint 안의 배열을 0으로 초기화하는 함수
 
 void bi_assign(bigint** dst, const bigint* src) // bigint 구조체를 복사하는 함수
 {
-    word* arr = (word*)malloc(sizeof(word)*get_wordlen(src));
-    array_copy(arr,src->a,get_wordlen(src));
-    //printf("assign = %02x\n", src->a[get_wordlen(src)-1]);
-    //bi_show(src,16);
-    int i, len = get_wordlen(src), sign = get_sign(src);
-    //printf("assign2 = %02x\n", src->a[get_wordlen(src)-1]);
-    if (FAIL == bi_new(dst, len, sign))
+    int srcLen = get_wordlen(src);
+    if (FAIL == bi_new(dst, srcLen, get_sign(src)))
         return;
-    //printf("assign3 = %02x\n", src->a[get_wordlen(src)-1]);
-    //bi_show(src,16);
-    for (i = 0; i < get_wordlen(src); i++)
-    {
-        (*dst)->a[i] = arr[i];
-    }
-    //printf("%02x %02x\n", (*dst)->a[i], src->a[i]);
-    //printf("assign2 = %02x\n", src->a[get_wordlen(src)-1]);
-    //array_copy((*dst)->a, src->a, get_wordlen(src));
-    free(arr);
-    arr = NULL;
+    array_copy((*dst)->a, src->a, srcLen);
 }
 
 void bi_set_by_array(bigint** x, int sign, word* a, int wordlen)  // a와 sign 정보를 struct에 저장하기.
@@ -205,8 +190,6 @@ void bi_gen_rand(bigint** x, int sign, int wordlen)
     }
     array_rand((*x)->a, wordlen);
     bi_refine(*x);
-    //if(bi_is_zero(*x) == TRUE)
-    //    (*x)->sign = NON_NEGATIVE;
 }
 
 int get_wordlen(const bigint* x)  // refine 해주고 해준 길이를 리턴
