@@ -37,6 +37,8 @@ int main(int argc, const char* argv[])
     //R2L_test();
     //Montgomery_test();
 
+    CM();
+    FLINT();
     ADD_FLINTvsCM();
     return 0;
 }

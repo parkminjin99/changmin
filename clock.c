@@ -16,16 +16,19 @@
 // flint_printf("\n");
 // fmpz_print(r);
 // flint_printf("\n");
+// gcc -Wall -O2 *.c -I /usr/local/include/flint/ -lflint -lmpfr -lgmp -lpthread
 
-void ADD_FLINTvsCM()
+int wordlen = 100;
+double result_c, result_f;
+
+void CM()
 {
     bigint* src1 = NULL;
     bigint* src2 = NULL;
     bigint* dst = NULL;
-    int cnt = 0, wordlen = 100;
+    int cnt = 0;
 
-    clock_t start1, end1; 
-    long double result1;
+    clock_t start1, end1;
     start1 = clock();
     while(cnt < MAX_COUNT)
     {
@@ -37,12 +40,45 @@ void ADD_FLINTvsCM()
         cnt++;
     }
     end1 = clock(); 
-    result1 = (long double)(end1 - start1);
+    result_c = (double)(end1 - start1)/(double)CLOCKS_PER_SEC;
+}
 
-    
-    cnt = 0; 
+void FLINT()
+{
+    fmpz_t x,y,z;
+    fmpz_init(x);
+    fmpz_init(y);
+    fmpz_init(z);
+    FLINT_TEST_INIT(state);
+
+    int cnt = 0;
+    clock_t start2, end2;
+    start2 = clock();
+    while(cnt < MAX_COUNT)
+    {
+        fmpz_randtest(x, state, wordlen*WORD_BITLEN);
+        fmpz_randtest(y, state, wordlen*WORD_BITLEN);
+        cnt++;
+    }
+    end2 = clock(); 
+    result_f = (double)(end2 - start2)/ (double)CLOCKS_PER_SEC;
+
+    fmpz_clear(x);
+    fmpz_clear(y);
+    fmpz_clear(z);
+    FLINT_TEST_CLEANUP(state);
+}
+
+void ADD_FLINTvsCM()
+{
+
+    bigint* src1 = NULL;
+    bigint* src2 = NULL;
+    bigint* dst = NULL;
+
+    int cnt = 0; 
     clock_t start, end; 
-    long double result;
+    double result;
     start = clock();
     while(cnt < MAX_COUNT)
     {
@@ -55,33 +91,29 @@ void ADD_FLINTvsCM()
         cnt++;
     }
     end = clock(); 
-    result = (long double)(end - start);
-    printf("CM add = %Lf\n", (result-result1) / CLOCKS_PER_SEC);
-    
-
+    result = (double)(end - start);
+    printf("CM add = %f\n", (result-result_c) / CLOCKS_PER_SEC);
 
     fmpz_t x,y,z;
     fmpz_init(x);
     fmpz_init(y);
     fmpz_init(z);
     FLINT_TEST_INIT(state);
-    cnt = 0;
-    fmpz_randbits(x,state,wordlen*WORD_BITLEN); // 이부분을 수정해야함
-    fmpz_randbits(y,state,wordlen*WORD_BITLEN); // 이부분을 수정해야함
 
-    clock_t start2, end2; 
-    double result2;
-    start2 = clock();
+    cnt = 0;
+    clock_t start3, end3;
+    double result3;
+    start3 = clock();
     while(cnt < MAX_COUNT)
     {
-        //fmpz_randbits(x,state,wordlen*WORD_BITLEN); // 이부분을 수정해야함
-        //fmpz_randbits(y,state,wordlen*WORD_BITLEN); // 이부분을 수정해야함
+        fmpz_randtest(x, state, wordlen*WORD_BITLEN);
+        fmpz_randtest(y, state, wordlen*WORD_BITLEN);
         fmpz_add(z,x,y);
         cnt++;
     }
-    end2 = clock(); 
-    result2 = (double)(end2 - start2);
-    printf("FLINT add = %f\n", result2 / CLOCKS_PER_SEC);
+    end3 = clock(); 
+    result3 = (double)(end3 - start3);
+    printf("FLINT add = %f\n", (result3-result_f)/CLOCKS_PER_SEC);
     fmpz_clear(x);
     fmpz_clear(y);
     fmpz_clear(z);

@@ -4,7 +4,8 @@
 #include "time.h"
 #include "changmin_library.h"
 
-
+void CM();
+void FLINT();
 void ADD_FLINTvsCM();
 void SUB_FLINTvsCM();
 void MUL_FLINTvsCM();
