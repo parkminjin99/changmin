@@ -396,7 +396,7 @@ void SQUvsKara() // ����: schoolbook vs. Karatsuba
     endka = clock();
     resultka = (double)(endka - startka - result_single_c)/CLOCKS_PER_SEC;
     //printf("karatsuba squaring = %f\n", (resultka - result_single_c) / CLOCKS_PER_SEC);
-    printf("[SQU vs Karatsuba | CM] %f %f",resultsqu,resultka);
+    printf("[SQU vs Karatsuba | CM] %f %f\n",resultsqu,resultka);
 
 }
 
@@ -469,7 +469,7 @@ void NAIVEvsBINARYLONGvsMULTIDIV() // Naive vs. binary long vs. multi-precision 
     endmul = clock();
     resultmul = (double)(endmul - startmul - result_c) / CLOCKS_PER_SEC;
     //printf("multi_precision_DIV = %f\n", (resultmul - result_c) / CLOCKS_PER_SEC);
-    printf("[NAIVE vs Binary vs Multi | CM] %f %f %f",resultnai, resultbin, resultmul);
+    printf("[NAIVE vs Binary vs Multi | CM] %f %f %f\n",resultnai, resultbin, resultmul);
 }
 
 void DIV_FLINTvsCM()
@@ -524,7 +524,7 @@ void DIV_FLINTvsCM()
     }
     endf = clock();
     resultf = (double)(endf - startf - result_f) / CLOCKS_PER_SEC;
-    printf("[DIV | CM vs FLINT] %f %f",resultc, resultf);
+    printf("[DIV | CM vs FLINT] %f %f\n",resultc, resultf);
     //printf("FLINT DIV = %f\n", (resultf - result_f) / CLOCKS_PER_SEC);
     fmpz_clear(f);
     fmpz_clear(s);
@@ -586,7 +586,6 @@ void EXPMOD_FLINTvsCM()
         bi_delete(&power);
         bi_delete(&dst);
         cnt++;
-        printf("%d\n",cnt);
     }
     endc = clock();
     resultc = (double)(endc - startc -result_c) / CLOCKS_PER_SEC;
@@ -608,15 +607,16 @@ void EXPMOD_FLINTvsCM()
     while (cnt < MAX_COUNT)
     {
         fmpz_randtest(g, state, wordlen * WORD_BITLEN);
-        fmpz_randtest(e, state, wordlen * WORD_BITLEN);
-        fmpz_randtest(m, state, wordlen * WORD_BITLEN);
+        fmpz_randtest_unsigned(e, state, wordlen * WORD_BITLEN);
+        fmpz_randtest_not_zero(m, state, wordlen * WORD_BITLEN);
+        fmpz_abs(m, m);
         fmpz_powm(f, g, e, m);  
         cnt++;
     }
     endf = clock();
     resultf = (double)(endf - startf - result_c) / CLOCKS_PER_SEC;
     //printf("FLINT expmod = %f\n", (resultf-result_c) / CLOCKS_PER_SEC);
-    printf("[EXPMOD | CM vs FLINT] %f %f",resultc, resultf);
+    printf("[EXPMOD | CM vs FLINT] %f %f\n",resultc, resultf);
     fmpz_clear(f);
     fmpz_clear(g);
     fmpz_clear(e);
