@@ -125,7 +125,6 @@ int bi_refine(bigint* x) // bigint 구조체 안의 배열에서 0인 하위의 배열을 삭제하
         if (x->a == NULL)
             return FAIL;
     }
-    //printf("word = %d\n",get_wordlen(x));
     if ((get_wordlen(x) == 0) && (x->a[0] == 0x0)) // bigint가 0인 경우에 sign값을 NON_NEGATIVE로 설정
         x->sign = NON_NEGATIVE;
     return SUCCESS;

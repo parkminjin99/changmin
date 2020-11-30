@@ -12,6 +12,7 @@
 #include "array.h"
 #include "operation.h"
 #include "test.h"
-#include "clock.h"
+#include "benchmark.h"
+
 
 #endif /* changmin_library_h */

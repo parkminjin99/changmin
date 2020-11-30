@@ -10,14 +10,13 @@
 #ifndef test_h
 #define test_h
 
-#define MAX_COUNT 10000 // �ݺ����� Ƚ�� 
+#define MAX_COUNT 10 // �ݺ����� Ƚ�� 
 
 void COMPARE_test();
 void SHIFT_test();
 void REDUCTION_test();
 
 void ADD_test(); // 0 
-void ADD2_test();
 void SUB_test(); // 0
 void MUL_test(); // 0
 void Karatsuba_test(); // x
