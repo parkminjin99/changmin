@@ -7,7 +7,8 @@
 //  
 #include "operation.h"
 
-int NAIVE_div(bigint** Q, bigint** R, bigint* src1, bigint* src2)
+
+int NaiveDiv(bigint** Q, bigint** R, bigint* src1, bigint* src2)
 {
     if(get_sign(src2) == NEGATIVE || bi_is_zero(src2) == TRUE)
         return INVALID;
@@ -29,8 +30,8 @@ int NAIVE_div(bigint** Q, bigint** R, bigint* src1, bigint* src2)
     bi_assign(R,src1);
     while(bi_compare(*R,src2) != -1)
     {
-        ADD2(Q, ONE);
-        SUB2(R, src2);
+        ADD_zzy(Q, ONE);
+        SUB_zzy(R, src2);
         //bi_show(*R,16);
     }
     return VALID;

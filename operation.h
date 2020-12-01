@@ -10,9 +10,7 @@
 #ifndef operation_h
 #define operation_h
 
-#include <stdio.h>
-#include "bigint.h"
-#include "array.h"
+#include "changmin_library.h"
 
 #define max(x,y)( (x)>(y)?(x):(y) )
 #define min(x,y)( (x)<(y)?(x):(y) )
@@ -23,32 +21,34 @@ void left_shift(bigint* x, int r);      // bigint x를 r비트만큼 왼쪽으로 shift하
 void right_shift(bigint* x, int r);     // bigint x를 r비트만큼 오른쪽으로 shift하는 함수
 void reduction_2_r(bigint* x, int r);   // bigint x의 x mod 2^r를 출력하는 함수
 
-void ADD_ABc(word* dst, word* carry, const word* src1, const word* src2);
-void ADD_ABc2(word* dst, word* carry, const word* src);
+void ADD_1word_zxyc(word* dst, word* carry, const word* src1, const word* src2);
+void ADD_1word_zzyc(word* dst, word* carry, const word* src);
 void ADDC(bigint** dst, const bigint* src1, const bigint* src2);
-void ADD(bigint** dst, const bigint* src1, const bigint* src2);
-void ADD2(bigint** dst, const bigint* src);
+void ADD_zxy(bigint** dst, const bigint* src1, const bigint* src2);
+void ADD_zzy(bigint** dst, const bigint* src);
 
-void subABS(word* dst, int* carry, const word* src1, const word* src2);    // src1과 src2, carry를 입력받아 1word에 대한 뺄셈의 절댓값을 출력
-void subc(bigint** dst, const bigint* src1, const bigint* src2);    // src1>src2로 입력받아 둘의 차를 dst에 저장
-void SUB(bigint** dst, const bigint* src1, const bigint* src2);   //src1 과 src2를 비교하여 subc로 이동시키는 함수
-void SUB2(bigint** dst, const bigint* src);
+void SUB_1word_zxy(word* dst, int* carry, const word* src1, const word* src2);    // src1과 src2, carry를 입력받아 1word에 대한 뺄셈의 절댓값을 출력
+void SUBC(bigint** dst, const bigint* src1, const bigint* src2);    // src1>src2로 입력받아 둘의 차를 dst에 저장
+void SUB_zxy(bigint** dst, const bigint* src1, const bigint* src2);   //src1 과 src2를 비교하여 subc로 이동시키는 함수
+void SUB_zzy(bigint** dst, const bigint* src);
 
-void Karatsuba(bigint** dst, const bigint* src1, const bigint* src2, const int flag);   
+void KaratsubaMUL(bigint** dst, const bigint* src1, const bigint* src2);
+void KaratsubaMUL_Flag(bigint** dst, const bigint* src1, const bigint* src2, const int flag);   
 
-void MUL_1Word(word* dst, const word* src1, const word* src2);  
-void MULC(bigint** dst, const bigint* src1, const bigint* src2);
-void MUL(bigint** dst, const bigint* src1, const bigint* src2);
-void MUL2(bigint** dst, const bigint* src);
+void MUL_1word_zxy(word* dst, const word* src1, const word* src2);  
+void schoolbook_MULC(bigint** dst, const bigint* src1, const bigint* src2);
+void MUL_zxy(bigint** dst, const bigint* src1, const bigint* src2);
+void MUL_zzy(bigint** dst, const bigint* src);
 
-void SQUC_1Word(word* dst, const word* src);
+void SQUC_1Word_zxx(word* dst, const word* src);
 void SQUC(bigint** dst, const bigint* src);
-void SQU(bigint** dst, const bigint* src);
+void SQU_zxx(bigint** dst, const bigint* src);
+
 void SQUCKaratsuba(bigint** dst, const bigint* src, const int flag);
 
-int NAIVE_div(bigint** Q, bigint** R, bigint* src1, bigint* src2);      
-int Binary_Long_Div(bigint** Q, bigint** R, bigint* src1, bigint* src2);
-void LDA_2word(word* Q, const word* src11, const word* src10, const word* src2);
+int NaiveDiv(bigint** Q, bigint** R, bigint* src1, bigint* src2);      
+int BinaryLongDiv(bigint** Q, bigint** R, bigint* src1, bigint* src2);
+void BinaryLongDiv_2word(word* Q, const word* src11, const word* src10, const word* src2);
 void DIVCC(word* Q, bigint** R, const bigint* src1, const bigint* src2); 
 void DIVC(word* Q, bigint** R, const bigint* src1, const bigint* src2, const int k);
 int DIV(bigint** Q, bigint** R, const bigint* src1, const bigint* src2);

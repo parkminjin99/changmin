@@ -7,7 +7,7 @@
 //  
 #include "operation.h"
 
-void MUL_1Word(word* dst, const word* src1, const word* src2)
+void MUL_1word_zxy(word* dst, const word* src1, const word* src2)
 {
     word A[2], B[2], temp[2], t;
     A[1] = (*src1)>>(WORD_BITLEN/2); // A1 = src1 >> w/2
@@ -29,7 +29,7 @@ void MUL_1Word(word* dst, const word* src1, const word* src2)
     if(dst[0] < t)  dst[1]++; // carry발생
 } 
 
-void MULC(bigint** dst, const bigint* src1, const bigint* src2)// schoolbook multiplication 
+void schoolbook_MULC(bigint** dst, const bigint* src1, const bigint* src2)// schoolbook multiplication 
 {
     word temp[2];
     int n = get_wordlen(src1), m = get_wordlen(src2), i, j;
@@ -40,10 +40,10 @@ void MULC(bigint** dst, const bigint* src1, const bigint* src2)// schoolbook mul
     {
         for ( j = 0; j < m; j++)
         {
-            MUL_1Word(temp, &src1->a[i], &src2->a[j]); // temp = src1->a[i] * src2->a[j]
+            MUL_1word_zxy(temp, &src1->a[i], &src2->a[j]); // temp = src1->a[i] * src2->a[j]
             temp_bigint->a[i+j] = temp[0];   // temp_bigint = temp << (i+j)*w
             temp_bigint->a[i+j+1] = temp[1];
-            ADD2(dst,temp_bigint); // dst += temp_bigint
+            ADD_zzy(dst,temp_bigint); // dst += temp_bigint
             temp_bigint->a[i+j] = 0;  // temp_bigint 초기화 
             temp_bigint->a[i+j+1] = 0;
         }
@@ -51,20 +51,20 @@ void MULC(bigint** dst, const bigint* src1, const bigint* src2)// schoolbook mul
     bi_delete(&temp_bigint);
 }
 
-/************************* ADD(A, B) ***************************
+/***************** MUL_zxy(A, B) : 임의의 두 정수 A,B의 곱 **********************
 Input: A, B ∈ Z
-Output: A + B ∈ Z
-1: if A = 0 then              |   10: if A < 0 and B > 0 then 
-2:      return B              |   11:     return SUB(B,|A|)
+Output: C = AB
+1: if A = 0 or B = 0 then     |   10: if B = 1 then 
+2:      return 0              |   11:     return A
 3: end if                     |   12: end if
-4: if B = 0 then              |   13: if WordLen(A) >= WordLen(B) then
-5:      return A              |   14:     return ADDC(A,B)
-6: end if                     |   15: else
-7: if A > 0 and B < 0 then    |   16:     return ADDC(B,A)
-8:      return SUB(A,|B|)     |   17: end if
-9: end if                     |  
+4: if A = 1 then              |   13: if B = -1 then
+5:      return B              |   14:     return -A
+6: end if                     |   15: end if
+7: if A = -1 then             |   16: C 
+8:      return -B             |   17: 
+9: end if                      
 ****************************************************************/
-void MUL(bigint** dst, const bigint* src1, const bigint* src2) // schoolbook multiplication 
+void MUL_zxy(bigint** dst, const bigint* src1, const bigint* src2) 
 {
     if(bi_is_zero(src1) == TRUE || bi_is_zero(src2) == TRUE) // src1 = 0 or src2 = 0
         bi_set_zero(dst);
@@ -84,7 +84,7 @@ void MUL(bigint** dst, const bigint* src1, const bigint* src2) // schoolbook mul
     }
     else
     {
-        MULC(dst,src1,src2); // dst = |src1|*|src2|
+        schoolbook_MULC(dst,src1,src2); // dst = |src1|*|src2|
         (*dst)->sign = get_sign(src1)^get_sign(src2); // dst의 부호 결정 
         // src1의 부호 1 0 1 0 
         // src2의 부호 1 0 0 1
@@ -92,10 +92,10 @@ void MUL(bigint** dst, const bigint* src1, const bigint* src2) // schoolbook mul
     }
 }
 
-void MUL2(bigint** dst, const bigint* src)
+void MUL_zzy(bigint** dst, const bigint* src)
 {
     bigint* temp = NULL;
     bi_assign(&temp, *dst);
-    MUL(dst, temp, src);
+    MUL_zxy(dst, temp, src);
     bi_delete(&temp);
 }

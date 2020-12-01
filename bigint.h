@@ -10,43 +10,19 @@
 #ifndef bigint_h
 #define bigint_h
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-
-#define WORD_BITLEN 64
-
-#if WORD_BITLEN == 64
-typedef unsigned long long word;
-#define HALF_WORDBIT 0x00000000ffffffff
-#define BITMASK 0xffffffffffffffff
-#elif WORD_BITLEN == 32
-typedef unsigned int word;
-#define HALF_WORDBIT 0x0000ffff
-#define BITMASK 0xffffffff
-#else // WORD_BITLEN == 8
-typedef unsigned char word;
-#define HALF_WORDBIT 0x0f
-#define BITMASK 0xff
-#endif
+#include "changmin_library.h"
 
 #define NON_NEGATIVE 0
 #define NEGATIVE 1
 
-#define SUCCESS 2
-#define FAIL -2
+#define SUCCESS 0
+#define FAIL 1
 
-#define TRUE 3
-#define FALSE -3
+#define TRUE 0
+#define FALSE 1
 
-#define VALID 4
-#define INVALID -4
-
-typedef struct {
-    int sign;
-    int wordlen;
-    word* a;
-} bigint;
+#define VALID 0
+#define INVALID 1
 
 void bi_sage_show(const bigint* x, const int base);
 void bi_show(const bigint* x, const int base);

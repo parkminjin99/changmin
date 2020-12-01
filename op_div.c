@@ -7,7 +7,7 @@
 //  
 #include "operation.h"
 
-void LDA_2word(word* Q, const word* src11, const word* src10, const word* src2) // Q는 1워드, src1은 2워드, src2은 1워드
+void BinaryLongDiv_2word(word* Q, const word* src11, const word* src10, const word* src2) // Q는 1워드, src1은 2워드, src2은 1워드
 {
     int i;
     word R = *src11;
@@ -43,17 +43,17 @@ void DIVCC(word* Q, bigint** R, const bigint* src1, const bigint* src2)
         if(src1->a[src2Len] == src2->a[src2Len-1])
             *Q = BITMASK;
         else
-            LDA_2word(Q, &src1->a[src2Len], &src1->a[src2Len-1], &src2->a[src2Len-1]);
+            BinaryLongDiv_2word(Q, &src1->a[src2Len], &src1->a[src2Len-1], &src2->a[src2Len-1]);
     }
     bi_new(&temp, 1, NON_NEGATIVE);
     temp->a[0] = *Q;
-    MUL2(&temp, src2); // temp = src2*Q
+    MUL_zzy(&temp, src2); // temp = src2*Q
 
-    SUB(R, src1, temp);  // R = src1 - src2*Q
+    SUB_zxy(R, src1, temp);  // R = src1 - src2*Q
     while(get_sign(*R) == NEGATIVE) // R < 0
     {
         (*Q)--;
-        ADD2(R,src2);
+        ADD_zzy(R,src2);
     }
     bi_delete(&temp);
 }

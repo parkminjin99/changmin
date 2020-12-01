@@ -7,7 +7,7 @@
 //  
 #include "operation.h"
 
-int Binary_Long_Div(bigint** Q, bigint** R, bigint* src1, bigint* src2)
+int BinaryLongDiv(bigint** Q, bigint** R, bigint* src1, bigint* src2)
 { 
     if(get_sign(src2) == NEGATIVE || bi_is_zero(src2) == TRUE)
         return INVALID; 
@@ -23,8 +23,8 @@ int Binary_Long_Div(bigint** Q, bigint** R, bigint* src1, bigint* src2)
         {
             bi_new(&temp,(i/WORD_BITLEN)+1,NON_NEGATIVE);
             temp->a[get_wordlen(temp)-1] ^= (word)1<<(i%WORD_BITLEN); // temp = 1<<(i%WORD_BITLEN)
-            ADD2(Q,temp); // Q += temp
-            SUB2(R,src2); // R -= src2
+            ADD_zzy(Q,temp); // Q += temp
+            SUB_zzy(R,src2); // R -= src2
             bi_delete(&temp);
         }
     }

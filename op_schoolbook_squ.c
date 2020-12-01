@@ -7,7 +7,7 @@
 //  
 #include "operation.h"
 
-void SQUC_1Word(word* dst, const word* src)
+void SQUC_1Word_zxx(word* dst, const word* src)
 {
     word A[2], temp, carry = 0;
     A[1] = (*src)>>(WORD_BITLEN/2);
@@ -19,8 +19,8 @@ void SQUC_1Word(word* dst, const word* src)
 
     word temp1 = temp << (WORD_BITLEN/2+1);
     word temp2 = temp >> (WORD_BITLEN/2-1);
-    ADD_ABc2(&dst[0], &carry, &temp1);
-    ADD_ABc2(&dst[1], &carry, &temp2);
+    ADD_1word_zzyc(&dst[0], &carry, &temp1);
+    ADD_1word_zzyc(&dst[1], &carry, &temp2);
 }
 
 void SQUC(bigint** dst, const bigint* src)
@@ -35,29 +35,29 @@ void SQUC(bigint** dst, const bigint* src)
     bi_new(&C1, 2*t, NON_NEGATIVE);
     for ( i = 0; i < t; i++)
     {
-        SQUC_1Word(temp, &src->a[i]);
+        SQUC_1Word_zxx(temp, &src->a[i]);
         temp_bigint->a[2*i] = temp[0];  
         temp_bigint->a[2*i+1] = temp[1];
-        ADD2(&C0, temp_bigint);
+        ADD_zzy(&C0, temp_bigint);
         array_init(temp_bigint->a + 2*i, 2);
         for ( j = i+1; j < t; j++)
         {
-            MUL_1Word(temp, &src->a[i], &src->a[j]);
+            MUL_1word_zxy(temp, &src->a[i], &src->a[j]);
             temp_bigint->a[i+j] = temp[0];  
             temp_bigint->a[i+j+1] = temp[1];
-            ADD2(&C1, temp_bigint);
+            ADD_zzy(&C1, temp_bigint);
             array_init(temp_bigint->a + i+j, 2);
         } 
     }
     left_shift(C1,1);
-    ADD(dst, C0, C1);
+    ADD_zxy(dst, C0, C1);
     
     bi_delete(&temp_bigint);
     bi_delete(&C0);
     bi_delete(&C1);
 }
 
-void SQU(bigint** dst, const bigint* src)
+void SQU_zxx(bigint** dst, const bigint* src)
 {
     if(bi_is_zero(src) == TRUE || bi_is_minus_one(src) == TRUE || bi_is_one(src) == TRUE)
     {

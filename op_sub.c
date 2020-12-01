@@ -7,7 +7,7 @@
 //  
 #include "operation.h"
 
-/*****subABS(A, b, B)*****************
+/*****SUB_1word_zxy(A, b, B)*****************
 Input: A, B (1 word), b ¡ô {0, 1}
 Output: b ¡ô {0, 1}, C ¡ô (1 word) such that A ? B = ?bW + C
 ------------------------------------------------------------------
@@ -24,7 +24,7 @@ Output: b ¡ô {0, 1}, C ¡ô (1 word) such that A ? B = ?bW + C
 11: return b, C
 **********************/
 
-void subABS(word* dst, int* carry, const word* src1, const word* src2)    // src1°ú src2, carry¸¦ ÀÔ·Â¹Þ¾Æ 1word¿¡ ´ëÇÑ »¬¼ÀÀÇ Àý´ñ°ªÀ» Ãâ·Â
+void SUB_1word_zxy(word* dst, int* carry, const word* src1, const word* src2)    // src1°ú src2, carry¸¦ ÀÔ·Â¹Þ¾Æ 1word¿¡ ´ëÇÑ »¬¼ÀÀÇ Àý´ñ°ªÀ» Ãâ·Â
 {
     *dst = (*src1) - (*carry);
 
@@ -40,7 +40,7 @@ void subABS(word* dst, int* carry, const word* src1, const word* src2)    // src
 
 }
 
-/********subc(A, B)***A ¡Ã B > 0*******************
+/********SUBC(A, B)***A ¡Ã B > 0*******************
 Input: A = [Wn?1, Wn), B = [Wm?1, Wm), (A ¡Ã B > 0),
 Output: A ? B = C¡ô [0, Wn)
 1: Bj ¡ç 0 for j = m, m + 1, . . . , n ? 1
@@ -52,7 +52,7 @@ Output: A ? B = C¡ô [0, Wn)
 7: return  C
 *******************************/
 
-void subc(bigint** dst, const bigint* src1, const bigint* src2)    // src1>src2·Î ÀÔ·Â¹Þ¾Æ µÑÀÇ Â÷¸¦ dst¿¡ ÀúÀå
+void SUBC(bigint** dst, const bigint* src1, const bigint* src2)    // src1>src2·Î ÀÔ·Â¹Þ¾Æ µÑÀÇ Â÷¸¦ dst¿¡ ÀúÀå
 {
     int new_wordlen = get_wordlen(src1);
     int y_wordlen = get_wordlen(src2);
@@ -78,13 +78,13 @@ void subc(bigint** dst, const bigint* src1, const bigint* src2)    // src1>src2·
     }
     for (int i = 0; i < new_wordlen; i++)
     {
-        subABS(&(*dst)->a[i], &carry, &src1->a[i], &temp->a[i]);
+        SUB_1word_zxy(&(*dst)->a[i], &carry, &src1->a[i], &temp->a[i]);
     }
     bi_refine(*dst);
     bi_delete(&temp);
 }
 
-/*********SUB(A, B) **************
+/*********SUB_zxy(A, B) **************
 Input: A, B ¡ô Z
 Output: A ? B ¡ô Z
 1: if A = 0 then              |   13: return ?SUBC(B, A)
@@ -95,14 +95,14 @@ Output: A ? B ¡ô Z
 6: end if                     |   18:     return ?SUBC(|A|, |B|)
 7: if A = B then              |   19: end if
 8:      return 0              |   20: if A > 0 and B < 0 then
-9: end if                     |   21:     return ADD(A, |B|)
+9: end if                     |   21:     return ADD_zxy(A, |B|)
 10: if 0 < B ¡Â A then        |   22: else .
-11:     return SUBC(A, B)     |   23:     return ?ADD(|A|, B)
+11:     return SUBC(A, B)     |   23:     return ?ADD_zxy(|A|, B)
 12: else if 0 < A < B then    |   24: end if
 
 ****************************/
 
-void SUB(bigint** dst, const bigint* src1, const bigint* src2)   //src1 °ú src2¸¦ ºñ±³ÇÏ¿© subc·Î ÀÌµ¿½ÃÅ°´Â ÇÔ¼ö
+void SUB_zxy(bigint** dst, const bigint* src1, const bigint* src2)   //src1 °ú src2¸¦ ºñ±³ÇÏ¿© subc·Î ÀÌµ¿½ÃÅ°´Â ÇÔ¼ö
 {
     bigint* temp = NULL;
     if(bi_is_zero(src1) == TRUE && bi_is_zero(src2) == TRUE)
@@ -129,23 +129,23 @@ void SUB(bigint** dst, const bigint* src1, const bigint* src2)   //src1 °ú src2¸
     else if ((1 == bi_compare(src1, src2)) && (src2->sign == NON_NEGATIVE))  //  src1>src2>0
     {
         //printf("#src1>src2>0\n");
-        subc(dst, src1, src2);
+        SUBC(dst, src1, src2);
     }
     else if ((-1 == bi_compare(src1, src2)) && (src1->sign == NON_NEGATIVE))  // src2>src1>0
     {
         //printf("#src2>src1>0\n");
-        subc(dst, src2, src1);
+        SUBC(dst, src2, src1);
         flip_sign(*dst);
     }
     else if ((1 == bi_compare(src1, src2)) && (src1->sign == NEGATIVE))      // 0>src1>src2
     {
         //printf("#0>src1>src2\n");
-        subc(dst, src2, src1);
+        SUBC(dst, src2, src1);
     }
     else if ((-1 == bi_compare(src1, src2)) && (src2->sign == NEGATIVE))   //   0>src2>src1
     {
         //printf("# 0>src2>src1\n");
-        subc(dst, src1, src2);
+        SUBC(dst, src1, src2);
         flip_sign(*dst);
     }
     else if ((src1->sign == NON_NEGATIVE) && (src2->sign == NEGATIVE))    //  src1>0>src2
@@ -153,9 +153,9 @@ void SUB(bigint** dst, const bigint* src1, const bigint* src2)   //src1 °ú src2¸
         //printf("# src1>0>src2\n");
         bi_assign(&temp, src2);
         flip_sign(temp);
-        ADD(dst, src1, temp);
+        ADD_zxy(dst, src1, temp);
         //flip_sign(src2);
-        //ADD(dst, src1, src2); // *¼öÁ¤*
+        //ADD_zxy(dst, src1, src2); // *¼öÁ¤*
         //flip_sign(src2);
     }
     else                           // src2>0>src1
@@ -163,20 +163,20 @@ void SUB(bigint** dst, const bigint* src1, const bigint* src2)   //src1 °ú src2¸
         //printf("#else\n");
         bi_assign(&temp,src1);
         flip_sign(temp);
-        ADD(dst, temp, src2);
+        ADD_zxy(dst, temp, src2);
         //flip_sign(src1);
-        //ADD(dst, src1, src2); // *¼öÁ¤*
+        //ADD_zxy(dst, src1, src2); // *¼öÁ¤*
         //flip_sign(src1);
         flip_sign(*dst);
     }
     bi_delete(&temp);
 }
 
-void SUB2(bigint** dst, const bigint* src)
+void SUB_zzy(bigint** dst, const bigint* src)
 {
     bigint* temp = NULL;
     bi_assign(&temp, *dst);
     bi_delete(dst);
-    SUB(dst, temp, src);
+    SUB_zxy(dst, temp, src);
     bi_delete(&temp);
 }

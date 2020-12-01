@@ -5,8 +5,7 @@
 //  Created by 최강창민 on 2020/11/09.
 //  Copyright 2020 최강창민. All rights reserved.
 //
-
-#include "changmin_library.h"
+#include "test.h"
 
 void BASIC_test()
 {
@@ -191,7 +190,7 @@ void ADD_test()
         bi_gen_rand(&src2, rand()%2, rand() % 20);
         printf("    addA = ");          bi_sage_show(src1, 16);    printf("\n");
         printf("    addB = ");          bi_sage_show(src2, 16);    printf("\n");
-        ADD(&dst, src1, src2);   
+        ADD_zxy(&dst, src1, src2);   
         printf("    cal = ");    bi_sage_show(dst, 16);    printf("\n");
         printf("    if addA + addB != cal:\n");
         printf("        print( 'False!!')\n");
@@ -234,7 +233,7 @@ void SUB_test()
         bi_gen_rand(&src2, rand()%2, rand() % 20);
         printf("    subA = ");          bi_sage_show(src1, 16);    printf("\n");
         printf("    subB = ");          bi_sage_show(src2, 16);    printf("\n");
-        SUB(&dst, src1, src2);   
+        SUB_zxy(&dst, src1, src2);   
         printf("    cal = ");    bi_sage_show(dst, 16);    printf("\n");
         printf("    if subA - subB != cal:\n");
         printf("        print( 'False!!')\n");
@@ -277,7 +276,7 @@ void MUL_test()
         bi_gen_rand(&src2, rand()%2, rand()%20);
         printf("    mulA = ");          bi_sage_show(src1, 16);    printf("\n");
         printf("    mulB = ");          bi_sage_show(src2, 16);    printf("\n");
-        MUL(&dst, src1, src2);   
+        MUL_zxy(&dst, src1, src2);   
         printf("    cal = ");    bi_sage_show(dst, 16);    printf("\n");
         printf("    if mulA * mulB != cal:\n");
         printf("        print( 'False!!')\n");
@@ -310,7 +309,6 @@ void Karatsuba_test()
     bigint* src1 = NULL;    // x*y에서 x
     bigint* src2 = NULL;    // x*y에서 y
     bigint* dst = NULL;     // x*y
-    int flag = 2;
     int cnt = 0;
 
     printf("while(True):\n");
@@ -321,7 +319,7 @@ void Karatsuba_test()
         bi_gen_rand(&src2, NON_NEGATIVE, rand()%20);
         printf("    mulA = ");          bi_sage_show(src1, 16);    printf("\n");
         printf("    mulB = ");          bi_sage_show(src2, 16);    printf("\n");
-        Karatsuba(&dst, src1, src2, flag);
+        KaratsubaMUL(&dst, src1, src2);
         printf("    cal = ");    bi_sage_show(dst, 16);    printf("\n");
         printf("    if mulA * mulB != cal:\n");
         printf("        print( 'False!!')\n");
@@ -361,7 +359,7 @@ void SQU_test()
     {
         bi_gen_rand(&src, rand() % 2, rand() % 10);
         printf("    squcA = ");          bi_sage_show(src, 16);    printf("\n");
-        SQU(&dst, src);
+        SQU_zxx(&dst, src);
         printf("    cal = ");    bi_sage_show(dst, 16);    printf("\n");
         printf("    if squcA * squcA != cal:\n");
         printf("        print( 'False!!')\n");
@@ -440,7 +438,7 @@ void NAIVE_div_test()
         bi_gen_rand(&src2, NON_NEGATIVE, rand() % 3);
         printf("    divA = ");          bi_sage_show(src1, 16);    printf("\n");
         printf("    divB = ");          bi_sage_show(src2, 16);    printf("\n");
-        if (INVALID == NAIVE_div(&dstQ, &dstR, src1, src2))
+        if (INVALID == NaiveDiv(&dstQ, &dstR, src1, src2))
             continue;
         printf("    Q = ");     bi_sage_show(dstQ, 16);     printf("\n");
         printf("    R = ");     bi_sage_show(dstR, 16);     printf("\n");
@@ -474,7 +472,7 @@ void NAIVE_div_test()
     printf("    print(divA%%divB)\n");
 }
 
-void Binary_Long_Div_test()
+void BinaryLongDiv_test()
 {
     printf("\n");
     printf(" #< bigint Long Division Algo > \n");
@@ -492,7 +490,7 @@ void Binary_Long_Div_test()
         bi_gen_rand(&src2, NON_NEGATIVE, rand() % 5);
         printf("    divA = ");          bi_sage_show(src1, 16);    printf("\n");
         printf("    divB = ");          bi_sage_show(src2, 16);    printf("\n");
-        if (INVALID == Binary_Long_Div(&dstQ, &dstR, src1, src2))
+        if (INVALID == BinaryLongDiv(&dstQ, &dstR, src1, src2))
             continue;
         printf("    Q = ");     bi_sage_show(dstQ, 16);     printf("\n");
         printf("    R = ");     bi_sage_show(dstR, 16);     printf("\n");

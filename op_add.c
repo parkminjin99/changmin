@@ -8,7 +8,23 @@
 
 #include "operation.h"
 
-void ADD_ABc(word* dst, word* carry, const word* src1, const word* src2)
+/***** ADD_1word_zxyc(A, b, B) :  *****************
+Input: A, B (1 word), b ¡ô {0, 1}
+Output: b ¡ô {0, 1}, C ¡ô (1 word) such that A ? B = ?bW + C
+------------------------------------------------------------------
+1: C ¡ç A - b
+2: if A < b then
+3:      b ¡ç 1
+4: else
+5:      b ¡ç 0
+6: end if
+7: if C < B then
+8:      b ¡ç b + 1
+9: end if
+10: C ¡ç C - B
+11: return b, C
+**********************/
+void ADD_1word_zxyc(word* dst, word* carry, const word* src1, const word* src2)
 {
     word new_carry = 0;
     *dst = (*src1) + (*src2);
@@ -20,7 +36,7 @@ void ADD_ABc(word* dst, word* carry, const word* src1, const word* src2)
     *carry = new_carry;
 }
 
-void ADD_ABc2(word* dst, word* carry, const word* src)
+void ADD_1word_zzyc(word* dst, word* carry, const word* src)
 {
     word new_carry = 0;
     *dst += *src;
@@ -32,16 +48,16 @@ void ADD_ABc2(word* dst, word* carry, const word* src)
     *carry = new_carry;
 }
 
-/************************* ADDC(A, B) ***************************
-Input: A = [Wn?1, Wn), B = [Wm?1, Wm) (WordLen(A) ¡Ã WordLen(B), Sign(A) = Sign(B))
+/************** ADDC(A, B) : µ¿ÀÏÇÑ ºÎÈ£ÀÇ µÎ Á¤¼ö µ¡¼À  *********************
+Input: A = [Wn-1, Wn), B = [Wm-1, Wm)
 Output: A + B ¡ô Z
-1: Bj ¡ç 0 for j = m, m + 1, . . . , n ? 1             |   10: if A < 0 and B > 0 then 
-2: carry = 0              |   11:     return SUB(B,|A|)
-3: for j = 0 to n ? 1 do                    |   12: end if
-4: if B = 0 then              |   13: if WordLen(A) >= WordLen(B) then
-5:      return A              |   14:     return ADDC(A,B)
-6: end if                     |   15: else
-****************************************************************/
+1: Bj ¡ç 0 for j = m, m+1,..., n-1   |   7: if A < 0 and B > 0 then 
+2: carry = 0                        |   8:     return SUB_zxy(B,|A|)
+3: for j = 0 to n-1 do              |   9: end if
+4:      carry, Cj ¡ç ADD_1word_zxyc()       |   10: if WordLen(A) >= WordLen(B) then
+5: end for                          |   11:     return ADDC(A,B)
+6: Cn ¡ç carry                       |   12: else
+********************************************************************/
 void ADDC(bigint** dst, const bigint* src1, const bigint* src2)
 {
     int i, src1Len = get_wordlen(src1), src2Len = get_wordlen(src2);
@@ -49,9 +65,9 @@ void ADDC(bigint** dst, const bigint* src1, const bigint* src2)
     bi_new(dst, src1Len + 1, get_sign(src1));
     word carry = 0; // carry
     for (i = 0; i < src2Len; i++)
-        ADD_ABc(&(*dst)->a[i], &carry, &src1->a[i], &src2->a[i]); // 1¿öµå µ¡¼À
+        ADD_1word_zxyc(&(*dst)->a[i], &carry, &src1->a[i], &src2->a[i]); // 1¿öµå µ¡¼À
 
-    for (i = src2Len; i < src1Len; i++)    // *¼öÁ¤*
+    for (i = src2Len; i < src1Len; i++)  
     {
         (*dst)->a[i] = src1->a[i] + carry;
         if ((*dst)->a[i] < carry && carry == 1) // carry ¹ß»ý
@@ -63,20 +79,20 @@ void ADDC(bigint** dst, const bigint* src1, const bigint* src2)
     bi_refine(*dst);
 }
 
-/************************* ADD(A, B) ***************************
+/************************* ADD_zxy(A, B) ****************************
 Input: A, B ¡ô Z
 Output: A + B ¡ô Z
 1: if A = 0 then              |   10: if A < 0 and B > 0 then 
-2:      return B              |   11:     return SUB(B,|A|)
+2:      return B              |   11:     return SUB_zxy(B,|A|)
 3: end if                     |   12: end if
 4: if B = 0 then              |   13: if WordLen(A) >= WordLen(B) then
 5:      return A              |   14:     return ADDC(A,B)
 6: end if                     |   15: else
 7: if A > 0 and B < 0 then    |   16:     return ADDC(B,A)
-8:      return SUB(A,|B|)     |   17: end if
+8:      return SUB_zxy(A,|B|)     |   17: end if
 9: end if                     |  
-****************************************************************/
-void ADD(bigint** dst, const bigint* src1, const bigint* src2)
+********************************************************************/
+void ADD_zxy(bigint** dst, const bigint* src1, const bigint* src2)
 {
     bigint* temp = NULL;
     if (bi_is_zero(src1) == TRUE) // src1 = 0
@@ -87,13 +103,13 @@ void ADD(bigint** dst, const bigint* src1, const bigint* src2)
     {
         bi_assign(&temp,src2);
         flip_sign(temp);
-        SUB(dst, src1, temp);
+        SUB_zxy(dst, src1, temp);
     }
     else if ((get_sign(src1) == NEGATIVE) && (get_sign(src2) == NON_NEGATIVE)) // src1 < 0, src2 >= 0
     {
         bi_assign(&temp,src1);
         flip_sign(temp);
-        SUB(dst, src2, temp);
+        SUB_zxy(dst, src2, temp);
     }
     else if (get_wordlen(src1) >= get_wordlen(src2))
         ADDC(dst, src1, src2);
@@ -102,10 +118,10 @@ void ADD(bigint** dst, const bigint* src1, const bigint* src2)
     bi_delete(&temp);
 }
 
-void ADD2(bigint** dst, const bigint* src)
+void ADD_zzy(bigint** dst, const bigint* src)
 {
     bigint* temp = NULL;
     bi_assign(&temp, *dst);
-    ADD(dst, temp, src);
+    ADD_zxy(dst, temp, src);
     bi_delete(&temp);
 }

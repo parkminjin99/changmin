@@ -10,9 +10,8 @@
 #ifndef array_h
 #define array_h
 
-#include <stdio.h>
 #include <string.h>
-#include "bigint.h"
+#include "changmin_library.h"
 
 void array_init(word* a, int len); // 배열을 0으로 초기화하는 함수
 void array_copy(word* dst, const word* src, int len); // dst배열에 src배열을 복사하는 함수

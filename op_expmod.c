@@ -45,11 +45,11 @@ void L2R(bigint** R, const bigint* base, const bigint* power, const int modn)
 
     for (int j = (len * WORD_BITLEN) - 1; j >= 0; j--)
     {
-        SQU(&tmp1, t);                //t^2를 tmp1에 저장 
+        SQU_zxx(&tmp1, t);                //t^2를 tmp1에 저장 
         ni = get_jth_bit(power, j);   //지수의 i번째 비트 확인
         if (ni == 1)                  //i번째가 1이면 base를 곱한후 t로 갱신 
         {
-            MUL(&tmp2, tmp1, base);
+            MUL_zxy(&tmp2, tmp1, base);
             bi_delete(&t);
             bi_assign(&t, tmp2);
         }
@@ -98,11 +98,11 @@ void R2L(bigint** R, const bigint* base, const bigint* power, const int modn)
         ni = get_jth_bit(power, j);  //지수의 i번째 비트 확인 
         if (ni == 1)                 //i번째 비트가 1이면 to*t1을 진행 아니면 그대로
         {
-            MUL(&tmp1, t0, t1);
+            MUL_zxy(&tmp1, t0, t1);
             bi_delete(&t0);
             bi_assign(&t0, tmp1);
         }
-        SQU(&tmp2, t1);               //t1^2를 tmp2에 저장
+        SQU_zxx(&tmp2, t1);               //t1^2를 tmp2에 저장
         bi_delete(&t1);
         bi_assign(&t1, tmp2);
 
@@ -135,19 +135,19 @@ void Montgomery(bigint** R, const bigint* base, const bigint* power, const int m
         ni = get_jth_bit(power, j);
         if (ni == 1)
         {
-            MUL(&tmp1, t0, t1);
+            MUL_zxy(&tmp1, t0, t1);
             bi_delete(&t0);
             bi_assign(&t0, tmp1);
-            SQU(&tmp2, t1);
+            SQU_zxx(&tmp2, t1);
             bi_delete(&t1);
             bi_assign(&t1, tmp2);
         }
         else
         {
-            MUL(&tmp1, t0, t1);
+            MUL_zxy(&tmp1, t0, t1);
             bi_delete(&t1);
             bi_assign(&t1, tmp1);
-            SQU(&tmp2, t0);
+            SQU_zxx(&tmp2, t0);
             bi_delete(&t0);
             bi_assign(&t0, tmp2);
         }

@@ -7,6 +7,8 @@
 //  
 
 #include "operation.h"
+
+
 void left_shift(bigint* x, int r) // bigint x를 r비트만큼 왼쪽으로 shift하는 함수
 {
     int i;

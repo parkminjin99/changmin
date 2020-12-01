@@ -10,7 +10,7 @@ void SQUCKaratsuba(bigint** dst, const bigint* src, const int flag)
 {
     if (flag >= get_wordlen(src))
     {
-        SQU(dst, src);
+        SQU_zxx(dst, src);
         return;
     }
     int l = (get_wordlen(src) + 1) >> 1;
@@ -30,12 +30,12 @@ void SQUCKaratsuba(bigint** dst, const bigint* src, const int flag)
     SQUCKaratsuba(&t0, A0, flag);
 
     left_shift(t1, 2 * l * WORD_BITLEN);
-    ADD(&R, t1, t0);
+    ADD_zxy(&R, t1, t0);
 
-    Karatsuba(&S, A1, A0, flag);
+    KaratsubaMUL(&S, A1, A0);
 
     left_shift(S, l * WORD_BITLEN + 1);
-    ADD(dst, R, S);
+    ADD_zxy(dst, R, S);
 
     bi_delete(&A1);
     bi_delete(&A0);
