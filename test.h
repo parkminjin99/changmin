@@ -11,7 +11,7 @@
 #define test_h
 
 #include "changmin_library.h"
-#define MAX_COUNT 10 // �ݺ����� Ƚ�� 
+#define MAX_COUNT 100 // �ݺ����� Ƚ�� 
 
 void COMPARE_test();
 void SHIFT_test();
@@ -23,14 +23,14 @@ void MUL_test(); // 0
 void Karatsuba_test(); // x
  
 void SQU_test(); // x
-void SQUCKaratsuba_test();
+void KaratsubaSQU_test();
 
 void NAIVE_div_test();
 void BinaryLongDiv_test();
 void DIV_test(); // 0
 
-void L2R_test(); // 0
-void R2L_test(); 
-void Montgomery_test();
+void MODExp_L2R_test(); // 0
+void MODExp_R2L_test();
+void MODExp_Montgomery_test();
 
 #endif /* test_h */

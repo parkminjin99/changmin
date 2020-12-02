@@ -2,11 +2,16 @@
 //  op_karatsuba_squ.c
 //  Changmin's library
 //  
-//  Created by ÃÖ°­Ã¢¹Î on 2020/11/09.
-//  Copyright 2020 ÃÖ°­Ã¢¹Î. All rights reserved.
+//  Created by ï¿½Ö°ï¿½Ã¢ï¿½ï¿½ on 2020/11/09.
+//  Copyright 2020 ï¿½Ö°ï¿½Ã¢ï¿½ï¿½. All rights reserved.
 //  
 #include "operation.h"
-void SQUCKaratsuba(bigint** dst, const bigint* src, const int flag)
+void KaratsubaSQU(bigint** dst, const bigint* src)
+{
+    KaratsubaSQU_Flag(dst, src, KARA_FLAG);
+}
+
+void KaratsubaSQU_Flag(bigint** dst, const bigint* src, const int flag)
 {
     if (flag >= get_wordlen(src))
     {
@@ -24,10 +29,10 @@ void SQUCKaratsuba(bigint** dst, const bigint* src, const int flag)
 
     bi_assign(&A1, src);
     bi_assign(&A0, src);
-    right_shift(A1, l * WORD_BITLEN);  reduction_2_r(A0, l * WORD_BITLEN);   //A1Àº »óÀ§ºñÆ®, A0´Â ÇÏÀ§ LW
+    right_shift(A1, l * WORD_BITLEN);  reduction_2_r(A0, l * WORD_BITLEN);   //A1ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®, A0ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ LW
 
-    SQUCKaratsuba(&t1, A1, flag);
-    SQUCKaratsuba(&t0, A0, flag);
+    KaratsubaSQU(&t1, A1);
+    KaratsubaSQU(&t0, A0);
 
     left_shift(t1, 2 * l * WORD_BITLEN);
     ADD_zxy(&R, t1, t0);

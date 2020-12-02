@@ -2,10 +2,12 @@
 //  test.c
 //  Changmin's library
 //
-//  Created by ÃÖ°­Ã¢¹Î on 2020/11/09.
-//  Copyright 2020 ÃÖ°­Ã¢¹Î. All rights reserved.
+//  Created by ï¿½Ö°ï¿½Ã¢ï¿½ï¿½ on 2020/11/09.
+//  Copyright 2020 ï¿½Ö°ï¿½Ã¢ï¿½ï¿½. All rights reserved.
 //
 #include "test.h"
+
+int Wordlen = 16;
 
 void BASIC_test()
 {
@@ -176,579 +178,806 @@ void REDUCTION_test()
 
 void ADD_test()
 {
-    //printf(" < bigint Addition > \n");
+    printf(" #< bigint Addition > \n");
     bigint* src1 = NULL;
     bigint* src2 = NULL;
     bigint* dst = NULL;
-    int cnt = 0;
 
-    printf("while(True):\n");
-    printf("    case=0\n");
-    while(cnt < MAX_COUNT)
+    fmpz_t x, y, z, cal, zero;
+    fmpz_init(x);
+    fmpz_init(y);
+    fmpz_init(z);
+    fmpz_init(cal);
+    fmpz_init(zero);
+
+    fmpz_zero(zero);  //zero¸¦ 0À¸·Î ¼³Á¤. 
+
+    int cnt = 0;
+    while (cnt < MAX_COUNT)
     {
-        bi_gen_rand(&src1, rand()%2, rand() % 20);
-        bi_gen_rand(&src2, rand()%2, rand() % 20);
-        printf("    addA = ");          bi_sage_show(src1, 16);    printf("\n");
-        printf("    addB = ");          bi_sage_show(src2, 16);    printf("\n");
-        ADD_zxy(&dst, src1, src2);   
-        printf("    cal = ");    bi_sage_show(dst, 16);    printf("\n");
-        printf("    if addA + addB != cal:\n");
-        printf("        print( 'False!!')\n");
-        printf("        break\n");
-        printf("    case=case+1\n");
-        bi_delete(&src1);
-        bi_delete(&src2);
-        bi_delete(&dst);
+        bi_gen_rand(&src1, NON_NEGATIVE, Wordlen);
+        bi_gen_rand(&src2, NON_NEGATIVE, Wordlen);
+
+        ADD_zxy(&dst, src1, src2);
+
+        fmpz_set_ui_array(x, (const mp_limb_t*)src1->a, src1->wordlen);
+        fmpz_set_ui_array(y, (const mp_limb_t*)src2->a, src2->wordlen);
+
+        fmpz_add(z, x, y);
+
+        fmpz_set_ui_array(cal, (const mp_limb_t*)dst->a, dst->wordlen);
+
+
+        if ((fmpz_equal(z, cal) != 1)) // ï¿½ï¿½ï¿½ï¿½ï¿? trueï¿½Ï¶ï¿½1 ï¿½ï¿½ï¿½ï¿½
+            break; // ï¿½Ù¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿? while ï¿½ï¿½ï¿½ï¿½
+
         cnt++;
+        if (0 == (cnt % (MAX_COUNT / 10)))
+            printf(".");
     }
-    printf("    print('true!!')\n");
-    printf("    break\n");
-    printf("\nif case!=%d:\n", MAX_COUNT);
-    printf("    print('error in ',end='')\n");
-    printf("    print(case+1)\n");
-    printf("    print('error case addA = ',end='')\n");
-    printf("    print(addA)\n");
-    printf("    print('error case addB = ',end='')\n");
-    printf("    print(addB)\n");
-    printf("    print('error case cal = ',end='')\n");
-    printf("    print(cal)\n");
-    printf("    print('error case real = ',end='')\n");
-    printf("    print(addA + addB)\n");
+    printf("\n");
+    if (cnt != MAX_COUNT)
+    {
+        printf("False %dth calculation\n", cnt + 1);
+        printf("A = ");  bi_show(src1, 10);
+        printf("B = ");  bi_show(src2, 10);
+        printf("cal = ");  bi_show(dst, 10);
+        printf("real = ");   fmpz_print(z); printf("\n");
+    }
+    else
+    {
+        printf("%dth test done.\n", MAX_COUNT);
+        printf("All true!\n");
+    }
+    bi_delete(&src1);
+    bi_delete(&src2);
+    bi_delete(&dst);
+    fmpz_clear(x);
+    fmpz_clear(y);
+    fmpz_clear(z);
+    fmpz_clear(cal);
 }
 
 void SUB_test()
 {
-    printf("\n");
-    //printf(" < bigint Subtraction > \n")
-    bigint* src1 = NULL;  // x-y¿¡¼­ x
-    bigint* src2 = NULL;  // x-y¿¡¼­ y
-    bigint* dst = NULL;  // x-y
-    int cnt = 0;
+    printf(" #< bigint Subtraction > \n");
+    bigint* src1 = NULL;
+    bigint* src2 = NULL;
+    bigint* dst = NULL;
 
-    printf("while(True):\n");
-    printf("    case=0\n");
+    fmpz_t x, y, z, cal, zero;
+    fmpz_init(x);
+    fmpz_init(y);
+    fmpz_init(z);
+    fmpz_init(cal);
+    fmpz_init(zero);
+
+    fmpz_zero(zero);
+
+    int cnt = 0;
     while (cnt < MAX_COUNT)
     {
-        bi_gen_rand(&src1, rand()%2, rand() % 20);
-        bi_gen_rand(&src2, rand()%2, rand() % 20);
-        printf("    subA = ");          bi_sage_show(src1, 16);    printf("\n");
-        printf("    subB = ");          bi_sage_show(src2, 16);    printf("\n");
-        SUB_zxy(&dst, src1, src2);   
-        printf("    cal = ");    bi_sage_show(dst, 16);    printf("\n");
-        printf("    if subA - subB != cal:\n");
-        printf("        print( 'False!!')\n");
-        printf("        break\n");
-        printf("    case=case+1\n");
-        bi_delete(&src1);
-        bi_delete(&src2);
-        bi_delete(&dst);
+        bi_gen_rand(&src1, NON_NEGATIVE, 16);
+        bi_gen_rand(&src2, NON_NEGATIVE, 16);
+        //printf("src1=");
+        //bi_show(src1,16);
+        //printf("src2=");
+        //bi_show(src2,16);
+
+        //printf("dst=");
+        SUB_zxy(&dst, src1, src2);  
+
+        //bi_show(dst,16);
+        fmpz_set_ui_array(x, (const mp_limb_t*)src1->a, src1->wordlen);
+        fmpz_set_ui_array(y, (const mp_limb_t*)src2->a, src2->wordlen);
+        
+        fmpz_sub(z, x, y);
+        //fmpz_print(z);
+        //printf("\n");    
+
+        fmpz_set_ui_array(cal, (const mp_limb_t*)dst->a, dst->wordlen);
+        //printf("cal=");
+        //fmpz_print(cal);
+
+        if(NEGATIVE==get_sign(dst))
+            fmpz_sub(cal,zero,cal);  
+        //printf("\n");  
+        //printf("-cal=");  
+        //fmpz_print(cal);
+
+        //fmpz_set_si(cal, (mp_limb_signed_t)dst);
+       
+        //fmpz_print(cal);
+
+        if ((fmpz_equal(z, cal) != 1)) // °°Àº °æ¿ì 1 
+            break; // ´Ù¸£¸é Á¾·á
+
         cnt++;
+        if (0 == (cnt % (MAX_COUNT / 10)))
+            printf(".");
     }
-    printf("    print('true!!')\n");
-    printf("    break\n");
-    printf("\nif case!=%d:\n", MAX_COUNT);
-    printf("    print('error in ',end='')\n");
-    printf("    print(case+1)\n");
-    printf("    print('error case subA = ',end='')\n");
-    printf("    print(subA)\n");
-    printf("    print('error case subB = ',end='')\n");
-    printf("    print(subB)\n");
-    printf("    print('error case cal = ',end='')\n");
-    printf("    print(cal)\n");
-    printf("    print('error case real = ',end='')\n");
-    printf("    print(subA - subB)\n");
+    printf("\n");
+    if (cnt != MAX_COUNT)
+    {
+        printf("False %dth calculation\n", cnt + 1);
+        printf("A = ");  bi_show(src1, 10);
+        printf("B = ");  bi_show(src2, 10);
+        printf("cal = ");  bi_show(dst, 10);
+        printf("real = ");   fmpz_print(z); printf("\n");
+    }
+    else
+    {
+        printf("%dth test done.\n", MAX_COUNT);
+        printf("All true!\n");
+    }
+    bi_delete(&src1);
+    bi_delete(&src2);
+    bi_delete(&dst);
+    fmpz_clear(x);
+    fmpz_clear(y);
+    fmpz_clear(z);
+    fmpz_clear(cal);
+    fmpz_clear(zero);
 }
 
 void MUL_test()
 {
     printf("\n");
-    //printf(" < bigint Multiplication > \n");
-    bigint* src1 = NULL;    // x*y¿¡¼­ x
-    bigint* src2 = NULL;    // x*y¿¡¼­ y
-    bigint* dst = NULL;     // x*y
-    int cnt = 0;
+    printf(" #< bigint Multiplication > \n");
+    bigint* src1 = NULL;
+    bigint* src2 = NULL;
+    bigint* dst = NULL;
 
-    printf("while(True):\n");
-    printf("    case=0\n");
-    while(cnt < MAX_COUNT)
+    fmpz_t x, y, z, cal;
+    fmpz_init(x);
+    fmpz_init(y);
+    fmpz_init(z);
+    fmpz_init(cal);
+
+    int cnt = 0;
+    while (cnt < MAX_COUNT)
     {
-        bi_gen_rand(&src1, rand()%2, rand()%20);
-        bi_gen_rand(&src2, rand()%2, rand()%20);
-        printf("    mulA = ");          bi_sage_show(src1, 16);    printf("\n");
-        printf("    mulB = ");          bi_sage_show(src2, 16);    printf("\n");
-        MUL_zxy(&dst, src1, src2);   
-        printf("    cal = ");    bi_sage_show(dst, 16);    printf("\n");
-        printf("    if mulA * mulB != cal:\n");
-        printf("        print( 'False!!')\n");
-        printf("        break\n");
-        printf("    case=case+1\n");
-        bi_delete(&src1);
-        bi_delete(&src2);
-        bi_delete(&dst);
+        bi_gen_rand(&src1, NON_NEGATIVE, Wordlen);
+        bi_gen_rand(&src2, NON_NEGATIVE, Wordlen);
+        
+        MUL_zxy(&dst, src1, src2);
+
+        fmpz_set_ui_array(x, (const mp_limb_t*)src1->a, src1->wordlen);
+        fmpz_set_ui_array(y, (const mp_limb_t*)src2->a, src2->wordlen);
+
+        fmpz_mul(z, x, y);
+
+        fmpz_set_ui_array(cal, (const mp_limb_t*)dst->a, dst->wordlen);
+
+
+        if ((fmpz_equal(z, cal) != 1)) 
+            break; // ´Ù¸£¸é Á¾·á
+
         cnt++;
+        if (0 == (cnt % (MAX_COUNT / 10)))
+            printf(".");
     }
-    printf("    print('true!!')\n");
-    printf("    break\n");
-    printf("\nif case!=%d:\n", MAX_COUNT);
-    printf("    print('error in ',end='')\n");
-    printf("    print(case+1)\n");
-    printf("    print('error case mulA = ',end='')\n");
-    printf("    print(mulA)\n");
-    printf("    print('error case mulB = ',end='')\n");
-    printf("    print(mulB)\n");
-    printf("    print('error case cal = ',end='')\n");
-    printf("    print(cal)\n");
-    printf("    print('error case real = ',end='')\n");
-    printf("    print(mulA * mulB)\n");
+    printf("\n");
+    if (cnt != MAX_COUNT)
+    {
+        printf("False %dth calculation\n", cnt + 1);
+        printf("A = ");  bi_show(src1, 10);
+        printf("B = ");  bi_show(src2, 10);
+        printf("cal = ");  bi_show(dst, 10);
+        printf("real = ");   fmpz_print(z); printf("\n");
+    }
+    else
+    {
+        printf("%dth test done.\n", MAX_COUNT);
+        printf("All true!\n");
+    }
+    bi_delete(&src1);
+    bi_delete(&src2);
+    bi_delete(&dst);
+    fmpz_clear(x);
+    fmpz_clear(y);
+    fmpz_clear(z);
+    fmpz_clear(cal);
 }
 
 void Karatsuba_test()
 {
-    //printf("\n < bigint KARA Multiplication > \n");
+    printf("\n < bigint KARA Multiplication > \n");
 
-    bigint* src1 = NULL;    // x*y¿¡¼­ x
-    bigint* src2 = NULL;    // x*y¿¡¼­ y
-    bigint* dst = NULL;     // x*y
+    bigint* src1 = NULL;
+    bigint* src2 = NULL;
+    bigint* dst = NULL;
+
+    fmpz_t x, y, z, cal;
+    fmpz_init(x);
+    fmpz_init(y);
+    fmpz_init(z);
+    fmpz_init(cal);
+
     int cnt = 0;
-
-    printf("while(True):\n");
-    printf("    case=0\n");
     while (cnt < MAX_COUNT)
     {
-        bi_gen_rand(&src1, NON_NEGATIVE, rand()%20);
-        bi_gen_rand(&src2, NON_NEGATIVE, rand()%20);
-        printf("    mulA = ");          bi_sage_show(src1, 16);    printf("\n");
-        printf("    mulB = ");          bi_sage_show(src2, 16);    printf("\n");
+        bi_gen_rand(&src1, NON_NEGATIVE, Wordlen);
+        bi_gen_rand(&src2, NON_NEGATIVE, Wordlen);
+
         KaratsubaMUL(&dst, src1, src2);
-        printf("    cal = ");    bi_sage_show(dst, 16);    printf("\n");
-        printf("    if mulA * mulB != cal:\n");
-        printf("        print( 'False!!')\n");
-        printf("        break\n");
-        printf("    case=case+1\n");
-        bi_delete(&src1);
-        bi_delete(&src2);
-        bi_delete(&dst);
+
+        fmpz_set_ui_array(x, (const mp_limb_t*)src1->a, src1->wordlen);
+        fmpz_set_ui_array(y, (const mp_limb_t*)src2->a, src2->wordlen);
+
+        fmpz_mul(z, x, y);
+
+        fmpz_set_ui_array(cal, (const mp_limb_t*)dst->a, dst->wordlen);
+
+
+        if ((fmpz_equal(z, cal) != 1)) // °°Àº°ªÀÎ°æ¿ì 1Ãâ·ÂµÊ
+            break; // °°Áö ¾ÊÀ¸¸é Áï½ÃÁ¾·á
+
         cnt++;
+        if (0 == (cnt % (MAX_COUNT / 10)))
+            printf(".");
     }
-    printf("    print('true!!')\n");
-    printf("    break\n");
-    printf("\nif case!=%d:\n", MAX_COUNT);
-    printf("    print('error in ',end='')\n");
-    printf("    print(case+1)\n");
-    printf("    print('error case mulA = ',end='')\n");
-    printf("    print(mulA)\n");
-    printf("    print('error case mulB = ',end='')\n");
-    printf("    print(mulB)\n");
-    printf("    print('error case cal = ',end='')\n");
-    printf("    print(cal)\n");
-    printf("    print('error case real = ',end='')\n");
-    printf("    print(mulA * mulB)\n");
+    printf("\n");
+    if (cnt != MAX_COUNT)
+    {
+        printf("False %dth calculation\n", cnt + 1);
+        printf("A = ");  bi_show(src1, 10);
+        printf("B = ");  bi_show(src2, 10);
+        printf("cal = ");  bi_show(dst, 10);
+        printf("real = ");   fmpz_print(z); printf("\n");
+    }
+    else
+    {
+        printf("%dth test done.\n", MAX_COUNT);
+        printf("All true!\n");
+    }
+    bi_delete(&src1);
+    bi_delete(&src2);
+    bi_delete(&dst);
+    fmpz_clear(x);
+    fmpz_clear(y);
+    fmpz_clear(z);
+    fmpz_clear(cal);
 }
 
 void SQU_test()
 {
-    printf("\n");
-    printf(" #< bigint Squaring > \n");
+    printf("\n #< bigint Squaring > \n");
     bigint* src = NULL;
     bigint* dst = NULL;
-    int cnt = 0;
 
-    printf("while(True):\n");
-    printf("    case=0\n");
+    fmpz_t x, y, z, cal;
+    fmpz_init(x);
+    fmpz_init(y);
+    fmpz_init(z);
+    fmpz_init(cal);
+    //FLINT °ö¼ÀÀÇ ÀÔ·Â¿¡ °°Àº°ªÀ» ³Ö´Â°ÍÀ¸·Î Á¦°öÀ» °ËÁõ
+
+    int cnt = 0;
     while (cnt < MAX_COUNT)
     {
-        bi_gen_rand(&src, rand() % 2, rand() % 10);
-        printf("    squcA = ");          bi_sage_show(src, 16);    printf("\n");
+        bi_gen_rand(&src, NON_NEGATIVE, Wordlen);
         SQU_zxx(&dst, src);
-        printf("    cal = ");    bi_sage_show(dst, 16);    printf("\n");
-        printf("    if squcA * squcA != cal:\n");
-        printf("        print( 'False!!')\n");
-        printf("        break\n");
-        bi_delete(&src);
-        bi_delete(&dst);
+
+        fmpz_set_ui_array(x, (const mp_limb_t*)src->a, src->wordlen);
+        fmpz_set_ui_array(y, (const mp_limb_t*)src->a, src->wordlen);
+
+        fmpz_mul(z, x, y);
+
+        fmpz_set_ui_array(cal, (const mp_limb_t*)dst->a, dst->wordlen);
+
+
+        if ((fmpz_equal(z, cal) != 1)) // ï¿½ï¿½ï¿½ï¿½ï¿? trueï¿½Ï¶ï¿½1 ï¿½ï¿½ï¿½ï¿½
+            break; // ï¿½Ù¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿? while ï¿½ï¿½ï¿½ï¿½
+
         cnt++;
-        printf("    case=case+1\n");
+        if (0 == (cnt % (MAX_COUNT / 10)))
+            printf(".");
     }
-    printf("    print('true!!')\n");
-    printf("    break\n");
-    printf("\nif case!=%d:\n", MAX_COUNT);
-    printf("    print('error in ',end='')\n");
-    printf("    print(case+1)\n");
-    printf("    print('error case squcA = ',end='')\n");
-    printf("    print(squcA)\n");
-    printf("    print('error case cal = ',end='')\n");
-    printf("    print(cal)\n");
-    printf("    print('error case real = ',end='')\n");
-    printf("    print(squcA * squcA)\n");
+    printf("\n");
+    if (cnt != MAX_COUNT)
+    {
+        printf("False %dth calculation\n", cnt + 1);
+        printf("A = ");  bi_show(src, 10);
+        printf("cal = ");  bi_show(dst, 10);
+        printf("real = ");   fmpz_print(z); printf("\n");
+    }
+    else
+    {
+        printf("%dth test done.\n", MAX_COUNT);
+        printf("All true!\n");
+    }
+    bi_delete(&src);
+    bi_delete(&dst);
+    fmpz_clear(x);
+    fmpz_clear(y);
+    fmpz_clear(z);
+    fmpz_clear(cal);
 }
 
-void SQUCKaratsuba_test()
+
+void KaratsubaSQU_test()
 {
-    printf("\n");
-    printf(" #< bigint karatsuba Squaring > \n");
+    printf("\n #< bigint karatsuba Squaring > \n");
     bigint* src = NULL;
     bigint* dst = NULL;
+
+    fmpz_t x, y, z, cal;
+    fmpz_init(x);
+    fmpz_init(y);
+    fmpz_init(z);
+    fmpz_init(cal);
+    //FLINT °ö¼ÀÀÇ ÀÔ·Â¿¡ °°Àº°ªÀ» ³Ö´Â°ÍÀ¸·Î Á¦°öÀ» °ËÁõ
+    
     int cnt = 0;
-    int flag = 2;
-
-    printf("while(True):\n");
-    printf("    case=0\n");
-
     while (cnt < MAX_COUNT)
     {
-        bi_gen_rand(&src, rand() % 2, rand() % 9);
-        printf("    squcA = ");          bi_sage_show(src, 16);    printf("\n");
-        SQUCKaratsuba(&dst, src, flag);
-        printf("    cal = ");    bi_sage_show(dst, 16);    printf("\n");
-        printf("    if squcA * squcA != cal:\n");
-        printf("        print( 'False!!')\n");
-        printf("        break\n");
-        bi_delete(&src);
-        bi_delete(&dst);
+        bi_gen_rand(&src, NON_NEGATIVE, Wordlen);
+        KaratsubaSQU(&dst, src);
+
+        fmpz_set_ui_array(x, (const mp_limb_t*)src->a, src->wordlen);
+        fmpz_set_ui_array(y, (const mp_limb_t*)src->a, src->wordlen);
+
+        fmpz_mul(z, x, y);
+
+        fmpz_set_ui_array(cal, (const mp_limb_t*)dst->a, dst->wordlen);
+
+
+        if ((fmpz_equal(z, cal) != 1)) // ï¿½ï¿½ï¿½ï¿½ï¿? trueï¿½Ï¶ï¿½1 ï¿½ï¿½ï¿½ï¿½
+            break; // ï¿½Ù¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿? while ï¿½ï¿½ï¿½ï¿½
+
         cnt++;
-        printf("    case=case+1\n");
+        if (0 == (cnt % (MAX_COUNT / 10)))
+            printf(".");
     }
-    printf("    print('true!!')\n");
-    printf("    break\n");
-    printf("\nif case!=%d:\n", MAX_COUNT);
-    printf("    print('error in ',end='')\n");
-    printf("    print(case+1)\n");
-    printf("    print('error case squcA = ',end='')\n");
-    printf("    print(squcA)\n");
-    printf("    print('error case cal = ',end='')\n");
-    printf("    print(cal)\n");
-    printf("    print('error case real = ',end='')\n");
-    printf("    print(squcA * squcA)\n");
+    printf("\n");
+    if (cnt != MAX_COUNT)
+    {
+        printf("False %dth calculation\n", cnt + 1);
+        printf("A = ");  bi_show(src, 10);
+        printf("cal = ");  bi_show(dst, 10);
+        printf("real = ");   fmpz_print(z); printf("\n");
+    }
+    else
+    {
+        printf("%dth test done.\n", MAX_COUNT);
+        printf("All true!\n");
+    }
+    bi_delete(&src);
+    bi_delete(&dst);
+    fmpz_clear(x);
+    fmpz_clear(y);
+    fmpz_clear(z);
+    fmpz_clear(cal);
 }
 
 void NAIVE_div_test()
 {
-    printf("\n");
-    printf(" #< bigint NAIVE Division Algo > \n");
+    printf(" < bigint BinaryLongDiv > \n");
     bigint* src1 = NULL;
     bigint* src2 = NULL;
     bigint* dstQ = NULL;
     bigint* dstR = NULL;
+
+    fmpz_t f, s, g, h, calq, calr;
+    fmpz_init(f);
+    fmpz_init(s);
+    fmpz_init(g);
+    fmpz_init(h);
+    fmpz_init(calq);
+    fmpz_init(calr);
+
     int cnt = 0;
-    printf("while(True):\n");
-    printf("    case=0\n");
     while (cnt < MAX_COUNT)
     {
-        bi_gen_rand(&src1, NON_NEGATIVE, 3);
-        bi_gen_rand(&src2, NON_NEGATIVE, rand() % 3);
-        printf("    divA = ");          bi_sage_show(src1, 16);    printf("\n");
-        printf("    divB = ");          bi_sage_show(src2, 16);    printf("\n");
-        if (INVALID == NaiveDiv(&dstQ, &dstR, src1, src2))
-            continue;
-        printf("    Q = ");     bi_sage_show(dstQ, 16);     printf("\n");
-        printf("    R = ");     bi_sage_show(dstR, 16);     printf("\n");
-        printf("    if divB*Q+R != divA:\n");
-        printf("        print( 'False!!')\n");
-        printf("        break\n");
-        bi_delete(&src1);
-        bi_delete(&src2);
-        bi_delete(&dstQ);
-        bi_delete(&dstR);
+        bi_gen_rand(&src1, NON_NEGATIVE, 2 * Wordlen);
+        bi_gen_rand(&src2, NON_NEGATIVE, Wordlen);
+        while (VALID != NaiveDiv(&dstQ, &dstR, src1, src2))
+        {
+            bi_gen_rand(&src1, NON_NEGATIVE, 2 * Wordlen);
+            bi_gen_rand(&src2, NON_NEGATIVE, Wordlen);
+        }
+
+        fmpz_set_ui_array(g, (const mp_limb_t*)src1->a, 2 * Wordlen);
+        fmpz_set_ui_array(h, (const mp_limb_t*)src2->a, Wordlen);
+
+        // bi_set_one(&dstQ);   // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿?
+
+        fmpz_fdiv_qr(f, s, g, h);
+
+        fmpz_set_ui_array(calq, (const mp_limb_t*)dstQ->a, dstQ->wordlen);
+        fmpz_set_ui_array(calr, (const mp_limb_t*)dstR->a, dstR->wordlen);
+
+        if ((fmpz_equal(f, calq) != 1) || (fmpz_equal(s, calr) != 1)) // ï¿½ï¿½ï¿½ï¿½ï¿? trueï¿½Ï¶ï¿½1 ï¿½ï¿½ï¿½ï¿½
+            break; // ï¿½Ù¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿? while ï¿½ï¿½ï¿½ï¿½
         cnt++;
-        printf("    case=case+1\n");
+        if (0 == (cnt % (MAX_COUNT / 100)))
+            printf(".");
+    }
+    printf("\n");
+    if (cnt != MAX_COUNT)
+    {
+        printf("False %dth calculation\n", cnt + 1);
+        printf("A = ");  bi_show(src1, 10);
+        printf("B = ");  bi_show(src2, 10);
+        printf("calQ = ");  bi_show(dstQ, 10);
+        printf("calR = ");  bi_show(dstR, 10);
+        printf("realQ = ");   fmpz_print(f); printf("\n");
+        printf("realR = ");   fmpz_print(s); printf("\n");
+    }
+    else
+    {
+        printf("%dth test done.\n", MAX_COUNT);
+        printf("All true!\n");
     }
 
-    printf("    print('true!!')\n");
-    printf("    break\n");
-    printf("\nif case!=%d:\n", MAX_COUNT);
-    printf("    print('error in ',end='')\n");
-    printf("    print(case+1)\n");
-    printf("    print('error case divA = ',end='')\n");
-    printf("    print(divA)\n");
-    printf("    print('error case divB = ',end='')\n");
-    printf("    print(divB)\n");
-    printf("    print('error case cal Q = ',end='')\n");
-    printf("    print(Q)\n");
-    printf("    print('error case cal R = ',end='')\n");
-    printf("    print(R)\n");
-    printf("    print('error case real Q= ',end='')\n");
-    printf("    print(divA//divB)\n");
-    printf("    print('error case real R= ',end='')\n");
-    printf("    print(divA%%divB)\n");
+    bi_delete(&src1);
+    bi_delete(&src2);
+    bi_delete(&dstQ);
+    bi_delete(&dstR);
+
+    fmpz_clear(f);
+    fmpz_clear(s);
+    fmpz_clear(g);
+    fmpz_clear(h);
+    fmpz_clear(calq);
+    fmpz_clear(calr);
 }
 
 void BinaryLongDiv_test()
 {
-    printf("\n");
-    printf(" #< bigint Long Division Algo > \n");
+    //printf(" < bigint BinaryLongDiv > \n");
     bigint* src1 = NULL;
     bigint* src2 = NULL;
     bigint* dstQ = NULL;
     bigint* dstR = NULL;
-    int cnt = 0;
-    printf("while(True):\n");
-    printf("    case=0\n");
 
+    fmpz_t f, s, g, h, calq, calr;
+    fmpz_init(f);
+    fmpz_init(s);
+    fmpz_init(g);
+    fmpz_init(h);
+    fmpz_init(calq);
+    fmpz_init(calr);
+
+    int cnt = 0;
     while (cnt < MAX_COUNT)
     {
-        bi_gen_rand(&src1, NON_NEGATIVE, 10);
-        bi_gen_rand(&src2, NON_NEGATIVE, rand() % 5);
-        printf("    divA = ");          bi_sage_show(src1, 16);    printf("\n");
-        printf("    divB = ");          bi_sage_show(src2, 16);    printf("\n");
-        if (INVALID == BinaryLongDiv(&dstQ, &dstR, src1, src2))
-            continue;
-        printf("    Q = ");     bi_sage_show(dstQ, 16);     printf("\n");
-        printf("    R = ");     bi_sage_show(dstR, 16);     printf("\n");
+        bi_gen_rand(&src1, NON_NEGATIVE, 2 * Wordlen);
+        bi_gen_rand(&src2, NON_NEGATIVE, Wordlen);
+        while (VALID != BinaryLongDiv(&dstQ, &dstR, src1, src2))
+        {
+            bi_gen_rand(&src1, NON_NEGATIVE, 2 * Wordlen);
+            bi_gen_rand(&src2, NON_NEGATIVE, Wordlen);
+        }
 
-        printf("    if divB*Q+R != divA:\n");
-        printf("        print( 'False!!')\n");
-        printf("        break\n");
+        fmpz_set_ui_array(g, (const mp_limb_t*)src1->a, 2 * Wordlen);
+        fmpz_set_ui_array(h, (const mp_limb_t*)src2->a, Wordlen);
 
-        bi_delete(&src1);
-        bi_delete(&src2);
-        bi_delete(&dstQ);
-        bi_delete(&dstR);
+        // bi_set_one(&dstQ);   // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿?
+
+        fmpz_fdiv_qr(f, s, g, h);
+
+        fmpz_set_ui_array(calq, (const mp_limb_t*)dstQ->a, dstQ->wordlen);
+        fmpz_set_ui_array(calr, (const mp_limb_t*)dstR->a, dstR->wordlen);
+
+        if ((fmpz_equal(f, calq) != 1) || (fmpz_equal(s, calr) != 1)) // ï¿½ï¿½ï¿½ï¿½ï¿? trueï¿½Ï¶ï¿½1 ï¿½ï¿½ï¿½ï¿½
+            break; // ï¿½Ù¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿? while ï¿½ï¿½ï¿½ï¿½
         cnt++;
-        printf("    case=case+1\n");
-
+        if (0 == (cnt % (MAX_COUNT / 10)))
+            printf(".");
     }
-    printf("    print('true!!')\n");
-    printf("    break\n");
-    printf("\nif case!=%d:\n", MAX_COUNT);
-    printf("    print('error in ',end='')\n");
-    printf("    print(case+1)\n");
-    printf("    print('error case divA = ',end='')\n");
-    printf("    print(divA)\n");
-    printf("    print('error case divB = ',end='')\n");
-    printf("    print(divB)\n");
-    printf("    print('error case cal Q = ',end='')\n");
-    printf("    print(Q)\n");
-    printf("    print('error case cal R = ',end='')\n");
-    printf("    print(R)\n");
-    printf("    print('error case real Q= ',end='')\n");
-    printf("    print(divA//divB)\n");
-    printf("    print('error case real R= ',end='')\n");
-    printf("    print(divA%%divB)\n");
+    printf("\n");
+    if (cnt != MAX_COUNT)
+    {
+        printf("False %dth calculation\n", cnt + 1);
+        printf("A = ");  bi_show(src1, 10);
+        printf("B = ");  bi_show(src2, 10);
+        printf("calQ = ");  bi_show(dstQ, 10);
+        printf("calR = ");  bi_show(dstR, 10);
+        printf("realQ = ");   fmpz_print(f); printf("\n");
+        printf("realR = ");   fmpz_print(s); printf("\n");
+    }
+    else
+    {
+        printf("%dth test done.\n", MAX_COUNT);
+        printf("All true!\n");
+    }
+
+    bi_delete(&src1);
+    bi_delete(&src2);
+    bi_delete(&dstQ);
+    bi_delete(&dstR);
+
+    fmpz_clear(f);
+    fmpz_clear(s);
+    fmpz_clear(g);
+    fmpz_clear(h);
+    fmpz_clear(calq);
+    fmpz_clear(calr);
+
 }
 
 void DIV_test()
 {
-    printf("\n");
-    //printf(" < bigint Squaring > \n");
+    printf(" < bigint Multi-precision_DIV > \n");
     bigint* src1 = NULL;
     bigint* src2 = NULL;
     bigint* dstQ = NULL;
     bigint* dstR = NULL;
+
+    fmpz_t f, s, g, h, calq, calr;
+    fmpz_init(f);
+    fmpz_init(s);
+    fmpz_init(g);
+    fmpz_init(h);
+    fmpz_init(calq);
+    fmpz_init(calr);
+
     int cnt = 0;
-
-    printf("while(True):\n");
-    printf("    case=0\n");
-
     while (cnt < MAX_COUNT)
     {
-        bi_gen_rand(&src1, NON_NEGATIVE, 4);
-        bi_gen_rand(&src2, NON_NEGATIVE, 2);
-        printf("    divA = ");          bi_sage_show(src1, 16);    printf("\n");
-        printf("    divB = ");          bi_sage_show(src2, 16);    printf("\n");
-        if (INVALID == DIV(&dstQ, &dstR, src1, src2))
+        bi_gen_rand(&src1, NON_NEGATIVE, 2 * Wordlen);
+        bi_gen_rand(&src2, NON_NEGATIVE, Wordlen);
+        
+        while (VALID != DIV(&dstQ, &dstR, src1, src2))
         {
-            bi_delete(&src1);
-            bi_delete(&src2);
-            continue;
+            bi_gen_rand(&src1, NON_NEGATIVE, 2 * Wordlen);
+            bi_gen_rand(&src2, NON_NEGATIVE, Wordlen);
         }
 
-        printf("    Q = ");     bi_sage_show(dstQ, 16);     printf("\n");
-        printf("    R = ");     bi_sage_show(dstR, 16);     printf("\n");
+        fmpz_set_ui_array(g, (const mp_limb_t*)src1->a, 2 * Wordlen);
+        fmpz_set_ui_array(h, (const mp_limb_t*)src2->a, Wordlen);
 
-        printf("    if divB*Q+R != divA:\n");
-        printf("        print( 'False!!')\n");
-        printf("        break\n");
+        // bi_set_one(&dstQ);   // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿?
 
-        bi_delete(&src1);
-        bi_delete(&src2);
-        bi_delete(&dstQ);
-        bi_delete(&dstR);
+        fmpz_fdiv_qr(f, s, g, h);
+
+        fmpz_set_ui_array(calq, (const mp_limb_t*)dstQ->a, dstQ->wordlen);
+        fmpz_set_ui_array(calr, (const mp_limb_t*)dstR->a, dstR->wordlen);
+
+        if ((fmpz_equal(f, calq) != 1) || (fmpz_equal(s, calr) != 1)) // ï¿½ï¿½ï¿½ï¿½ï¿? trueï¿½Ï¶ï¿½1 ï¿½ï¿½ï¿½ï¿½
+            break; // ï¿½Ù¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿? while ï¿½ï¿½ï¿½ï¿½
         cnt++;
-        printf("    case=case+1\n");
+        if (0 == (cnt % (MAX_COUNT / 10)))
+            printf(".");
     }
-    printf("    print('true!!')\n");
-    printf("    break\n");
-    printf("\nif case!=%d:\n", MAX_COUNT);
-    printf("    print('error in ',end='')\n");
-    printf("    print(case+1)\n");
-    printf("    print('error case divA = ',end='')\n");
-    printf("    print(divA)\n");
-    printf("    print('error case divB = ',end='')\n");
-    printf("    print(divB)\n");
-    printf("    print('error case cal Q = ',end='')\n");
-    printf("    print(Q)\n");
-    printf("    print('error case cal R = ',end='')\n");
-    printf("    print(R)\n");
-    printf("    print('error case real Q= ',end='')\n");
-    printf("    print(divA//divB)\n");
-    printf("    print('error case real R= ',end='')\n");
-    printf("    print(divA%%divB)\n");
+    printf("\n");
+    if (cnt != MAX_COUNT)
+    {
+        printf("False %dth calculation\n", cnt + 1);
+        printf("A = ");  bi_show(src1, 10);
+        printf("B = ");  bi_show(src2, 10);
+        printf("calQ = ");  bi_show(dstQ, 10);
+        printf("calR = ");  bi_show(dstR, 10);
+        printf("realQ = ");   fmpz_print(f); printf("\n");
+        printf("realR = ");   fmpz_print(s); printf("\n");
+    }
+    else
+    {
+        printf("%dth test done.\n", MAX_COUNT);
+        printf("All true!\n");
+    }
+
+    bi_delete(&src1);
+    bi_delete(&src2);
+    bi_delete(&dstQ);
+    bi_delete(&dstR);
+
+    fmpz_clear(f);
+    fmpz_clear(s);
+    fmpz_clear(g);
+    fmpz_clear(h);
+    fmpz_clear(calq);
+    fmpz_clear(calr);
+
 }
 
 
-void L2R_test()
+void MODExp_L2R_test()
 {
-    printf("\n #< bignum L2R > \n");
+    printf("\n #< bignum MODExp_L2R > \n");
     bigint* base = NULL;
     bigint* power = NULL;
     bigint* dst = NULL;
-    int cnt = 0;
-    int modn = 50;
-    printf("def exp(base, power,mod): \n");
-    printf("   t = [1, base]\n");
-    printf("   e = power.bits()\n");
-    printf("   for i in range(len(e) - 1, -1, -1): \n");
-    printf("       t[1- e[i]] = (t[0] * t[1])%%(2**mod) \n");
-    printf("       t[e[i]] = (t[e[i]]^2)%%(2**mod) \n");
-    printf("   return t[0]\n \n");
+    bigint* M = NULL;
 
-    printf("while(True):\n");
-    printf("    case=0\n");
+    fmpz_t f, g, e, m, cal;
+    fmpz_init(f);
+    fmpz_init(g);
+    fmpz_init(e);
+    fmpz_init(m);
+    fmpz_init(cal);
+
+    int cnt = 0;
+
     while (cnt < MAX_COUNT)
     {
-        bi_gen_rand(&base, NON_NEGATIVE, 11);
-        bi_gen_rand(&power, NON_NEGATIVE, 20);
+        bi_gen_rand(&base, NON_NEGATIVE, Wordlen);
+        bi_gen_rand(&power, NON_NEGATIVE, Wordlen);
+        bi_gen_rand(&M, NON_NEGATIVE, Wordlen);
+        while (!bi_is_zero(M))
+            bi_gen_rand(&M, NON_NEGATIVE, Wordlen);
 
-        printf("    base = ");          bi_sage_show(base, 16);    printf("\n");
-        printf("    power = ");          bi_sage_show(power, 16);    printf("\n");
-        printf("    modn = %d \n", modn);
-        L2R(&dst, base, power, modn);
-        printf("    cal = ");            bi_sage_show(dst, 16);    printf("\n");
+        MODExp_L2R(&dst, base, power, M);
 
-        printf("    if cal != exp(base, power,modn):\n");
-        printf("        print( 'False!!')\n");
-        printf("        break\n");
+        fmpz_set_ui_array(g, (const mp_limb_t*)base->a, Wordlen); // x = src1
+        fmpz_set_ui_array(e, (const mp_limb_t*)power->a, Wordlen); // y = src2
+        fmpz_set_ui_array(m, (const mp_limb_t*)M->a, Wordlen); // y = src2
 
-        bi_delete(&base);
-        bi_delete(&power);
-        bi_delete(&dst);
+        fmpz_powm(f, g, e, m);
+
+        fmpz_set_ui_array(cal, (const mp_limb_t*)dst->a, dst->wordlen);
+
+        if ((fmpz_equal(f, cal) != 1)) // ï¿½ï¿½ï¿½ï¿½ï¿? trueï¿½Ï¶ï¿½1 ï¿½ï¿½ï¿½ï¿½
+            break; // ï¿½Ù¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿? while ï¿½ï¿½ï¿½ï¿½
         cnt++;
-        printf("    case=case+1\n");
+        if (0 == (cnt % (MAX_COUNT / 10)))
+            printf(".");
+
     }
-
-    printf("    print('true!!')\n");
-    printf("    break\n");
-    printf("\nif case!=%d:\n", MAX_COUNT);
-    printf("    print('error in ',end='')\n");
-    printf("    print(case+1)\n");
-    printf("    print('error case base = ',end='')\n");
-    printf("    print(base)\n");
-    printf("    print('error case power = ',end='')\n");
-    printf("    print(power)\n");
-    printf("    print('error case cal = ',end='')\n");
-    printf("    print(cal)\n");
-    printf("    print('error case real = ',end='')\n");
-    printf("    print(exp(base, power,modn))\n");
-}
-
-
-void R2L_test()
-{
-    printf("\n #< bignum R2L > \n");
-    bigint* base = NULL;
-    bigint* power = NULL;
-    bigint* dst = NULL;
-    int cnt = 0;
-    int modn = 50;
-    printf("def exp(base, power,mod): \n");
-    printf("   t = [1, base]\n");
-    printf("   e = power.bits()\n");
-    printf("   for i in range(len(e) - 1, -1, -1): \n");
-    printf("       t[1- e[i]] = (t[0] * t[1])%%(2**mod) \n");
-    printf("       t[e[i]] = (t[e[i]]^2)%%(2**mod) \n");
-    printf("   return t[0]\n \n");
-
-    printf("while(True):\n");
-    printf("    case=0\n");
-    while (cnt < MAX_COUNT)
+    printf("\n");
+    if (cnt != MAX_COUNT)
     {
-        bi_gen_rand(&base, NON_NEGATIVE, 11);
-        bi_gen_rand(&power, NON_NEGATIVE, 20);
-
-        printf("    base = ");          bi_sage_show(base, 16);    printf("\n");
-        printf("    power = ");          bi_sage_show(power, 16);    printf("\n");
-        printf("    modn = %d \n", modn);
-        R2L(&dst, base, power, modn);
-        printf("    cal = ");            bi_sage_show(dst, 16);    printf("\n");
-
-        printf("    if cal != exp(base, power,modn):\n");
-        printf("        print( 'False!!')\n");
-        printf("        break\n");
-
-        bi_delete(&base);
-        bi_delete(&power);
-        bi_delete(&dst);
-        cnt++;
-        printf("    case=case+1\n");
+        printf("False %dth calculation\n", cnt + 1);
+        printf("base = ");  bi_show(base, 10);
+        printf("power = ");  bi_show(power, 10);
+        printf("M = ");  bi_show(M, 10);
+        printf("cal = ");  bi_show(dst, 10);
+        printf("real = ");   fmpz_print(f); printf("\n");
     }
-
-    printf("    print('true!!')\n");
-    printf("    break\n");
-    printf("\nif case!=%d:\n", MAX_COUNT);
-    printf("    print('error in ',end='')\n");
-    printf("    print(case+1)\n");
-    printf("    print('error case base = ',end='')\n");
-    printf("    print(base)\n");
-    printf("    print('error case power = ',end='')\n");
-    printf("    print(power)\n");
-    printf("    print('error case cal = ',end='')\n");
-    printf("    print(cal)\n");
-    printf("    print('error case real = ',end='')\n");
-    printf("    print(exp(base, power,modn))\n");
-}
-
-void Montgomery_test()
-{
-    printf("\n #< bignum Montgomery > \n");
-    bigint* base = NULL;
-    bigint* power = NULL;
-    bigint* dst = NULL;
-    int cnt = 0;
-    int modn = 50;
-    printf("def exp(base, power,mod): \n");
-    printf("   t = [1, base]\n");
-    printf("   e = power.bits()\n");
-    printf("   for i in range(len(e) - 1, -1, -1): \n");
-    printf("       t[1- e[i]] = (t[0] * t[1])%%(2**mod) \n");
-    printf("       t[e[i]] = (t[e[i]]^2)%%(2**mod) \n");
-    printf("   return t[0]\n \n");
-
-    printf("while(True):\n");
-    printf("    case=0\n");
-    while (cnt < MAX_COUNT)
+    else
     {
-        bi_gen_rand(&base, NON_NEGATIVE, 11);
-        bi_gen_rand(&power, NON_NEGATIVE, 20);
-
-        printf("    base = ");          bi_sage_show(base, 16);    printf("\n");
-        printf("    power = ");          bi_sage_show(power, 16);    printf("\n");
-        printf("    modn = %d \n", modn);
-        Montgomery(&dst, base, power, modn);
-        printf("    cal = ");            bi_sage_show(dst, 16);    printf("\n");
-
-        printf("    if cal != exp(base, power,modn):\n");
-        printf("        print( 'False!!')\n");
-        printf("        break\n");
-
-        bi_delete(&base);
-        bi_delete(&power);
-        bi_delete(&dst);
-        cnt++;
-        printf("    case=case+1\n");
+        printf("%dth test done.\n", MAX_COUNT);
+        printf("All true!\n");
     }
 
-    printf("    print('true!!')\n");
-    printf("    break\n");
-    printf("\nif case!=%d:\n", MAX_COUNT);
-    printf("    print('error in ',end='')\n");
-    printf("    print(case+1)\n");
-    printf("    print('error case base = ',end='')\n");
-    printf("    print(base)\n");
-    printf("    print('error case power = ',end='')\n");
-    printf("    print(power)\n");
-    printf("    print('error case cal = ',end='')\n");
-    printf("    print(cal)\n");
-    printf("    print('error case real = ',end='')\n");
-    printf("    print(exp(base, power,modn))\n");
+    bi_delete(&base);
+    bi_delete(&power);
+    bi_delete(&dst);
+    bi_delete(&M);
     
+    fmpz_clear(f);
+    fmpz_clear(g);
+    fmpz_clear(e);
+    fmpz_clear(m);
+}
+
+
+void MODExp_R2L_test()
+{
+    printf("\n #< bignum MODExp_R2L > \n");
+    bigint* base = NULL;
+    bigint* power = NULL;
+    bigint* dst = NULL;
+    bigint* M = NULL;
+
+    fmpz_t f, g, e, m, cal;
+    fmpz_init(f);
+    fmpz_init(g);
+    fmpz_init(e);
+    fmpz_init(m);
+    fmpz_init(cal);
+
+    int cnt = 0;
+
+    while (cnt < MAX_COUNT)
+    {
+        bi_gen_rand(&base, NON_NEGATIVE, Wordlen);
+        bi_gen_rand(&power, NON_NEGATIVE, Wordlen);
+        bi_gen_rand(&M, NON_NEGATIVE, Wordlen);
+        while (!bi_is_zero(M))
+            bi_gen_rand(&M, NON_NEGATIVE, Wordlen);
+
+        MODExp_R2L(&dst, base, power, M);
+
+        fmpz_set_ui_array(g, (const mp_limb_t*)base->a, Wordlen); // x = src1
+        fmpz_set_ui_array(e, (const mp_limb_t*)power->a, Wordlen); // y = src2
+        fmpz_set_ui_array(m, (const mp_limb_t*)M->a, Wordlen); // y = src2
+
+        fmpz_powm(f, g, e, m);
+
+        fmpz_set_ui_array(cal, (const mp_limb_t*)dst->a, dst->wordlen);
+
+        if ((fmpz_equal(f, cal) != 1)) // ï¿½ï¿½ï¿½ï¿½ï¿? trueï¿½Ï¶ï¿½1 ï¿½ï¿½ï¿½ï¿½
+            break; // ï¿½Ù¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿? while ï¿½ï¿½ï¿½ï¿½
+        cnt++;
+        if (0 == (cnt % (MAX_COUNT / 10)))
+            printf(".");
+
+    }
+    printf("\n");
+    if (cnt != MAX_COUNT)
+    {
+        printf("False %dth calculation\n", cnt + 1);
+        printf("base = ");  bi_show(base, 10);
+        printf("power = ");  bi_show(power, 10);
+        printf("M = ");  bi_show(M, 10);
+        printf("cal = ");  bi_show(dst, 10);
+        printf("real = ");   fmpz_print(f); printf("\n");
+    }
+    else
+    {
+        printf("%dth test done.\n", MAX_COUNT);
+        printf("All true!\n");
+    }
+
+    bi_delete(&base);
+    bi_delete(&power);
+    bi_delete(&dst);
+    bi_delete(&M);
+
+    fmpz_clear(f);
+    fmpz_clear(g);
+    fmpz_clear(e);
+    fmpz_clear(m);
+}
+
+void MODExp_Montgomery_test()
+{
+    printf("\n #< bignum MODExp_Montgomery > \n");
+    bigint* base = NULL;
+    bigint* power = NULL;
+    bigint* dst = NULL;
+    bigint* M = NULL;
+
+    fmpz_t f, g, e, m, cal;
+    fmpz_init(f);
+    fmpz_init(g);
+    fmpz_init(e);
+    fmpz_init(m);
+    fmpz_init(cal);
+
+    int cnt = 0;
+
+    while (cnt < MAX_COUNT)
+    {
+        bi_gen_rand(&base, NON_NEGATIVE, Wordlen);
+        bi_gen_rand(&power, NON_NEGATIVE, Wordlen);
+        bi_gen_rand(&M, NON_NEGATIVE, Wordlen);
+        while (!bi_is_zero(M))
+            bi_gen_rand(&M, NON_NEGATIVE, Wordlen);
+
+        MODExp_Montgomery(&dst, base, power, M);
+
+        fmpz_set_ui_array(g, (const mp_limb_t*)base->a, Wordlen); // x = src1
+        fmpz_set_ui_array(e, (const mp_limb_t*)power->a, Wordlen); // y = src2
+        fmpz_set_ui_array(m, (const mp_limb_t*)M->a, Wordlen); // y = src2
+
+        fmpz_powm(f, g, e, m);
+
+        fmpz_set_ui_array(cal, (const mp_limb_t*)dst->a, dst->wordlen);
+
+        if ((fmpz_equal(f, cal) != 1)) // ï¿½ï¿½ï¿½ï¿½ï¿? trueï¿½Ï¶ï¿½1 ï¿½ï¿½ï¿½ï¿½
+            break; // ï¿½Ù¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿? while ï¿½ï¿½ï¿½ï¿½
+        cnt++;
+        if (0 == (cnt % (MAX_COUNT / 10)))
+            printf(".");
+
+    }
+    printf("\n");
+    if (cnt != MAX_COUNT)
+    {
+        printf("False %dth calculation\n", cnt + 1);
+        printf("base = ");  bi_show(base, 10);
+        printf("power = ");  bi_show(power, 10);
+        printf("M = ");  bi_show(M, 10);
+        printf("cal = ");  bi_show(dst, 10);
+        printf("real = ");   fmpz_print(f); printf("\n");
+    }
+    else
+    {
+        printf("%dth test done.\n", MAX_COUNT);
+        printf("All true!\n");
+    }
+
+    bi_delete(&base);
+    bi_delete(&power);
+    bi_delete(&dst);
+    bi_delete(&M);
+
+    fmpz_clear(f);
+    fmpz_clear(g);
+    fmpz_clear(e);
+    fmpz_clear(m);    
 }

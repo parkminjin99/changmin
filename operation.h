@@ -44,7 +44,8 @@ void SQUC_1Word_zxx(word* dst, const word* src);
 void SQUC(bigint** dst, const bigint* src);
 void SQU_zxx(bigint** dst, const bigint* src);
 
-void SQUCKaratsuba(bigint** dst, const bigint* src, const int flag);
+void KaratsubaSQU(bigint** dst, const bigint* src);
+void KaratsubaSQU_Flag(bigint** dst, const bigint* src, const int flag);
 
 int NaiveDiv(bigint** Q, bigint** R, bigint* src1, bigint* src2);      
 int BinaryLongDiv(bigint** Q, bigint** R, bigint* src1, bigint* src2);
@@ -53,8 +54,8 @@ void DIVCC(word* Q, bigint** R, const bigint* src1, const bigint* src2);
 void DIVC(word* Q, bigint** R, const bigint* src1, const bigint* src2, const int k);
 int DIV(bigint** Q, bigint** R, const bigint* src1, const bigint* src2);
 
-void L2R(bigint** R, const bigint* base, const bigint* power, const int modn);
-void R2L(bigint** R, const bigint* base, const bigint* power, const int modn);
-void Montgomery(bigint** R, const bigint* base, const bigint* power, const int modn);
+void MODExp_L2R(bigint** dst, const bigint* base, const bigint* power, const bigint* M);
+void MODExp_R2L(bigint** dst, const bigint* base, const bigint* power, const bigint* M);
+void MODExp_Montgomery(bigint** dst, const bigint* base, const bigint* power, const bigint* M);
 
 #endif /* operation_h */

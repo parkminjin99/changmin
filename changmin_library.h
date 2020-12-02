@@ -2,8 +2,8 @@
 //  changmin_library.h
 //  Changmin's library
 //
-//  Created by ÃÖ°­Ã¢¹Î on 2020/11/09.
-//  Copyright 2020 ÃÖ°­Ã¢¹Î. All rights reserved.
+//  Created by ï¿½Ö°ï¿½Ã¢ï¿½ï¿½ on 2020/11/09.
+//  Copyright 2020 ï¿½Ö°ï¿½Ã¢ï¿½ï¿½. All rights reserved.
 //
 
 #ifndef changmin_library_h
