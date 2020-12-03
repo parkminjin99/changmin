@@ -200,12 +200,12 @@ void ADD_test()
 
         ADD_zxy(&dst, src1, src2);
 
-        fmpz_set_ui_array(x, (const mp_limb_t*)src1->a, src1->wordlen);
-        fmpz_set_ui_array(y, (const mp_limb_t*)src2->a, src2->wordlen);
+        fmpz_set_ui_array(x, (const mp_limb_t*)src1->a, (((src1->wordlen)+1)/8)*8/(64/WORD_BITLEN));
+        fmpz_set_ui_array(y, (const mp_limb_t*)src2->a, (((src2->wordlen)+1)/8)*8/(64/WORD_BITLEN));
 
         fmpz_add(z, x, y);
 
-        fmpz_set_ui_array(cal, (const mp_limb_t*)dst->a, dst->wordlen);
+        fmpz_set_ui_array(cal, (const mp_limb_t*)dst->a, (((dst->wordlen)+1)/8)*8/(64/WORD_BITLEN));
 
 
         if ((fmpz_equal(z, cal) != 1)) // ï¿½ï¿½ï¿½ï¿½ï¿? trueï¿½Ï¶ï¿½1 ï¿½ï¿½ï¿½ï¿½
@@ -343,12 +343,12 @@ void MUL_test()
         
         MUL_zxy(&dst, src1, src2);
 
-        fmpz_set_ui_array(x, (const mp_limb_t*)src1->a, src1->wordlen);
-        fmpz_set_ui_array(y, (const mp_limb_t*)src2->a, src2->wordlen);
+        fmpz_set_ui_array(x, (const mp_limb_t*)src1->a, (((src1->wordlen)+1)/8)*8/(64/WORD_BITLEN));
+        fmpz_set_ui_array(y, (const mp_limb_t*)src2->a, (((src2->wordlen)+1)/8)*8/(64/WORD_BITLEN));
 
         fmpz_mul(z, x, y);
 
-        fmpz_set_ui_array(cal, (const mp_limb_t*)dst->a, dst->wordlen);
+        fmpz_set_ui_array(cal, (const mp_limb_t*)dst->a, (((dst->wordlen)+1)/8)*8/(64/WORD_BITLEN));
 
 
         if ((fmpz_equal(z, cal) != 1)) 
@@ -403,12 +403,12 @@ void Karatsuba_test()
 
         KaratsubaMUL(&dst, src1, src2);
 
-        fmpz_set_ui_array(x, (const mp_limb_t*)src1->a, src1->wordlen);
-        fmpz_set_ui_array(y, (const mp_limb_t*)src2->a, src2->wordlen);
+        fmpz_set_ui_array(x, (const mp_limb_t*)src1->a, (((src1->wordlen)+1)/8)*8/(64/WORD_BITLEN));
+        fmpz_set_ui_array(y, (const mp_limb_t*)src2->a, (((src2->wordlen)+1)/8)*8/(64/WORD_BITLEN));
 
         fmpz_mul(z, x, y);
 
-        fmpz_set_ui_array(cal, (const mp_limb_t*)dst->a, dst->wordlen);
+        fmpz_set_ui_array(cal, (const mp_limb_t*)dst->a, (((dst->wordlen)+1)/8)*8/(64/WORD_BITLEN));
 
 
         if ((fmpz_equal(z, cal) != 1)) // °°Àº°ªÀÎ°æ¿ì 1Ãâ·ÂµÊ
@@ -460,12 +460,12 @@ void SQU_test()
         bi_gen_rand(&src, NON_NEGATIVE, Wordlen);
         SQU_zxx(&dst, src);
 
-        fmpz_set_ui_array(x, (const mp_limb_t*)src->a, src->wordlen);
-        fmpz_set_ui_array(y, (const mp_limb_t*)src->a, src->wordlen);
+        fmpz_set_ui_array(x, (const mp_limb_t*)src->a, (((src->wordlen)+1)/8)*8/(64/WORD_BITLEN));
+        fmpz_set_ui_array(y, (const mp_limb_t*)src->a, (((src->wordlen)+1)/8)*8/(64/WORD_BITLEN));
 
         fmpz_mul(z, x, y);
 
-        fmpz_set_ui_array(cal, (const mp_limb_t*)dst->a, dst->wordlen);
+        fmpz_set_ui_array(cal, (const mp_limb_t*)dst->a, (((dst->wordlen)+1)/8)*8/(64/WORD_BITLEN));
 
 
         if ((fmpz_equal(z, cal) != 1)) // ï¿½ï¿½ï¿½ï¿½ï¿? trueï¿½Ï¶ï¿½1 ï¿½ï¿½ï¿½ï¿½
@@ -516,12 +516,12 @@ void KaratsubaSQU_test()
         bi_gen_rand(&src, NON_NEGATIVE, Wordlen);
         KaratsubaSQU(&dst, src);
 
-        fmpz_set_ui_array(x, (const mp_limb_t*)src->a, src->wordlen);
-        fmpz_set_ui_array(y, (const mp_limb_t*)src->a, src->wordlen);
+        fmpz_set_ui_array(x, (const mp_limb_t*)src->a, (((src->wordlen)+1)/8)*8/(64/WORD_BITLEN));
+        fmpz_set_ui_array(y, (const mp_limb_t*)src->a, (((src->wordlen)+1)/8)*8/(64/WORD_BITLEN));
 
         fmpz_mul(z, x, y);
 
-        fmpz_set_ui_array(cal, (const mp_limb_t*)dst->a, dst->wordlen);
+        fmpz_set_ui_array(cal, (const mp_limb_t*)dst->a, (((dst->wordlen)+1)/8)*8/(64/WORD_BITLEN));
 
 
         if ((fmpz_equal(z, cal) != 1)) // ï¿½ï¿½ï¿½ï¿½ï¿? trueï¿½Ï¶ï¿½1 ï¿½ï¿½ï¿½ï¿½
@@ -579,15 +579,15 @@ void NAIVE_div_test()
             bi_gen_rand(&src2, NON_NEGATIVE, Wordlen);
         }
 
-        fmpz_set_ui_array(g, (const mp_limb_t*)src1->a, 2 * Wordlen);
-        fmpz_set_ui_array(h, (const mp_limb_t*)src2->a, Wordlen);
+        fmpz_set_ui_array(g, (const mp_limb_t*)src1->a, (((src1->wordlen)+1)/8)*8/(64/WORD_BITLEN));
+        fmpz_set_ui_array(h, (const mp_limb_t*)src2->a, (((src2->wordlen)+1)/8)*8/(64/WORD_BITLEN));
 
         // bi_set_one(&dstQ);   // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿?
 
         fmpz_fdiv_qr(f, s, g, h);
 
-        fmpz_set_ui_array(calq, (const mp_limb_t*)dstQ->a, dstQ->wordlen);
-        fmpz_set_ui_array(calr, (const mp_limb_t*)dstR->a, dstR->wordlen);
+        fmpz_set_ui_array(calq, (const mp_limb_t*)dstQ->a, (((dstQ->wordlen)+1)/8)*8/(64/WORD_BITLEN));
+        fmpz_set_ui_array(calr, (const mp_limb_t*)dstR->a, (((dstR->wordlen)+1)/8)*8/(64/WORD_BITLEN));
 
         if ((fmpz_equal(f, calq) != 1) || (fmpz_equal(s, calr) != 1)) // ï¿½ï¿½ï¿½ï¿½ï¿? trueï¿½Ï¶ï¿½1 ï¿½ï¿½ï¿½ï¿½
             break; // ï¿½Ù¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿? while ï¿½ï¿½ï¿½ï¿½
@@ -652,15 +652,15 @@ void BinaryLongDiv_test()
             bi_gen_rand(&src2, NON_NEGATIVE, Wordlen);
         }
 
-        fmpz_set_ui_array(g, (const mp_limb_t*)src1->a, 2 * Wordlen);
-        fmpz_set_ui_array(h, (const mp_limb_t*)src2->a, Wordlen);
+        fmpz_set_ui_array(g, (const mp_limb_t*)src1->a, (((src1->wordlen)+1)/8)*8/(64/WORD_BITLEN));
+        fmpz_set_ui_array(h, (const mp_limb_t*)src2->a, (((src2->wordlen)+1)/8)*8/(64/WORD_BITLEN));
 
         // bi_set_one(&dstQ);   // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿?
 
         fmpz_fdiv_qr(f, s, g, h);
 
-        fmpz_set_ui_array(calq, (const mp_limb_t*)dstQ->a, dstQ->wordlen);
-        fmpz_set_ui_array(calr, (const mp_limb_t*)dstR->a, dstR->wordlen);
+        fmpz_set_ui_array(calq, (const mp_limb_t*)dstQ->a, (((dstQ>wordlen)+1)/8)*8/(64/WORD_BITLEN));
+        fmpz_set_ui_array(calr, (const mp_limb_t*)dstR->a, (((dstR->wordlen)+1)/8)*8/(64/WORD_BITLEN));
 
         if ((fmpz_equal(f, calq) != 1) || (fmpz_equal(s, calr) != 1)) // ï¿½ï¿½ï¿½ï¿½ï¿? trueï¿½Ï¶ï¿½1 ï¿½ï¿½ï¿½ï¿½
             break; // ï¿½Ù¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿? while ï¿½ï¿½ï¿½ï¿½
@@ -727,15 +727,15 @@ void DIV_test()
             bi_gen_rand(&src2, NON_NEGATIVE, Wordlen);
         }
 
-        fmpz_set_ui_array(g, (const mp_limb_t*)src1->a, 2 * Wordlen);
-        fmpz_set_ui_array(h, (const mp_limb_t*)src2->a, Wordlen);
+        fmpz_set_ui_array(g, (const mp_limb_t*)src1->a, (((src1->wordlen)+1)/8)*8/(64/WORD_BITLEN));
+        fmpz_set_ui_array(h, (const mp_limb_t*)src2->a, (((src2->wordlen)+1)/8)*8/(64/WORD_BITLEN));
 
         // bi_set_one(&dstQ);   // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿?
 
         fmpz_fdiv_qr(f, s, g, h);
 
-        fmpz_set_ui_array(calq, (const mp_limb_t*)dstQ->a, dstQ->wordlen);
-        fmpz_set_ui_array(calr, (const mp_limb_t*)dstR->a, dstR->wordlen);
+        fmpz_set_ui_array(calq, (const mp_limb_t*)dstQ->a, (((dstQ->wordlen)+1)/8)*8/(64/WORD_BITLEN));
+        fmpz_set_ui_array(calr, (const mp_limb_t*)dstR->a, (((dstR->wordlen)+1)/8)*8/(64/WORD_BITLEN));
 
         if ((fmpz_equal(f, calq) != 1) || (fmpz_equal(s, calr) != 1)) // ï¿½ï¿½ï¿½ï¿½ï¿? trueï¿½Ï¶ï¿½1 ï¿½ï¿½ï¿½ï¿½
             break; // ï¿½Ù¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿? while ï¿½ï¿½ï¿½ï¿½
@@ -802,13 +802,13 @@ void MODExp_L2R_test()
 
         MODExp_L2R(&dst, base, power, M);
 
-        fmpz_set_ui_array(g, (const mp_limb_t*)base->a, Wordlen); // x = src1
-        fmpz_set_ui_array(e, (const mp_limb_t*)power->a, Wordlen); // y = src2
-        fmpz_set_ui_array(m, (const mp_limb_t*)M->a, Wordlen); // y = src2
+        fmpz_set_ui_array(g, (const mp_limb_t*)base->a, (((base->wordlen)+1)/8)*8/(64/WORD_BITLEN)); // x = src1
+        fmpz_set_ui_array(e, (const mp_limb_t*)power->a, (((power->wordlen)+1)/8)*8/(64/WORD_BITLEN)); // y = src2
+        fmpz_set_ui_array(m, (const mp_limb_t*)M->a, (((M->wordlen)+1)/8)*8/(64/WORD_BITLEN)); // y = src2
 
         fmpz_powm(f, g, e, m);
 
-        fmpz_set_ui_array(cal, (const mp_limb_t*)dst->a, dst->wordlen);
+        fmpz_set_ui_array(cal, (const mp_limb_t*)dst->a, (((dst->wordlen)+1)/8)*8/(64/WORD_BITLEN));
 
         if ((fmpz_equal(f, cal) != 1)) // ï¿½ï¿½ï¿½ï¿½ï¿? trueï¿½Ï¶ï¿½1 ï¿½ï¿½ï¿½ï¿½
             break; // ï¿½Ù¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿? while ï¿½ï¿½ï¿½ï¿½
@@ -872,13 +872,13 @@ void MODExp_R2L_test()
 
         MODExp_R2L(&dst, base, power, M);
 
-        fmpz_set_ui_array(g, (const mp_limb_t*)base->a, Wordlen); // x = src1
-        fmpz_set_ui_array(e, (const mp_limb_t*)power->a, Wordlen); // y = src2
-        fmpz_set_ui_array(m, (const mp_limb_t*)M->a, Wordlen); // y = src2
+        fmpz_set_ui_array(g, (const mp_limb_t*)base->a, (((base->wordlen)+1)/8)*8/(64/WORD_BITLEN)); // x = src1
+        fmpz_set_ui_array(e, (const mp_limb_t*)power->a, (((power->wordlen)+1)/8)*8/(64/WORD_BITLEN)); // y = src2
+        fmpz_set_ui_array(m, (const mp_limb_t*)M->a, (((M->wordlen)+1)/8)*8/(64/WORD_BITLEN)); // y = src2
 
         fmpz_powm(f, g, e, m);
 
-        fmpz_set_ui_array(cal, (const mp_limb_t*)dst->a, dst->wordlen);
+        fmpz_set_ui_array(cal, (const mp_limb_t*)dst->a, (((dst->wordlen)+1)/8)*8/(64/WORD_BITLEN));
 
         if ((fmpz_equal(f, cal) != 1)) // ï¿½ï¿½ï¿½ï¿½ï¿? trueï¿½Ï¶ï¿½1 ï¿½ï¿½ï¿½ï¿½
             break; // ï¿½Ù¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿? while ï¿½ï¿½ï¿½ï¿½
@@ -941,13 +941,13 @@ void MODExp_Montgomery_test()
 
         MODExp_Montgomery(&dst, base, power, M);
 
-        fmpz_set_ui_array(g, (const mp_limb_t*)base->a, Wordlen); // x = src1
-        fmpz_set_ui_array(e, (const mp_limb_t*)power->a, Wordlen); // y = src2
-        fmpz_set_ui_array(m, (const mp_limb_t*)M->a, Wordlen); // y = src2
+        fmpz_set_ui_array(g, (const mp_limb_t*)base->a, (((base->wordlen)+1)/8)*8/(64/WORD_BITLEN)); // x = src1
+        fmpz_set_ui_array(e, (const mp_limb_t*)power->a, (((power->wordlen)+1)/8)*8/(64/WORD_BITLEN)); // y = src2
+        fmpz_set_ui_array(m, (const mp_limb_t*)M->a, (((M->wordlen)+1)/8)*8/(64/WORD_BITLEN)); // y = src2
 
         fmpz_powm(f, g, e, m);
 
-        fmpz_set_ui_array(cal, (const mp_limb_t*)dst->a, dst->wordlen);
+        fmpz_set_ui_array(cal, (const mp_limb_t*)dst->a, (((dst->wordlen)+1)/8)*8/(64/WORD_BITLEN));
 
         if ((fmpz_equal(f, cal) != 1)) // ï¿½ï¿½ï¿½ï¿½ï¿? trueï¿½Ï¶ï¿½1 ï¿½ï¿½ï¿½ï¿½
             break; // ï¿½Ù¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿? while ï¿½ï¿½ï¿½ï¿½
