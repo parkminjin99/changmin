@@ -2,12 +2,12 @@
 //  test.c
 //  Changmin's library
 //
-//  Created by ï¿½Ö°ï¿½Ã¢ï¿½ï¿½ on 2020/11/09.
-//  Copyright 2020 ï¿½Ö°ï¿½Ã¢ï¿½ï¿½. All rights reserved.
+//  Created by ÃÖ°­Ã¢¹Î on 2020/11/09.
+//  Copyright 2020 ÃÖ°­Ã¢¹Î. All rights reserved.
 //
 #include "test.h"
 
-int Wordlen = 16;
+int Wordlen = 8;
 
 void BASIC_test()
 {
@@ -259,25 +259,28 @@ void SUB_test()
     {
         bi_gen_rand(&src1, NON_NEGATIVE, 16);
         bi_gen_rand(&src2, NON_NEGATIVE, 16);
-        //printf("src1=");
-        //bi_show(src1,16);
-        //printf("src2=");
-        //bi_show(src2,16);
+        printf("src1=");
+        bi_show(src1,16);
+        printf("src2=");
+        bi_show(src2,16);
 
-        //printf("dst=");
+        printf("dst=");
         SUB_zxy(&dst, src1, src2);  
 
-        //bi_show(dst,16);
-        fmpz_set_ui_array(x, (const mp_limb_t*)src1->a, src1->wordlen);
-        fmpz_set_ui_array(y, (const mp_limb_t*)src2->a, src2->wordlen);
+        bi_show(dst,16);
+        fmpz_set_ui_array(x, (const mp_limb_t*)src1->a, (((src1->wordlen)+1)/8)*8/(64/WORD_BITLEN) );
+        fmpz_set_ui_array(y, (const mp_limb_t*)src2->a, (((src2->wordlen)+1)/8)*8/(64/WORD_BITLEN) );
         
         fmpz_sub(z, x, y);
-        //fmpz_print(z);
+        //printf("x=");
+       // fmpz_print(x);
         //printf("\n");    
-
-        fmpz_set_ui_array(cal, (const mp_limb_t*)dst->a, dst->wordlen);
-        //printf("cal=");
-        //fmpz_print(cal);
+       // printf("y=");
+       // fmpz_print(y);
+       // printf("\n"); 
+        fmpz_set_ui_array(cal, (const mp_limb_t*)dst->a, (((dst->wordlen)+1)/8)*8/(64/WORD_BITLEN) );
+       // printf("cal=");
+       // fmpz_print(cal);
 
         if(NEGATIVE==get_sign(dst))
             fmpz_sub(cal,zero,cal);  
@@ -285,13 +288,11 @@ void SUB_test()
         //printf("-cal=");  
         //fmpz_print(cal);
 
-        //fmpz_set_si(cal, (mp_limb_signed_t)dst);
-       
         //fmpz_print(cal);
 
         if ((fmpz_equal(z, cal) != 1)) // °°Àº °æ¿ì 1 
             break; // ´Ù¸£¸é Á¾·á
-
+        printf("\n===============\n");
         cnt++;
         if (0 == (cnt % (MAX_COUNT / 10)))
             printf(".");
@@ -300,9 +301,9 @@ void SUB_test()
     if (cnt != MAX_COUNT)
     {
         printf("False %dth calculation\n", cnt + 1);
-        printf("A = ");  bi_show(src1, 10);
-        printf("B = ");  bi_show(src2, 10);
-        printf("cal = ");  bi_show(dst, 10);
+        printf("A = ");  bi_show(src1, 16);
+        printf("B = ");  bi_show(src2, 16);
+        printf("cal = ");  bi_show(dst, 16);
         printf("real = ");   fmpz_print(z); printf("\n");
     }
     else

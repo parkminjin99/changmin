@@ -2,8 +2,8 @@
 //  bigint.c
 //  Changmin's library
 //
-//  Created by ï¿½Ö°ï¿½Ã¢ï¿½ï¿½ on 2020/11/09.
-//  Copyright 2020 ï¿½Ö°ï¿½Ã¢ï¿½ï¿½. All rights reserved.
+//  Created by ÃÖ°­Ã¢¹Î on 2020/11/09.
+//  Copyright 2020 ÃÖ°­Ã¢¹Î. All rights reserved.
 // 
 
 #include "bigint.h"
@@ -11,39 +11,46 @@
 #include <stdlib.h>
 #include <memory.h>
 
+/********************************
+bi_sage_show
+±¸Á¶Ã¼¿¡ ÀúÀåµÇ¾îÀÖ´Â bignumÀ» ¿øÇÏ´Â Áø¼ö(2,10,16)·Î Ãâ·ÂÇÏ´Â ÇÔ¼ö.
+±¸Á¶Ã¼¿Í, Ãâ·ÂÀ» ¿øÇÏ´Â Áø¼ö¸¦ ÀÔ·Â¹Þ´Â´Ù. 
+´Ü ±¸Á¶Ã¼ÀÇ °ªÀÌ ¿Ã¹Ù¸£°Ô ³ª¿À´ÂÁö sageÇÁ·Î±×·¥À» ÀÌ¿ëÇß±â ¶§¹®¿¡,
+sageÀÇ Çü½Ä¿¡ ¸Âµµ·Ï Ãâ·ÂµÇ´Â Çü½ÄÀ» ¼³Á¤ÇÑ´Ù.
+*********************************/
 void bi_sage_show(const bigint* x, const int base)
 {
     int i, j;
     if (get_sign(x) == NEGATIVE)
-        printf("-");
-    if (base == 16)
+        printf("-");               // À½¼öÀÎ°æ¿ì ¾Õ¿¡ - ºÙÀÌ±â
+    if (base == 16)                //16Áø¼öÀÎ °æ¿ì
     {
-        printf("0x");
+        printf("0x");              //¼ýÀÚ°¡ Ãâ·ÂµÇ±âÀü 0x¸¦ Ãâ·ÂÇÏ°Ô ÇØ¼­ sage°¡ 16Áø¼öÀÓÀ» ¾Ëµµ·Ï¼³Á¤
         if(bi_is_zero(x) == TRUE)
-            printf("0");
-        else
-        {
+            printf("0");           // 0ÀÌ¸é 0Ãâ·Â
+        else                       // 0ÀÌ¾Æ´Ï¸é ÇØ´ç ±¸Á¶Ã¼¿¡ ÀúÀåµÈ °ª Ãâ·Â
+        { 
             for (i = get_wordlen(x) - 1; i >= 0; i--)
                 for (j = WORD_BITLEN - 4; j >= 0; j = j - 4)
                     printf("%x", (int)(((x->a[i]) >> j) & 0xf));
         }
     }
-    else if (base == 2)
+    else if (base == 2)             //2Áø¼öÀÎ°æ¿ì
     {
-        printf("0b");
-        if(bi_is_zero(x) == TRUE)
-            printf("0");
-        else
+        printf("0b");               //¼ýÀÚ°¡ Ãâ·ÂµÇ±âÀü 0b¸¦ Ãâ·ÂÇÏ°Ô ÇØ¼­ sage°¡ 16Áø¼öÀÓÀ» ¾Ëµµ·Ï¼³Á¤
+        if(bi_is_zero(x) == TRUE)   
+            printf("0");            // 0ÀÌ¸é 0Ãâ·Â
+        else                        // 0¾Æ´Ï¸é ÇØ´ç ±¸Á¶Ã¼¿¡ ÀúÀåµÈ °ª Ãâ·Â
         {
             for (int i = get_wordlen(x) - 1; i >= 0; i--)
                 for (int j = WORD_BITLEN - 1; j >= 0; j--)
                     printf("%x", (int)(((x->a[i]) >> j) & 0x1));
         }
     }
-    else // base = 10
+    else                            // 10Áø¼öÀÎ °æ¿ì
     {
         if (bi_is_zero(x) == TRUE)
-            printf("0");
+            printf("0");            // 0ÀÌ¸é 0Ãâ·Â
         else
         {
             int str[5000];
@@ -78,37 +85,38 @@ void bi_sage_show(const bigint* x, const int base)
                 printf("%d", str[j]);
         }
     }
-    //printf(")\n");
+    printf(")\n");
 }
 
 /********************************
 bi_show
-ï¿½ï¿½ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ç¾ï¿½ï¿½Ö´ï¿½ bignumï¿½ï¿½ ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½(2,10,16)ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ô¼ï¿½
+±¸Á¶Ã¼¿¡ ÀúÀåµÇ¾îÀÖ´Â bignumÀ» ¿øÇÏ´Â Áø¼ö(2,10,16)·Î Ãâ·ÂÇÏ´Â ÇÔ¼ö.
+±¸Á¶Ã¼¿Í, Ãâ·ÂÀ» ¿øÇÏ´Â Áø¼ö¸¦ ÀÔ·Â¹Þ´Â´Ù. 
 *********************************/
 
 void bi_show(const bigint* x, const int base)
 {
     int i, j;
-    if(bi_is_zero(x) == TRUE)
+    if(bi_is_zero(x) == TRUE)         //ÀÔ·ÂµÈ °ªÀÌ 0ÀÌ¶ó¸é 0À» Ãâ·ÂÇÏ°í Á¾·á
     {
         printf("0\n");
         return;
     }
-    if (get_sign(x) == NEGATIVE)
+    if (get_sign(x) == NEGATIVE)       //ÀÔ·ÂµÈ °ªÀÌ À½¼öÀÌ¸é - Ç¥½Ã
         printf("-");
-    if (base == 16)
+    if (base == 16)                    //16Áø¼öÀÎ °æ¿ì
     {
         for (i = get_wordlen(x) - 1; i >= 0; i--)
             for (j = WORD_BITLEN - 4; j >= 0; j = j - 4)
                 printf("%x", (int)(((x->a[i]) >> j) & 0xf));
     }
-    else if (base == 2)
+    else if (base == 2)                 // 2Áø¼öÀÎ °æ¿ì
     {
         for (int i = get_wordlen(x) - 1; i >= 0; i--)
             for (int j = WORD_BITLEN - 1; j >= 0; j--)
                 printf("%x", (int)(((x->a[i]) >> j) & 0x1));
     }
-    else // base = 10
+    else                                // 10Áø¼öÀÎ °æ¿ì
     {
         int str[5000];
         bigint* ten = NULL;
@@ -143,63 +151,63 @@ void bi_show(const bigint* x, const int base)
     }
     printf("\n");
 }
-void bi_delete(bigint** x) // bigint ï¿½ï¿½ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½Þ¸ð¸®¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ô¼ï¿½
+void bi_delete(bigint** x) // bigint ±¸Á¶Ã¼ÀÇ ¸Þ¸ð¸®¸¦ ÇØÁ¦ÇÏ´Â ÇÔ¼ö
 {
-    if (*x == NULL) // ï¿½Þ¸ð¸®°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¿ä°¡ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+    if (*x == NULL)     // ¸Þ¸ð¸®°¡ ÇØÁ¦µÉ ÇÊ¿ä°¡ ¾ø´Â °æ¿ì
         return;
-#ifdef ZEROIZE // ï¿½Ê¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ #define ZEROIZEï¿½ï¿½ ï¿½ï¿½ï¿½Ö¾ï¿½ ï¿½ï¿½ï¿½ï¿½Ã¼ ï¿½ï¿½ ï¿½è¿­ ï¿½Þ¸ð¸®¸ï¿½ ï¿½Ê±ï¿½È­ ï¿½ï¿½ ï¿½ï¿½ ï¿½Þ¸ï¿½ ï¿½ï¿½ï¿½ï¿½
+#ifdef ZEROIZE          // ÇÊ¿äÇÏ´Ù¸é #define ZEROIZE¸¦ ÇØÁÖ¾î ±¸Á¶Ã¼ ¾È ¹è¿­ ¸Þ¸ð¸®¸¦ ÃÊ±âÈ­ÇÑÈÄ ¸Þ¸ð¸® ÇØÁ¦
     array_init((*x)->a, (*x)->wordlen);
 #endif
-    free((*x)->a);  // ï¿½ï¿½ï¿½ï¿½Ã¼ ï¿½ï¿½ ï¿½è¿­ ï¿½Þ¸ï¿½ ï¿½ï¿½ï¿½ï¿½
-    free(*x);       // ï¿½ï¿½ï¿½ï¿½Ã¼ ï¿½Þ¸ï¿½ ï¿½ï¿½ï¿½ï¿½
+    free((*x)->a);  // ±¸Á¶Ã¼ ¾È ¹è¿­ ¸Þ¸ð¸® ÇØÁ¦
+    free(*x);       // ±¸Á¶Ã¼ ¸Þ¸ð¸® ÇØÁ¦
     *x = NULL;
 }
 
 
-int bi_new(bigint** x, int wordlen, int sign) // bigint ï¿½ï¿½ï¿½ï¿½Ã¼ ï¿½Þ¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ò´ï¿½ ï¿½Ô¼ï¿½
+int bi_new(bigint** x, int wordlen, int sign) // bigint ±¸Á¶Ã¼ ¸Þ¸ð¸® µ¿ÀûÇÒ´ç ÇÔ¼ö
 {
-    if (*x != NULL) // ï¿½Þ¸ð¸®°ï¿½ NULLï¿½ï¿½ ï¿½Æ´Ï¸ï¿½ ï¿½Þ¸ï¿½ ï¿½ï¿½ï¿½ï¿½
+    if (*x != NULL) // ¸Þ¸ð¸®°¡ NULLÀÌ ¾Æ´Ï¸é ¸Þ¸ð¸® ÇØÁ¦
         bi_delete(x);
-    *x = (bigint*)malloc(sizeof(bigint)); // bigint ï¿½ï¿½ï¿½ï¿½Ã¼ ï¿½Þ¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ò´ï¿½
-    if (*x == NULL) // ï¿½Þ¸ð¸®°ï¿½ ï¿½Ò´ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ FAIL ï¿½ï¿½ï¿½ï¿½
+    *x = (bigint*)malloc(sizeof(bigint)); // bigint ±¸Á¶Ã¼ ¸Þ¸ð¸® µ¿ÀûÇÒ´ç
+    if (*x == NULL) // ¸Þ¸ð¸® ÇÒ´çµÇÁö ¾ÊÀ¸¸é FAIL ¸®ÅÏ
         return FAIL;
     (*x)->sign = sign;
     (*x)->wordlen = wordlen;
-    (*x)->a = (word*)calloc(wordlen, sizeof(word)); // bigint ï¿½ï¿½ï¿½ï¿½Ã¼ ï¿½ï¿½ ï¿½è¿­ ï¿½Þ¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ò´ï¿½
+    (*x)->a = (word*)calloc(wordlen, sizeof(word)); // bigint ±¸Á¶Ã¼ ¾È ¹è¿­ ¸Þ¸ð¸® µ¿ÀûÇÒ´ç
     return SUCCESS;
 }
 
 
-int bi_refine(bigint* x) // bigint ï¿½ï¿½ï¿½ï¿½Ã¼ ï¿½ï¿½ï¿½ï¿½ ï¿½è¿­ï¿½ï¿½ï¿½ï¿½ 0ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½è¿­ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ô¼ï¿½
+int bi_refine(bigint* x) // bigint ±¸Á¶Ã¼ ¾ÈÀÇ ¹è¿­¿¡¼­ 0ÀÎ ÇÏÀ§ ¹è¿­À» »èÁ¦ÇÏ´Â ÇÔ¼ö
 {
     if (x == NULL)
         return SUCCESS;
     int new_wordlen = get_wordlen(x);
     while (new_wordlen > 1)
     {
-        if (x->a[new_wordlen - 1] != 0) // 0ï¿½ï¿½ ï¿½Æ´ï¿½ ï¿½è¿­ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ break
+        if (x->a[new_wordlen - 1] != 0) // 0ÀÌ ¾Æ´Ñ ¹è¿­ÀÎ °æ¿ì break
             break;
         new_wordlen--;
     }
-    if (get_wordlen(x) != new_wordlen) // ï¿½Þ¸ï¿½ ï¿½ï¿½ï¿½Ò´ï¿½
+    if (get_wordlen(x) != new_wordlen) // ¸Þ¸ð¸® ÀçÇÒ´ç
     {
         x->wordlen = new_wordlen;
         x->a = (word*)realloc(x->a, sizeof(word) * new_wordlen);
         if (x->a == NULL)
             return FAIL;
     }
-    if ((get_wordlen(x) == 0) && (x->a[0] == 0x0)) // bigintï¿½ï¿½ 0ï¿½ï¿½ ï¿½ï¿½ì¿¡ signï¿½ï¿½ï¿½ï¿½ NON_NEGATIVEï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    if ((get_wordlen(x) == 0) && (x->a[0] == 0x0)) // bigint°¡ 0ÀÎ °æ¿ì sign°ªÀ» NON_NEGATIVE·Î ¼³Á¤
         x->sign = NON_NEGATIVE;
     return SUCCESS;
 }
 
-void bi_zeroize(bigint* x) // bigint ï¿½ï¿½ï¿½ï¿½ ï¿½è¿­ï¿½ï¿½ 0ï¿½ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½È­ï¿½Ï´ï¿½ ï¿½Ô¼ï¿½
+void bi_zeroize(bigint* x) // bigint ¾ÈÀÇ ¹è¿­À» 0À¸·Î ÃÊ±âÈ­ ÇÏ´Â ÇÔ¼ö
 {
     array_init(x->a, get_wordlen(x));
     bi_refine(x);
 }
 
-void bi_assign(bigint** dst, const bigint* src) // bigint ï¿½ï¿½ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ô¼ï¿½
+void bi_assign(bigint** dst, const bigint* src) // bigint ±¸Á¶Ã¼¸¦ º¹»çÇÏ´Â ÇÔ¼ö
 {
     int srcLen = get_wordlen(src);
     if (FAIL == bi_new(dst, srcLen, get_sign(src)))
@@ -207,24 +215,24 @@ void bi_assign(bigint** dst, const bigint* src) // bigint ï¿½ï¿½ï¿½ï¿½Ã¼ï¿½ï¿½ ï
     array_copy((*dst)->a, src->a, srcLen);
 }
 
-void bi_set_by_array(bigint** x, int sign, word* a, int wordlen)  // aï¿½ï¿½ sign ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ structï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï±ï¿½.
+void bi_set_by_array(bigint** x, int sign, word* a, int wordlen)  // a¿Í sign Á¤º¸¸¦ struct¿¡ ÀúÀå.
 {
     if (FAIL == bi_new(x, wordlen, sign))
         return;
     array_copy((*x)->a, a, wordlen);
 }
 
-void bi_set_by_string(bigint** x, int sign, char* str, word base) // str = "1234567896321356"
+void bi_set_by_string(bigint** x, int sign, char* str, word base) // ÀÔ·ÂµÈ ¹®ÀÚ¿­À» ±¸Á¶Ã¼¿¡ ¿Ã¹Ù¸¥ Áø¼ö·Î ÀúÀå
 {
     int stln = (int)strlen(str);
-    if (base == 2)
+    if (base == 2)                  // ÀÔ·Â ¹®ÀÚ°¡ 2Áø¼öÀÎ °æ¿ì
     {
         if (FAIL == bi_new(x, (stln / (WORD_BITLEN + 1)) + 1, sign))
             return;
-        for (int i = stln - 1; i >= 0; i--)   //  11110001       10001111 0001 1111
+        for (int i = stln - 1; i >= 0; i--)   
             (*x)->a[(stln - 1 - i) / WORD_BITLEN] ^= ((str[i] - '0') << ((stln - 1 - i) % WORD_BITLEN));
     }
-    else if (base == 16)
+    else if (base == 16)            // ÀÔ·Â ¹®ÀÚ°¡ 16Áø¼öÀÎ °æ¿ì
     {
         int len = (stln*4) / WORD_BITLEN;
         if((stln*4)%WORD_BITLEN != 0)
@@ -233,7 +241,7 @@ void bi_set_by_string(bigint** x, int sign, char* str, word base) // str = "1234
             return;
         printf("x->wordlen = %d\n", (*x)->wordlen);
         int tmp[16] = { '0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f' };
-        for (int i = stln - 1; i >= 0; i--)   //  11110001       10001111 0001 1111
+        for (int i = stln - 1; i >= 0; i--)   
         {
             int j = 0;
             for (j = 0; j < 16; j++)
@@ -244,7 +252,7 @@ void bi_set_by_string(bigint** x, int sign, char* str, word base) // str = "1234
             (*x)->a[4 * (stln - 1 - i) / WORD_BITLEN] ^= ((word)(j) << (4 * (stln - 1 - i) % WORD_BITLEN));
         }
     }
-    else // base = 10
+    else                            // ÀÔ·Â¹®ÀÚ°¡ 10Áø¼öÀÎ °æ¿ì
     {
         bigint* ten = NULL;
         bigint* b = NULL;
@@ -285,7 +293,8 @@ void bi_set_by_string(bigint** x, int sign, char* str, word base) // str = "1234
     }
 
 }
-void bi_gen_rand(bigint** x, int sign, int wordlen)
+
+void bi_gen_rand(bigint** x, int sign, int wordlen)   // ±¸Á¶Ã¼¸¦ ·£´ýÇÏ°Ô »ý¼ºÇÏ´Â ÇÔ¼ö
 {
     if (FAIL == bi_new(x, wordlen, sign))
     {
@@ -295,41 +304,40 @@ void bi_gen_rand(bigint** x, int sign, int wordlen)
     array_rand((*x)->a, wordlen);
     bi_refine(*x);
 }
+
 /**********************
 get_wordlen
-ï¿½ï¿½ï¿½ï¿½Ç¾ï¿½ï¿½Ö´ï¿½ bignumï¿½ï¿½ wordï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö´ï¿½ ï¿½Ô¼ï¿½.
-ï¿½ï¿½ï¿½ï¿½ï¿½ intï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+ÀúÀåµÇ¾îÀÖ´Â bignumÀÇ word±æÀÌ¸¦ Ãâ·ÂÇÏ´Â ÇÔ¼ö
+Ãâ·ÂÀº intÇüÀÌ¸ç °¡µ¶¼ºÀ» À§ÇÔ.
 **********************/
-
 int get_wordlen(const bigint* x) 
 {
-    return x->wordlen;             //ï¿½ï¿½ï¿½ï¿½Ã¼ï¿½ï¿½ wordlenï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+    return x->wordlen;             
 }
 
 /**********************
 get_bitlen
-ï¿½ï¿½ï¿½ï¿½Ç¾ï¿½ï¿½Ö´ï¿½ bignumï¿½ï¿½ bitï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö´ï¿½ ï¿½Ô¼ï¿½.
-ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ intï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+ÀúÀåµÇ¾îÀÖ´Â bignumÀÇ bit±æÀÌ¸¦ Ãâ·ÂÇÏ´Â ÇÔ¼ö
+Ãâ·ÂÀº intÇüÀÌ¸ç °¡µ¶¼ºÀ» À§ÇÔ.
 **********************/
 
-int get_bitlen(const bigint* x)            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½..?
+int get_bitlen(const bigint* x)            
 {
     word last = x->a[get_wordlen(x) - 1];
     for (int i = WORD_BITLEN - 1; i > 0; i--)
     {
         if (((last >> i) | 0x0) == 1)
-            return i;
+            return (i + WORD_BITLEN* (get_wordlen(x)-1));
     }
     return FAIL;
 }
 
 /**********************
 get_jth_bit
-ï¿½ï¿½ï¿½ï¿½Ç¾ï¿½ï¿½Ö´ï¿½ bignumï¿½ï¿½ jï¿½ï¿½Â° bitï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö´ï¿½ ï¿½Ô¼ï¿½.
-ï¿½ï¿½ï¿½â¼­ jï¿½ï¿½Â°ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ 1ï¿½ï¿½Â°ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½.
-ï¿½ï¿½ï¿½ï¿½ï¿½ intï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+ÀúÀåµÇ¾îÀÖ´Â bignumÀÇ j¹øÂ° bit¸¦ Ãâ·ÂÇØÁÖ´Â ÇÔ¼ö.
+¿©±â¼­ j¹øÂ°´Â ÇÏÀ§ºñÆ®¸¦ 1¹øÂ°·Î º¸°í °è»ê.
+Ãâ·ÂÀº intÇüÀ¸·Î ÁøÇà.
 **********************/
-
 int get_jth_bit(const bigint* x, const int j)  
 {
     int jword, jbit;
@@ -340,11 +348,10 @@ int get_jth_bit(const bigint* x, const int j)
 
 /**********************
 get_sign
-ï¿½ï¿½ï¿½ï¿½Ç¾ï¿½ï¿½Ö´ï¿½ bignumï¿½ï¿½ ï¿½ï¿½È£ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö´ï¿½ ï¿½Ô¼ï¿½.
-ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ intï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
-NEGATIVEï¿½Î°ï¿½ï¿½ 1, NON_NEGATIVEï¿½ï¿½ ï¿½ï¿½ï¿½ 0 ï¿½ï¿½ï¿½ï¿½.
+ÀúÀåµÇ¾îÀÖ´Â bignumÀÇ ºÎÈ£¸¦ Ãâ·ÂÇØÁÖ´Â ÇÔ¼ö.
+°¡µ¶¼ºÀ» À§ÇÑ ÇÔ¼ö·Î Ãâ·ÂÀº intÇüÀ¸·Î ÁøÇà. 
+NEGATIVEÀÎ°æ¿ì 1, NON_NEGATIVEÀÎ °æ¿ì 0 ¸®ÅÏ.
 **********************/
-
 int get_sign(const bigint* x)     
 {
     return x->sign;
@@ -352,11 +359,10 @@ int get_sign(const bigint* x)
 
 /**********************
 flip_sign
-ï¿½ï¿½ï¿½ï¿½Ç¾ï¿½ï¿½Ö´ï¿½ bignumï¿½ï¿½ ï¿½ï¿½È£ï¿½ï¿½ ï¿½Ù²Ù¾ï¿½ï¿½Ö´ï¿½ ï¿½Ô¼ï¿½.
-NEGATIVEï¿½Î°ï¿½ï¿½ 1, NON_NEGATIVEï¿½ï¿½ ï¿½ï¿½ï¿½ 0 ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ç±ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-XOR 1ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.
+ÀúÀåµÇ¾îÀÖ´Â bignumÀÇ ºÎÈ£¸¦ ¹Ù²Ù¾îÁÖ´Â ÇÔ¼ö.
+NEGATIVEÀÎ°æ¿ì 1, NON_NEGATIVEÀÎ °æ¿ì 0 À¸·Î ÀúÀåµÇ±â ¶§¹®¿¡ 
+XOR 1À» ÅëÇØ ºÎÈ£¸¦ º¯°æÇÏ´Â °ÍÀÌ °¡´ÉÇÏ´Ù.
 **********************/
-
 void flip_sign(bigint* x)    
 {
     x->sign = 0x1 ^ (x->sign);
@@ -364,12 +370,11 @@ void flip_sign(bigint* x)
 
 /**********************
 bi_set_one
-ï¿½Ô·Â¹ï¿½ï¿½ï¿½ ï¿½Ö¼Ò¿ï¿½ ï¿½Ø´ï¿½ï¿½Ï´ï¿½ bignumï¿½ï¿½ ï¿½ï¿½ï¿½ 1ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ô¼ï¿½.
-ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½î¿¡ï¿½ï¿½ 1ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï±â¿¡ ï¿½ï¿½ï¿½Ç¸ï¿½ ï¿½ï¿½ï¿½ï¿½.
-ï¿½Ô·ï¿½ï¿½ï¿½ bignumï¿½ï¿½ ï¿½Ö¼Ò·ï¿½ ï¿½ï¿½ï¿½ï¿½.
-wordï¿½ï¿½ï¿½Ì¸ï¿½ 1, ï¿½ï¿½È£ï¿½ï¿½ NON_NEGATIVE, ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 1ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+ÀÔ·Â¹ÞÀº ÁÖ¼Ò¿¡ ÇØ´çÇÏ´Â bignumÀ» ¾ç¼ö 1·Î ¼³Á¤ÇÏ´Â ÇÔ¼ö.
+Áö¼ö½Â ¿¬»êµî¿¡¼­ 1À» »ç¿ëÇÏ±â¿¡ ÆíÀÇ¸¦ À§ÇÔ.
+ÀÔ·ÂÀ» bignumÀÇ ÁÖ¼Ò·Î ¹ÞÀ½.
+word±æÀÌ¸¦ 1, ºÎÈ£´Â NON_NEGATIVE, ÀúÀåµÈ °ªÀº 1·Î ¼³Á¤
 **********************/
-
 void bi_set_one(bigint** x)     
 {
     if (FAIL == bi_new(x, 1, NON_NEGATIVE))
@@ -379,12 +384,11 @@ void bi_set_one(bigint** x)
 
 /**********************
 bi_set_zero
-ï¿½Ô·Â¹ï¿½ï¿½ï¿½ ï¿½Ö¼Ò¿ï¿½ ï¿½Ø´ï¿½ï¿½Ï´ï¿½ bignumï¿½ï¿½ ï¿½ï¿½ï¿½ 0ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ô¼ï¿½. (0ï¿½ï¿½ ï¿½ï¿½ï¿½Ç»ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.)
-FORï¿½ï¿½ ï¿½î¿¡ï¿½ï¿½ 0ï¿½ï¿½ ï¿½Ê¿ï¿½ï¿½ï¿½ ï¿½ï¿½ì°¡ ï¿½Ö±â¿¡ ï¿½ï¿½ï¿½Ç¸ï¿½ ï¿½ï¿½ï¿½ï¿½.
-ï¿½Ô·ï¿½ï¿½ï¿½ bignumï¿½ï¿½ ï¿½Ö¼Ò·ï¿½ ï¿½ï¿½ï¿½ï¿½.
-wordï¿½ï¿½ï¿½Ì¸ï¿½ 1, ï¿½ï¿½È£ï¿½ï¿½ NON_NEGATIVE, ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 0ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+ÀÔ·Â¹ÞÀº ÁÖ¼Ò¿¡ ÇØ´çÇÏ´Â bignumÀ» ¾ç¼ö 0À¸·Î ¼³Á¤ÇÏ´Â ÇÔ¼ö. (0Àº ÆíÀÇ»ó ¾ç¼ö·Î ¼³Á¤.)
+FOR¹® µî¿¡¼­ 0ÀÌ ÇÊ¿äÇÑ °æ¿ì°¡ ÀÖ±â¿¡ ÆíÀÇ¸¦ À§ÇÔ.
+ÀÔ·ÂÀ» bignumÀÇ ÁÖ¼Ò·Î ¹ÞÀ½.
+word±æÀÌ¸¦ 1, ºÎÈ£´Â NON_NEGATIVE, ÀúÀåµÈ °ªÀº 0·Î ¼³Á¤
 **********************/
-
 void bi_set_zero(bigint** x)   
 {
     if (FAIL == bi_new(x, 1, NON_NEGATIVE))
@@ -394,12 +398,11 @@ void bi_set_zero(bigint** x)
 
 /**********************
 bi_is_minus_one
-ï¿½Ô·Â¹ï¿½ï¿½ï¿½ bignumï¿½ï¿½ -1ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ô¼ï¿½
-        ï¿½Ê¿ï¿½ï¿½ï¿½ ï¿½ï¿½ì°¡ ï¿½Ö±â¿¡ ï¿½ï¿½ï¿½Ç¸ï¿½ ï¿½ï¿½ï¿½ï¿½.
-ï¿½Ô·ï¿½ï¿½ï¿½ bignumï¿½ï¿½ ï¿½Þ¾Æ¼ï¿½ ï¿½ï¿½ï¿½Ú¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ x->aï¿½ï¿½ 1ï¿½Ì°ï¿½ ï¿½ï¿½È£ï¿½ï¿½ NEGATIVEï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½ï¿½Ñ´ï¿½.
-ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ TRUE, Æ²ï¿½ï¿½ï¿½ï¿½ FALSEï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+ÀÔ·Â¹ÞÀº bignumÀÌ -1ÀÎÁö È®ÀÎÇÏ´Â ÇÔ¼ö
+        ÇÊ¿äÇÑ °æ¿ì°¡ ÀÖ±â¿¡ ÆíÀÇ¸¦ À§ÇÔ.
+ÀÔ·ÂÀ» bignumÀ» ¹Þ¾Æ¼­ ¼ýÀÚ¸¦ ÀúÀåÇÏ´Â x->aÀÌ 1ÀÌ°í ºÎÈ£°¡ NEGATIVEÀÎÁö È®ÀÎÇÑ´Ù.
+¸ÂÀ¸¸é TRUE, Æ²¸®¸é FALSE¸¦ ¸®ÅÏ
 **********************/
-
 int bi_is_minus_one(const bigint* x)
 {
     if ((get_sign(x) != NEGATIVE) || (x->a[0] != 0x1))
@@ -412,12 +415,11 @@ int bi_is_minus_one(const bigint* x)
 
 /**********************
 bi_is_one
-ï¿½Ô·Â¹ï¿½ï¿½ï¿½ bignumï¿½ï¿½ 1ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ô¼ï¿½
-        ï¿½Ê¿ï¿½ï¿½ï¿½ ï¿½ï¿½ì°¡ ï¿½Ö±â¿¡ ï¿½ï¿½ï¿½Ç¸ï¿½ ï¿½ï¿½ï¿½ï¿½.
-ï¿½Ô·ï¿½ï¿½ï¿½ bignumï¿½ï¿½ ï¿½Þ¾Æ¼ï¿½ ï¿½ï¿½ï¿½Ú¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ x->aï¿½ï¿½ 1ï¿½Ì°ï¿½ ï¿½ï¿½È£ï¿½ï¿½ NON_NEGATIVEï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½ï¿½Ñ´ï¿½.
-ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ TRUE, Æ²ï¿½ï¿½ï¿½ï¿½ FALSEï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+ÀÔ·Â¹ÞÀº bignumÀÌ 1ÀÎÁö È®ÀÎÇÏ´Â ÇÔ¼ö
+        ÇÊ¿äÇÑ °æ¿ì°¡ ÀÖ±â¿¡ ÆíÀÇ¸¦ À§ÇÔ.
+ÀÔ·ÂÀ» bignumÀ» ¹Þ¾Æ¼­ ¼ýÀÚ¸¦ ÀúÀåÇÏ´Â x->aÀÌ 1ÀÌ°í ºÎÈ£°¡ NON_NEGATIVEÀÎÁö È®ÀÎÇÑ´Ù.
+¸ÂÀ¸¸é TRUE, Æ²¸®¸é FALSE¸¦ ¸®ÅÏ
 **********************/
-
 int bi_is_one(const bigint* x)     
 {
     if ((get_sign(x) == NEGATIVE) || (x->a[0] != 0x1))
@@ -434,12 +436,11 @@ int bi_is_one(const bigint* x)
 
 /**********************
 bi_is_zero
-ï¿½Ô·Â¹ï¿½ï¿½ï¿½ bignumï¿½ï¿½ 0ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ô¼ï¿½
-        ï¿½Ê¿ï¿½ï¿½ï¿½ ï¿½ï¿½ì°¡ ï¿½Ö±â¿¡ ï¿½ï¿½ï¿½Ç¸ï¿½ ï¿½ï¿½ï¿½ï¿½.
-ï¿½Ô·ï¿½ï¿½ï¿½ bignumï¿½ï¿½ ï¿½Þ¾Æ¼ï¿½ ï¿½ï¿½ï¿½Ú¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ x->aï¿½ï¿½ 0ï¿½Ì°ï¿½ ï¿½ï¿½È£ï¿½ï¿½ NON_NEGATIVEï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½ï¿½Ñ´ï¿½.
-ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ TRUE, Æ²ï¿½ï¿½ï¿½ï¿½ FALSEï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+ÀÔ·Â¹ÞÀº bignumÀÌ 0ÀÎÁö È®ÀÎÇÏ´Â ÇÔ¼ö
+        ÇÊ¿äÇÑ °æ¿ì°¡ ÀÖ±â¿¡ ÆíÀÇ¸¦ À§ÇÔ.
+ÀÔ·ÂÀ» bignumÀ» ¹Þ¾Æ¼­ ¼ýÀÚ¸¦ ÀúÀåÇÏ´Â x->aÀÌ 0ÀÌ°í ºÎÈ£°¡ NON_NEGATIVEÀÎÁö È®ÀÎÇÑ´Ù.
+¸ÂÀ¸¸é TRUE, Æ²¸®¸é FALSE¸¦ ¸®ÅÏ
 **********************/
-
 int bi_is_zero(const bigint* x)       
 {
     if (get_wordlen(x) == 0)
@@ -454,43 +455,43 @@ int bi_is_zero(const bigint* x)
     return TRUE;
 }
 
-int bi_compareABS(const bigint* src1, const bigint* src2) // ï¿½ï¿½ bigintï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ô¼ï¿½
+int bi_compareABS(const bigint* src1, const bigint* src2) // µÎ bigintÀÇ Àý´ñ°ªÀ» ºñ±³ÇÏ´Â ÇÔ¼ö
 {
     if (get_wordlen(src1) > get_wordlen(src2))   // src1 > src2
-        return 1;                                                              // *ï¿½ï¿½ï¿½ï¿½*
+        return 1;                                                              
     else if (get_wordlen(src1) < get_wordlen(src2)) // src1 < src2
-        return -1;                                                                // *ï¿½ï¿½ï¿½ï¿½*
-    else // get_wordlen(src1) = get_wordlen(src2)
+        return -1;                                                                
+    else                    // get_wordlen(src1) = get_wordlen(src2)
     {
         int j;
         for (j = get_wordlen(src1) - 1; j >= 0; j--)
         {
-            if (src1->a[j] > src2->a[j]) // src1 > src2
+            if (src1->a[j] > src2->a[j])        // src1 > src2
                 return 1;
-            else if (src1->a[j] < src2->a[j]) // src1 < src2
+            else if (src1->a[j] < src2->a[j])   // src1 < src2
                 return -1;
         }
     }
-    return 0; // src1 = src2
+    return 0;                                   // src1 = src2
 }
 
-int bi_compare(const bigint* src1, const bigint* src2) // ï¿½ï¿½ bigintï¿½ï¿½ ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ô¼ï¿½
+int bi_compare(const bigint* src1, const bigint* src2) // µÎ bigint¸¦ ºñ±³ÇÏ´Â ÇÔ¼ö
 {
     /*
         A > B : 1
         A < B : -1
         A = B : 0
     */
-    if (src1->sign == NEGATIVE && src2->sign == NON_NEGATIVE) // src1ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, src2ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Ç´ï¿½ 0
+    if (src1->sign == NEGATIVE && src2->sign == NON_NEGATIVE) // src1Àº À½¼ö, src2´Â 0ÀÌ»ó
         return -1;
-    else if (src1->sign == NON_NEGATIVE && src2->sign == NEGATIVE) // src1ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Ç´ï¿½ 0, src2ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    else if (src1->sign == NON_NEGATIVE && src2->sign == NEGATIVE) // src1Àº 0ÀÌ»ó , src2´Â À½¼ö
         return 1;
     else
     {
-        int ret = bi_compareABS(src1, src2); // src1, src2ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Å©ï¿½â¸¦ ï¿½ï¿½
-        if (src1->sign == NON_NEGATIVE) // src1, src2 ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½
+        int ret = bi_compareABS(src1, src2); // src1, src2ÀÇ Àý´ñ°ª Å©±â ºñ±³
+        if (src1->sign == NON_NEGATIVE) // src1, src2 ¸ðµÎ 0ÀÌ»ó
             return ret;
-        else                // src1, src2 ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+        else                // src1, src2 µÑ´Ù À½¼ö
             return ret * (-1);
     }
 }

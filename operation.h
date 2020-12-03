@@ -28,12 +28,12 @@ void ADD_zxy(bigint** dst, const bigint* src1, const bigint* src2);
 void ADD_zzy(bigint** dst, const bigint* src);
 
 void SUB_1word_zxy(word* dst, int* carry, const word* src1, const word* src2);    // src1과 src2, carry를 입력받아 1word에 대한 뺄셈의 절댓값을 출력
-void SUBC(bigint** dst, const bigint* src1, const bigint* src2);    // src1>src2로 입력받아 둘의 차를 dst에 저장
-void SUB_zxy(bigint** dst, const bigint* src1, const bigint* src2);   //src1 과 src2를 비교하여 subc로 이동시키는 함수
-void SUB_zzy(bigint** dst, const bigint* src);
+void SUBC(bigint** dst, const bigint* src1, const bigint* src2);     //src1>src2로 입력받아 둘의 차를 dst에 저장
+void SUB_zxy(bigint** dst, const bigint* src1, const bigint* src2);  //src1과 src2를 비교하여 subc로 이동시키는 함수
+void SUB_zzy(bigint** dst, const bigint* src);                       //dst-src를 dst에 입력하는 함수.
 
-void KaratsubaMUL(bigint** dst, const bigint* src1, const bigint* src2);
-void KaratsubaMUL_Flag(bigint** dst, const bigint* src1, const bigint* src2, const int flag);   
+void KaratsubaMUL(bigint** dst, const bigint* src1, const bigint* src2); //전역변수 KARA_FLAG를 이용하는 karatsuba 곱셈.
+void KaratsubaMUL_Flag(bigint** dst, const bigint* src1, const bigint* src2, const int flag);  //그때마다 설정한 FLAG를 이용하는 karatsuba 곱셈.
 
 void MUL_1word_zxy(word* dst, const word* src1, const word* src2);  
 void schoolbook_MULC(bigint** dst, const bigint* src1, const bigint* src2);
@@ -44,8 +44,8 @@ void SQUC_1Word_zxx(word* dst, const word* src);
 void SQUC(bigint** dst, const bigint* src);
 void SQU_zxx(bigint** dst, const bigint* src);
 
-void KaratsubaSQU(bigint** dst, const bigint* src);
-void KaratsubaSQU_Flag(bigint** dst, const bigint* src, const int flag);
+void KaratsubaSQU(bigint** dst, const bigint* src);                         //전역변수 KARA_FLAG를 이용하는 karatsuba 제곱.
+void KaratsubaSQU_Flag(bigint** dst, const bigint* src, const int flag);    //그때마다 설정한 FLAG를 이용하는 karatsuba 제곱.
 
 int NaiveDiv(bigint** Q, bigint** R, bigint* src1, bigint* src2);      
 int BinaryLongDiv(bigint** Q, bigint** R, bigint* src1, bigint* src2);
@@ -54,8 +54,8 @@ void DIVCC(word* Q, bigint** R, const bigint* src1, const bigint* src2);
 void DIVC(word* Q, bigint** R, const bigint* src1, const bigint* src2, const int k);
 int DIV(bigint** Q, bigint** R, const bigint* src1, const bigint* src2);
 
-void MODExp_L2R(bigint** dst, const bigint* base, const bigint* power, const bigint* M);
-void MODExp_R2L(bigint** dst, const bigint* base, const bigint* power, const bigint* M);
-void MODExp_Montgomery(bigint** dst, const bigint* base, const bigint* power, const bigint* M);
+void MODExp_L2R(bigint** dst, const bigint* base, const bigint* power, const bigint* M); //left to right 방법을 이용한 modular exponentiation.
+void MODExp_R2L(bigint** dst, const bigint* base, const bigint* power, const bigint* M); //right to left 방법을 이용한 modular exponentiation.
+void MODExp_Montgomery(bigint** dst, const bigint* base, const bigint* power, const bigint* M); //Montgomery ladder 방법을 이용한 modular exponentiation.
 
 #endif /* operation_h */

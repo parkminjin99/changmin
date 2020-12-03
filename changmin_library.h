@@ -2,12 +2,14 @@
 //  changmin_library.h
 //  Changmin's library
 //
-//  Created by ï¿½Ö°ï¿½Ã¢ï¿½ï¿½ on 2020/11/09.
-//  Copyright 2020 ï¿½Ö°ï¿½Ã¢ï¿½ï¿½. All rights reserved.
+//  Created by ÃÖ°­Ã¢¹Î on 2020/11/09.
+//  Copyright 2020 ÃÖ°­Ã¢¹Î. All rights reserved.
 //
 
 #ifndef changmin_library_h
 #define changmin_library_h
+
+#define MAX_COUNT 100            // °¢ ¿¬»êÀ» ¸îÈ¸ È®ÀÎÇÒÁö 
 
 #define KARA_FLAG 6
 

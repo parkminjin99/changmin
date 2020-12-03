@@ -1,4 +1,30 @@
 #include "benchmark.h"
+/******************************
+ benchmark.c
+ 구현한 함수와 FLINT라이브러리의 속도 차이를 비교한다.
+ 속도차이는 다음의 함수를 비교했다.
+ 함수명                cm              FLINT           
+ ----------------------------------------------
+ ADD_FLINTvsCM    |  ADD_zxy         fmpz_add
+ SUB_FLINTvsCM    |  SUB_zxy         fmpz_sub
+ MUL_FLINTvsCM    |  KaratsubaMUL    fmpz_mul
+ DIV_FLINTvsCM    |  DIV             fmpz_fdiv_qr
+ EXPMOD_FLINTvsCM |  MODExp_L2R      fmpz_powm
+
+ 더불어 구현한 함수간에 속도 차이도 함께 비교했다.
+ 함수명                          비교함수
+ -------------------------------------------------------------
+ MULvsKara                   | MUL_zxy    KaratsubaMUL
+ MULvsSQU                    | MUL_zxy    SQU_zxx
+ SQUvsKara                   | SQU_zxx    KaratsubaSQU
+ NAIVEvsBINARYLONGvsMULTIDIV | NaiveDiv   BinaryLongDiv   DIV
+
+ 마지막으로 flag에 따른 Karatsuba연산의 속도를 비교했다.
+ 함수명
+ -------------
+ Kara_flag()
+ *****************************/
+
 // fmpz_powm(z,x,y,a);
 // fmpz_print(z);
 // flint_printf("\n");
@@ -18,7 +44,7 @@
 // flint_printf("\n");
 // gcc -Wall -O2 *.c -I /usr/local/include/flint/ -lflint -lmpfr -lgmp -lpthread
 
-int wordlen = 10; // 512-> 8, 1024 -> 16, 2048 -> 32, 3072 -> 48, 4096 -> 64
+//int wordlen = 10; // 512-> 8, 1024 -> 16, 2048 -> 32, 3072 -> 48, 4096 -> 64
 // RSA PARAMETER?뜝?룞?삕 ?몴?뜝?룞?삕 ?뜝?뙎琉꾩삕?뜝?룞?삕? ?뜝?뙇源띿삕
 // PARAMETER ?겕?뜝?뜦蹂꾢뜝?룞?삕 ?뜝?룞?삕? -> ?뜝?뙎琉꾩삕?뜝?룞?삕?뜝?룞?삕 ?뜝?뙇怨ㅼ삕 ?뜝????눦?삕?뜝?룞?삕 ?뜝?룞?삕?뜝?룞?삕?뜝?떢怨ㅼ삕?뜝?룞?삕?뜝?룞?삕... // 
 // wordlen -> karatsuba?뜝?룞?삕?뜝?룞?삕(8-100) ->  4?뜝?룞?삕?뜝?룞?삕?뜝?룞?삕!
@@ -26,26 +52,26 @@ int wordlen = 10; // 512-> 8, 1024 -> 16, 2048 -> 32, 3072 -> 48, 4096 -> 64
 // iso?뜝?룞?삕?뜝?룞?삕? bin ?겕?뜝?룞?삕 ?뜝?룞?삕 ? 
 
 
-void ADD_FLINTvsCM()
+void ADD_FLINTvsCM(int wordlen)
 {
     bigint* src1 = NULL;
     bigint* src2 = NULL;
     bigint* dst = NULL;
-    bi_gen_rand(&src1, NON_NEGATIVE, wordlen); // src1, src2 ?옖?뜡?븯寃? ?깮?꽦 
+    bi_gen_rand(&src1, NON_NEGATIVE, wordlen); // src1, src2 임의로 생성
     bi_gen_rand(&src2, NON_NEGATIVE, wordlen);
 
     fmpz_t x,y,z;
     fmpz_init(x);
     fmpz_init(y);
     fmpz_init(z);
-    fmpz_set_ui_array(x, (const mp_limb_t*)src1->a, src1->wordlen); // x = src1
-    fmpz_set_ui_array(y, (const mp_limb_t*)src2->a, src2->wordlen); // y = src2
+    fmpz_set_ui_array(x, (const mp_limb_t*)src1->a, src1->wordlen); // x에 src1 저장
+    fmpz_set_ui_array(y, (const mp_limb_t*)src2->a, src2->wordlen); // y에 src2 저장
 
     clock_t start, end; 
     double result_ac, result_af;
 
     int cnt = 0;
-    start = clock();
+    start = clock();                    //구현한 덧셈함수 시간측정 
     while(cnt < MAX_COUNT)
     {
         ADD_zxy(&dst, src1, src2);
@@ -56,7 +82,7 @@ void ADD_FLINTvsCM()
     result_ac = (double)(end - start)/(double)CLOCKS_PER_SEC;
     
     cnt = 0;
-    start = clock();
+    start = clock();                    //FLINT의 덧셈함수 시간측정
     while(cnt < MAX_COUNT)
     {
         fmpz_add(z,x,y);
@@ -75,26 +101,26 @@ void ADD_FLINTvsCM()
     fmpz_clear(z);
 }
 
-void SUB_FLINTvsCM()
+void SUB_FLINTvsCM(int wordlen)
 {
     bigint* src1 = NULL;
     bigint* src2 = NULL;
     bigint* dst = NULL;
-    bi_gen_rand(&src1, NON_NEGATIVE, wordlen); // src1, src2 ?옖?뜡?븯寃? ?깮?꽦 
+    bi_gen_rand(&src1, NON_NEGATIVE, wordlen);  // src1, src2 임의로 생성
     bi_gen_rand(&src2, NON_NEGATIVE, wordlen);
 
     fmpz_t x,y,z;
     fmpz_init(x);
     fmpz_init(y);
     fmpz_init(z);
-    fmpz_set_ui_array(x, (const mp_limb_t*)src1->a, src1->wordlen); // x = src1
-    fmpz_set_ui_array(y, (const mp_limb_t*)src2->a, src2->wordlen); // y = src2
+    fmpz_set_ui_array(x, (const mp_limb_t*)src1->a, src1->wordlen); // x에 src1 입력
+    fmpz_set_ui_array(y, (const mp_limb_t*)src2->a, src2->wordlen); // y에 src2 입력
 
     clock_t start, end; 
     double result_sc, result_sf;
 
     int cnt = 0;
-    start = clock();
+    start = clock();                        //구현한 뺄셈 시간측정
     while(cnt < MAX_COUNT)
     {
         SUB_zxy(&dst, src1, src2);
@@ -105,7 +131,7 @@ void SUB_FLINTvsCM()
     result_sc = (double)(end - start)/(double)CLOCKS_PER_SEC;
 
     cnt = 0;
-    start = clock();
+    start = clock();                        //FLINT 뺄셈 시간측정
     while(cnt < MAX_COUNT)
     {
         fmpz_sub(z,x,y);
@@ -124,26 +150,26 @@ void SUB_FLINTvsCM()
     fmpz_clear(z);
 }
 
-void MUL_FLINTvsCM()
+void MUL_FLINTvsCM(int wordlen)
 {
     bigint* src1 = NULL;
     bigint* src2 = NULL;
     bigint* dst = NULL;
-    bi_gen_rand(&src1, NON_NEGATIVE, wordlen); // src1, src2 ?옖?뜡?븯寃? ?깮?꽦 
+    bi_gen_rand(&src1, NON_NEGATIVE, wordlen); // src1, src2 임의로 생성
     bi_gen_rand(&src2, NON_NEGATIVE, wordlen);
 
     fmpz_t x,y,z;
     fmpz_init(x);
     fmpz_init(y);
     fmpz_init(z);
-    fmpz_set_ui_array(x, (const mp_limb_t*)src1->a, src1->wordlen); // x = src1
-    fmpz_set_ui_array(y, (const mp_limb_t*)src2->a, src2->wordlen); // y = src2
+    fmpz_set_ui_array(x, (const mp_limb_t*)src1->a, src1->wordlen); // x에 src1 입력
+    fmpz_set_ui_array(y, (const mp_limb_t*)src2->a, src2->wordlen); // y에 src2 입력
 
     clock_t start, end; 
     double result_mc, result_mf;
 
     int cnt = 0;
-    start = clock();
+    start = clock();                        //구현한 곱셈함수 시간측정
     while(cnt < MAX_COUNT)
     {
         //MUL_zxy(&dst, src1, src2);
@@ -156,7 +182,7 @@ void MUL_FLINTvsCM()
     result_mc = (double)(end - start)/(double)CLOCKS_PER_SEC;   
 
     cnt = 0;
-    start = clock();
+    start = clock();                        //FLINT 함수 시간측정.
     while(cnt < MAX_COUNT)
     {
         fmpz_mul(z,x,y);
@@ -186,47 +212,47 @@ void Kara_flag()
     clock_t start, end; 
     double result;
 
-    bi_gen_rand(&src1, NON_NEGATIVE, 2*wordlen);
-    bi_gen_rand(&src2, NON_NEGATIVE, wordlen);
-
-    while(flag < wordlen)
+    //bi_gen_rand(&src1, NON_NEGATIVE, 2*wordlen);        // src1, src2 임의로 생성    
+   // bi_gen_rand(&src2, NON_NEGATIVE, wordlen);
+/***
+    while(flag < wordlen/2)                           //flag를 변경하면서 KaratsubaMUL 시간측정
     {
         cnt = 0;
         start = clock();
         while(cnt < MAX_COUNT)
         {
             KaratsubaMUL_Flag(&dst, src1, src2, flag);
-            cnt=cnt+4;
+            cnt++;
         }
         end = clock(); 
         result = (double)(end - start) / (double)CLOCKS_PER_SEC;
         printf("[Karatsuba | CM] %f (flag = %d)\n", result, flag);
         flag++;
-    }
+    }***/
     bi_delete(&src1);
     bi_delete(&src2);
     bi_delete(&dst);
 }
-
-void MULvsKara() // ?뜝?룞?삕?뜝?룞?삕: schoolbook vs. Karatsuba
+#if 0
+void MULvsKara() 
 {
     bigint* src1 = NULL;
     bigint* src2 = NULL;
     bigint* dst = NULL;
-    bi_gen_rand(&src1, NON_NEGATIVE, wordlen); // src1, src2 ?옖?뜡?븯寃? ?깮?꽦 
-    bi_gen_rand(&src2, NON_NEGATIVE, wordlen);
+   // bi_gen_rand(&src1, NON_NEGATIVE, wordlen); // src1, src2 임의로 생성 
+   // bi_gen_rand(&src2, NON_NEGATIVE, wordlen);
 
     bigint* src1_t = NULL;
     bigint* src2_t = NULL;
     bigint* dst_t = NULL;
-    bi_assign(&src1_t, src1); // src1_t = src1
-    bi_assign(&src2_t, src2); // src2_t = src2
+    bi_assign(&src1_t, src1); // src1_t에 src1 입력
+    bi_assign(&src2_t, src2); // src2_t에 src2 입력
 
     clock_t start, end; 
     double result_mul, result_kara;
 
     int cnt = 0; 
-    start = clock();
+    start = clock();                //schoolbookMUL 시간측정
     while(cnt < MAX_COUNT)
     {
         MUL_zxy(&dst, src1, src2);
@@ -237,7 +263,7 @@ void MULvsKara() // ?뜝?룞?삕?뜝?룞?삕: schoolbook vs. Karatsuba
     result_mul = (double)(end - start)/(double)CLOCKS_PER_SEC;
 
     cnt = 0; 
-    start = clock();
+    start = clock();                //KaratsubaMUL 시간측정
     while(cnt < MAX_COUNT)
     {
         KaratsubaMUL(&dst_t, src1_t, src2_t);
@@ -260,17 +286,17 @@ void MULvsSQU()
 {
     bigint* src = NULL;
     bigint* dst = NULL;
-    bi_gen_rand(&src, NON_NEGATIVE, wordlen); // src ?옖?뜡?븯寃? ?깮?꽦 
+    bi_gen_rand(&src, NON_NEGATIVE, wordlen); // src 임의로 생성
 
     bigint* src_t = NULL;
     bigint* dst_t = NULL;
-    bi_assign(&src_t, src); // src1_t = src1
+    bi_assign(&src_t, src); // src1_t에 src1 입력
 
     clock_t start, end; 
     double result_mul, result_squ;
 
     int cnt = 0; 
-    start = clock();
+    start = clock();            //곱셈함수를 이용한 제곱연산 시간측정
     while(cnt < MAX_COUNT)
     {
         MUL_zxy(&dst, src, src);
@@ -281,7 +307,7 @@ void MULvsSQU()
     result_mul = (double)(end - start)/(double)CLOCKS_PER_SEC;
 
     cnt = 0; 
-    start = clock();
+    start = clock();            //제곱함수를 이용한 제곱연산 시간측정
     while(cnt < MAX_COUNT)
     {
         SQU_zxx(&dst_t, src_t);
@@ -298,21 +324,21 @@ void MULvsSQU()
     bi_delete(&dst_t);
 }
 //////////////////////////////////////////////////////////////////////////////////////////
-void SQUvsKara() // ?뜝?룞?삕?뜝?룞?삕: schoolbook vs. Karatsuba
+void SQUvsKara() 
 {
     bigint* src = NULL;
     bigint* dst = NULL;
 
-    bi_gen_rand(&src, NON_NEGATIVE, wordlen);
+    bi_gen_rand(&src, NON_NEGATIVE, wordlen);   //src 임의로 생성
 
     int cnt = 0;
     clock_t start, end;
     double result_squ, result_ka;
 
-    start = clock();
+    start = clock();            //schoolbook SQU 시간측정
     while (cnt < MAX_COUNT)
     {
-        SQU_zxx(&dst, src);
+        SQU_zxx(&dst, src);             
         cnt++;
     }
     end = clock();
@@ -320,7 +346,7 @@ void SQUvsKara() // ?뜝?룞?삕?뜝?룞?삕: schoolbook vs. Karatsuba
 
 
     cnt = 0;
-    start = clock();
+    start = clock();            //Karatsuba SQU 시간측정
     while (cnt < MAX_COUNT)
     {
         KaratsubaSQU(&dst, src);
@@ -342,10 +368,10 @@ void NAIVEvsBINARYLONGvsMULTIDIV() // Naive vs. binary long vs. multi-precision 
     bigint* dstQ = NULL;
     bigint* dstR = NULL;
 
-    bi_gen_rand(&src1, NON_NEGATIVE, 2 * wordlen);
-    bi_gen_rand(&src2, NON_NEGATIVE, wordlen);
+    bi_gen_rand(&src1, NON_NEGATIVE, 2 * wordlen);      //src1, src2 임의로 생성
+    bi_gen_rand(&src2, NON_NEGATIVE, wordlen);          // 나눗셈이므로 src1는 src2의 두배 길이.
 
-    while (VALID != DIV(&dstQ, &dstR, src1, src2))
+    while (VALID != DIV(&dstQ, &dstR, src1, src2))      
     {
         bi_gen_rand(&src1, NON_NEGATIVE, 2 * wordlen);
         bi_gen_rand(&src2, NON_NEGATIVE, wordlen);
@@ -355,7 +381,7 @@ void NAIVEvsBINARYLONGvsMULTIDIV() // Naive vs. binary long vs. multi-precision 
 
     clock_t start, end;
     double result_nai, result_bin, result_mul;
-    start = clock();
+    start = clock();                                    //NaiveDiv 시간측정
     while (cnt < MAX_COUNT)
     {
         NaiveDiv(&dstQ, &dstR, src1, src2);
@@ -365,7 +391,7 @@ void NAIVEvsBINARYLONGvsMULTIDIV() // Naive vs. binary long vs. multi-precision 
     result_nai = (double)(end - start) / CLOCKS_PER_SEC;
 
     cnt = 0;
-    start = clock();
+    start = clock();                                     //binarylongDiv 시간측정
     while (cnt < MAX_COUNT)
     {
         BinaryLongDiv(&dstQ, &dstR, src1, src2);
@@ -374,8 +400,8 @@ void NAIVEvsBINARYLONGvsMULTIDIV() // Naive vs. binary long vs. multi-precision 
     end = clock();
     result_bin = (double)(end - start) / CLOCKS_PER_SEC;
 
-    cnt = 0;
-    start = clock();
+    cnt = 0;            
+    start = clock();                                    //multi-precision Div 시간측정
     while (cnt < MAX_COUNT)
     {
         DIV(&dstQ, &dstR, src1, src2);
@@ -390,16 +416,16 @@ void NAIVEvsBINARYLONGvsMULTIDIV() // Naive vs. binary long vs. multi-precision 
     bi_delete(&src1);
     bi_delete(&src2);
 }
-
-void DIV_FLINTvsCM()
+#endif
+void DIV_FLINTvsCM(int wordlen)
 {
     bigint* src1 = NULL;
     bigint* src2 = NULL;
     bigint* dstQ = NULL;
     bigint* dstR = NULL;
 
-    bi_gen_rand(&src1, NON_NEGATIVE, 2 * wordlen);
-    bi_gen_rand(&src2, NON_NEGATIVE, wordlen);
+    bi_gen_rand(&src1, NON_NEGATIVE, 2 * wordlen);  //src1, src2 임의로 생성
+    bi_gen_rand(&src2, NON_NEGATIVE, wordlen);      // 나눗셈이므로 src1는 src2의 두배 길이.
 
     while (VALID != DIV(&dstQ, &dstR, src1, src2))
     {
@@ -413,8 +439,8 @@ void DIV_FLINTvsCM()
     fmpz_init(g);
     fmpz_init(h);
 
-    fmpz_set_ui_array(g, (const mp_limb_t*)src1->a, src1->wordlen);
-    fmpz_set_ui_array(h, (const mp_limb_t*)src2->a, src2->wordlen);
+    fmpz_set_ui_array(g, (const mp_limb_t*)src1->a, src1->wordlen); //g에 src1 입력
+    fmpz_set_ui_array(h, (const mp_limb_t*)src2->a, src2->wordlen); //h에 src2 입력
 
     clock_t start, end;
     double result_dc, result_df;
@@ -422,7 +448,7 @@ void DIV_FLINTvsCM()
     int cnt = 0;
 
     start = clock();
-    while (cnt < MAX_COUNT)
+    while (cnt < MAX_COUNT)                             //구현한 나눗셈 시간측정
     {
         DIV(&dstQ, &dstR, src1, src2);
         cnt++;
@@ -432,7 +458,7 @@ void DIV_FLINTvsCM()
 
 
     cnt = 0;
-    start = clock();
+    start = clock();                                    //FLINT 나눗셈 시간측정
     while (cnt < MAX_COUNT)
     {
         fmpz_fdiv_qr(f, s, g, h);
@@ -453,14 +479,14 @@ void DIV_FLINTvsCM()
     fmpz_clear(h);
 }
 
-void EXPMOD_FLINTvsCM()
+void EXPMOD_FLINTvsCM(int wordlen)
 {
     bigint* base = NULL;
     bigint* power = NULL;
     bigint* dst = NULL;
     bigint* M = NULL;
 
-    bi_gen_rand(&base, NON_NEGATIVE, wordlen);
+    bi_gen_rand(&base, NON_NEGATIVE, wordlen);      //base, power, M 임의로 생성
     bi_gen_rand(&power,  NON_NEGATIVE, wordlen);
     bi_gen_rand(&M, NON_NEGATIVE, wordlen);
     while (!bi_is_zero(M))
@@ -471,18 +497,16 @@ void EXPMOD_FLINTvsCM()
     fmpz_init(g);
     fmpz_init(e);
     fmpz_init(m);
-    //bi_show(base,10);
-    fmpz_set_ui_array(g, (const mp_limb_t*)base->a, base->wordlen); // x = src1
-    //fmpz_print(g);
-    fmpz_set_ui_array(e, (const mp_limb_t*)power->a, power->wordlen); // y = src2
-    fmpz_set_ui_array(m, (const mp_limb_t*)M->a, M->wordlen); // y = src2
+    fmpz_set_ui_array(g, (const mp_limb_t*)base->a, base->wordlen);     // g에 base입력
+    fmpz_set_ui_array(e, (const mp_limb_t*)power->a, power->wordlen);   // e에 power입력
+    fmpz_set_ui_array(m, (const mp_limb_t*)M->a, M->wordlen);           // m에 M입력
 
     clock_t start, end;
     double result_ec, result_ef;
 
     int cnt = 0;
 
-    start = clock();
+    start = clock();                           //구현한 modexp 시간측정
     while (cnt < MAX_COUNT)
     {
         MODExp_L2R(&dst, base, power, M);
@@ -494,7 +518,7 @@ void EXPMOD_FLINTvsCM()
 
 
     cnt = 0;
-    start = clock();
+    start = clock();                            //FLINT MODExp시간측정
     while (cnt < MAX_COUNT)
     {
         fmpz_powm(f, g, e, m);
@@ -515,11 +539,6 @@ void EXPMOD_FLINTvsCM()
     fmpz_clear(m);
 }
 
-void EXPMOD_test() // ?뜝?룞?삕?뜝?룞?삕?뜝?룞?삕?뜝????
-{
-
-}
-// ?뜝?룞?삕?뜝?룞?삕?뜝?룞?삕 ?뜝?룞?삕?뜝?룞?삕..
 
 // time.c // ?뜝?룞?삕?샇?뜝?떙怨ㅼ삕?뜝?룞?삕?뜝?룞?삕?뜝?떇?씛?삕?뜝?룞?삕?븙?뜝? ?뜝?뙂?벝?삕?뜝?룞?삕 -> 1024, 2048?뜝?룞?삕?듃
 // void mod_test() // ?뜝?룞?삕?뜝?룞?삕?뜝?룞?삕?뜝????

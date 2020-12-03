@@ -88,24 +88,24 @@ void SUBC(bigint** dst, const bigint* src1, const bigint* src2)     // src1>src2
 }
 
 /*********SUB_zxy(A, B) **************
-Input: A, B ï¿½ï¿½ Z
-Output: A ? B ï¿½ï¿½ Z
-1: if A = 0 then              |   13: return ?SUBC(B, A)
-2:      return ?B             |   14: end if
-3: end if                     |   15: if 0 > A ï¿½ï¿½ B then
+Input: A, B ¡ô Z
+Output: A ¡ç B ¡ô Z
+1: if A = 0 then              |   13: return -SUBC(B, A)
+2:      return -B             |   14: end if
+3: end if                     |   15: if 0 > A ¡Ã B then
 4: if B = 0 then              |   16:     return SUBC(|B|, |A|)
 5:      return A              |   17: else if 0 > B > A then
-6: end if                     |   18:     return ?SUBC(|A|, |B|)
+6: end if                     |   18:     return -SUBC(|A|, |B|)
 7: if A = B then              |   19: end if
 8:      return 0              |   20: if A > 0 and B < 0 then
 9: end if                     |   21:     return ADD_zxy(A, |B|)
-10: if 0 < B ï¿½ï¿½ A then        |   22: else .
-11:     return SUBC(A, B)     |   23:     return ?ADD_zxy(|A|, B)
+10: if 0 < B ¡Â A then         |   22: else 
+11:     return SUBC(A, B)     |   23:     return -ADD_zxy(|A|, B)
 12: else if 0 < A < B then    |   24: end if
-
 ****************************/
 
-void SUB_zxy(bigint** dst, const bigint* src1, const bigint* src2)   //src1 ï¿½ï¿½ src2ï¿½ï¿½ ï¿½ï¿½ï¿½Ï¿ï¿½ subcï¿½ï¿½ ï¿½Ìµï¿½ï¿½ï¿½Å°ï¿½ï¿½ ï¿½Ô¼ï¿½
+
+void SUB_zxy(bigint** dst, const bigint* src1, const bigint* src2)   //src1°ú src2 ºñ±³ÇØ¼­ SUBC·Î Á¶°Ç¿¡ ¸Â°Ô ÀÔ·Â
 {
     bigint* temp = NULL;
     if(bi_is_zero(src1) == TRUE && bi_is_zero(src2) == TRUE)
@@ -114,7 +114,7 @@ void SUB_zxy(bigint** dst, const bigint* src1, const bigint* src2)   //src1 ï¿½ï
     }
     else if (TRUE == bi_is_zero(src1))  //  src1=0
     {
-        bi_assign(dst, src2); // bigint ï¿½ï¿½ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ô¼ï¿½
+        bi_assign(dst, src2); // bigint ±¸Á¹Ã¼¸¦ º¹»ç
         flip_sign(*dst);
         //printf("#src1=0\n");
     }
@@ -157,9 +157,6 @@ void SUB_zxy(bigint** dst, const bigint* src1, const bigint* src2)   //src1 ï¿½ï
         bi_assign(&temp, src2);
         flip_sign(temp);
         ADD_zxy(dst, src1, temp);
-        //flip_sign(src2);
-        //ADD_zxy(dst, src1, src2); // *ï¿½ï¿½ï¿½ï¿½*
-        //flip_sign(src2);
     }
     else                           // src2>0>src1
     {
@@ -167,15 +164,12 @@ void SUB_zxy(bigint** dst, const bigint* src1, const bigint* src2)   //src1 ï¿½ï
         bi_assign(&temp,src1);
         flip_sign(temp);
         ADD_zxy(dst, temp, src2);
-        //flip_sign(src1);
-        //ADD_zxy(dst, src1, src2); // *ï¿½ï¿½ï¿½ï¿½*
-        //flip_sign(src1);
         flip_sign(*dst);
     }
     bi_delete(&temp);
 }
 
-void SUB_zzy(bigint** dst, const bigint* src)
+void SUB_zzy(bigint** dst, const bigint* src)       //z-y¸¦ z¿¡ ÀÔ·ÂÇÏµµ·Ï ÇÏ´Â ÇÔ¼ö.
 {
     bigint* temp = NULL;
     bi_assign(&temp, *dst);

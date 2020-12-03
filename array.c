@@ -2,23 +2,23 @@
 //  array.c
 //  Changmin's library
 // 
-//  Created by ï¿½Ö°ï¿½Ã¢ï¿½ï¿½ on 2020/11/09.
-//  Copyright 2020 ï¿½Ö°ï¿½Ã¢ï¿½ï¿½. All rights reserved.
+//  Created by ÃÖ°­Ã¢¹Î on 2020/11/09.
+//  Copyright 2020 ÃÖ°­Ã¢¹Î. All rights reserved.
 //
 
 #include "array.h"
 
-void array_init(word* a, int len) // ï¿½è¿­ï¿½ï¿½ 0ï¿½ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½È­ï¿½Ï´ï¿½ ï¿½Ô¼ï¿½
+void array_init(word* a, int len) // ¹è¿­À» 0À¸·Î ÃÊ±âÈ­ÇÏ´Â ÇÔ¼ö
 {
     memset(a, 0, sizeof(word) * len);
 }
 
-void array_copy(word* dst, const word* src, int len) // dstï¿½è¿­ï¿½ï¿½ srcï¿½è¿­ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ô¼ï¿½
+void array_copy(word* dst, const word* src, int len) // dst¹è¿­¿¡ src¹è¿­À» º¹»çÇÏ´Â ÇÔ¼ö
 {
     memcpy(dst, src, len * sizeof(word));
 }
 
-void array_rand(word* dst, int wordlen) // ï¿½è¿­ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô·ï¿½ï¿½Ï´ï¿½ ï¿½Ô¼ï¿½
+void array_rand(word* dst, int wordlen) // ¹è¿­¿¡ ·£´ýÇÏ°Ô °ªÀ» ÀÔ·ÂÇÏ´Â ÇÔ¼ö
 {
     unsigned char* p = (unsigned char*)dst;
     int cnt = wordlen * sizeof(word);

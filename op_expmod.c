@@ -2,85 +2,85 @@
 //  op_expmod.c
 //  Changmin's library
 //  
-//  Created by ï¿½Ö°ï¿½Ã¢ï¿½ï¿½ on 2020/11/09.
-//  Copyright 2020 ï¿½Ö°ï¿½Ã¢ï¿½ï¿½. All rights reserved.
+//  Created by ÃÖ°­Ã¢¹Î on 2020/11/09.
+//  Copyright 2020 ÃÖ°­Ã¢¹Î. All rights reserved.
 //  
 #include "operation.h"
 
-/*****===================================
-ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½ï¿½ï¿½ x^n mod N ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ô¼ï¿½ï¿½Ì´ï¿½.
+/***************************************
+x^n mod N ¿¡ ´ëÇÑ ¿¬»êÀ» ÁøÇàÇÏ´Â ÇÔ¼öÀÌ´Ù. 
 
-ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½ï¿½ï¿½ (bigint** R, const bigint* base, const bigint* power, const int modn)ï¿½ï¿½ ï¿½Ô·ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ´Â´ï¿½.
-ï¿½Ì¶ï¿½ Rï¿½ï¿½ ï¿½ï¿½ÂµÇ´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ ï¿½Ô¼ï¿½ ï¿½ï¿½ï¿½Î¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½È´ï¿½.
-baseï¿½ï¿½ xï¿½ï¿½ ï¿½Ø´ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô·Â¹Þ´Â´ï¿½.
-powerï¿½ï¿½ nï¿½ï¿½ ï¿½Ø´ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô·Â¹Þ´Â´ï¿½.
-modnï¿½ï¿½ Nï¿½ï¿½ ï¿½Ø´ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô·Â¹Þ´Â´ï¿½.
-ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 3ï¿½ï¿½ï¿½ï¿½ ï¿½Ë°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
-    - Left to Right (L2R)
-    - Right to Left (R2L)
-    - Montgomery
+°¢°¢ÀÇ ÇÔ¼ö´Â (bigint** R, const bigint* base, const bigint* power, const int modn)¸¦ ÀÔ·ÂÀ¸·Î ¹Þ´Â´Ù.
+ÀÌ¶§ RÀº Ãâ·ÂµÇ´Â °ªÀ¸·Î, °¢ ÇÔ¼ö ³»ºÎ¿¡¼­ °ªÀ» ¸¸µé°Ô µÈ´Ù. 
+base´Â x¿¡ ÇØ´çÇÏ´Â °ªÀ¸·Î, ¸¸µé¾îÁø °ªÀ» ÀÔ·Â¹Þ´Â´Ù. 
+power´Â n¿¡ ÇØ´çÇÏ´Â °ªÀ¸·Î, ¸¸µé¾îÁø °ªÀ» ÀÔ·Â¹Þ´Â´Ù. 
+modnÀº N¿¡ ÇØ´çÇÏ´Â °ªÀ¸·Î, ¸¸µé¾îÁø °ªÀ» ÀÔ·Â¹Þ´Â´Ù.
+Áö¼ö½Â ¿¬»êÀº ´ÙÀ½ÀÇ 3°¡Áö ¾Ë°í¸®µëÀÌ Á¸ÀçÇÑ´Ù.
+    - Left to Right (MODExp_L2R)
+    - Right to Left (MODExp_R2L)
+    - Montgomery    (MODExp_Montgomery)
+
 *********************************/
 
-/***********L2R*************
+/***********MODExp_L2R*************
 Input: x and n
 Output: x^n
-1: t ï¿½ï¿½ 1
-2: for i ï¿½ï¿½ l ? 1 downto 0 do
-3:      t ï¿½ï¿½ t^2
-4:      t ï¿½ï¿½ tx^ni
+---------------------------
+1: t ¡ç 1
+2: for i ¡ç l - 1 downto 0 do
+3:      t ¡ç t^2
+4:      t ¡ç tx^ni
 5: end for
 6: return t
 **************************/
 
 void MODExp_L2R(bigint** dst, const bigint* base, const bigint* power, const bigint* M)
 {
-    bigint* t = NULL;           //pseudo codeï¿½ï¿½ï¿½ï¿½ t
-    bigint* tmp1 = NULL;        // t^2ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
-    bigint* tmp2 = NULL;        // tx^niï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½  
+    bigint* t = NULL;           //pseudo code»óÀÇ t
+    bigint* tmp1 = NULL;        // t^2¸¦ ÀúÀåÇÒ º¯¼ö
+    bigint* tmp2 = NULL;        // tx^ni¸¦ ÀúÀåÇÒ ÇÔ¼ö  
     bigint* Q = NULL;
     bigint* R = NULL;
-    int ni;                     //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ iï¿½ï¿½Â° ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½
+    int ni;                     //Áö¼ö nÀÇ ÇÏÀ§ i¹øÂ° ºñÆ®
 
-    bi_set_one(&t);                   // tï¿½ï¿½ 1ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
-    int len = get_wordlen(power);     // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ wordlen È®ï¿½ï¿½
+    bi_set_one(&t);                   // t¸¦ 1·Î ¼³Á¤
+    int len = get_wordlen(power);     // Áö¼öÀÇ wordlen 
 
     for (int j = (len * WORD_BITLEN) - 1; j >= 0; j--)
     {
-        SQU_zxx(&tmp1, t);                //t^2ï¿½ï¿½ tmp1ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 
-        ni = get_jth_bit(power, j);   //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ iï¿½ï¿½Â° ï¿½ï¿½Æ® È®ï¿½ï¿½
-        if (ni == 1)                  //iï¿½ï¿½Â°ï¿½ï¿½ 1ï¿½Ì¸ï¿½ baseï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ tï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 
+        SQU_zxx(&tmp1, t);                //t^2¸¦ tmp1¿¡ ÀúÀå 
+        ni = get_jth_bit(power, j);   //Áö¼öÀÇ i¹øÂ° ºñÆ® È®ÀÎ
+        if (ni == 1)                  //i¹øÂ° ºñÆ®°¡ 1ÀÎ°æ¿ì base¸¦ °öÇÑ ÈÄ t°»½Å 
         {
             MUL_zxy(&tmp2, tmp1, base);
-            bi_delete(&t);
             bi_assign(&t, tmp2);
         }
-        else                          //iï¿½ï¿½Â°ï¿½ï¿½ 0ï¿½Ì¸ï¿½ ï¿½×´ï¿½ï¿½ t ï¿½ï¿½ï¿½ï¿½
+        else                          //i¹øÂ° ºñÆ®°¡ 0ÀÎ°æ¿ì ±×´ë·Î t °»½Å
         {
-            bi_delete(&t);
             bi_assign(&t, tmp1);
         }
-        DIV(&Q, &R, t, M);
-        bi_delete(&t);
+        DIV(&Q, &R, t, M);      //´Ü°è°¡ ³¡³¯¶§¸¶´Ù mod M ÁøÇà
         bi_assign(&t, R);
 
-        bi_delete(&Q);
-        bi_delete(&R);
-        bi_delete(&tmp1);             //ï¿½Ü°ï¿½ ï¿½ï¿½ï¿½ï¿½ tmpï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
-        bi_delete(&tmp2);
+        
     }
-    bi_assign(dst, t);                  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ò´ï¿½
+    bi_assign(dst, t);                  //¸¶Áö¸· °á°ú dst¿¡ ÇÒ´ç
+    bi_delete(&Q);
+    bi_delete(&R);
+    bi_delete(&tmp1);             
+    bi_delete(&tmp2);
     bi_delete(&t);
 
 }
 
-/*********R2L************
+/*********MODExp_R2L************
 Input: x and n
 Output: x^n
 ---------------------------
-1: t0, t1 ï¿½ï¿½ 1, x
-2: for i ï¿½ï¿½ 0 to l ? 1 do
-3:      t0 ï¿½ï¿½ t0*t1^ni
-4:      t1 ï¿½ï¿½ t1^2
+1: t0, t1 ¡ç 1, x
+2: for i ¡ç 0 to l - 1 do
+3:      t0 ¡ç t0*t1^ni
+4:      t1 ¡ç t1^2
 5: end for
 6: return t0
 ***********************/
@@ -89,52 +89,56 @@ void MODExp_R2L(bigint** dst, const bigint* base, const bigint* power, const big
 {
     bigint* t0 = NULL;
     bigint* t1 = NULL;
-    bigint* tmp1 = NULL;            //t0*t1 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 
-    bigint* tmp2 = NULL;            //t1^2 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
-    bigint* Q = NULL;
-    bigint* R = NULL;
-    int ni;                         //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ iï¿½ï¿½Â° ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½
+    bigint* tmp1 = NULL;            //t0*t1 ÀúÀåÇÒ º¯¼ö
+    bigint* tmp2 = NULL;            //t1^2 ÀúÀåÇÒ º¯¼ö
+    bigint* Q = NULL;               //Mod°úÁ¤¿¡¼­ ÇÊ¿äÇÑº¯¼ö
+    bigint* R = NULL;               //mod°úÁ¤¿¡¼­ ÇÊ¿ä
+    int ni;                         //Áö¼öÀÇ i¹øÂ° ºñÆ® ÀúÀå
 
-    bi_set_one(&t0);                //t0ï¿½ï¿½ 1ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
-    bi_assign(&t1, base);           //t1ï¿½ï¿½ xï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    bi_set_one(&t0);                //t0¸¦ 1·Î ¼³Á¤
+    bi_assign(&t1, base);           //t1¸¦ base ·Î ¼³Á¤
 
-    int len = get_wordlen(power);   //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ wordlen È®ï¿½ï¿½
+    int len = get_wordlen(power);   //Áö¼öÀÇ wordlen È®ÀÎ
 
     for (int j = 0; j < len * WORD_BITLEN; j++)
     {
-        ni = get_jth_bit(power, j);  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ iï¿½ï¿½Â° ï¿½ï¿½Æ® È®ï¿½ï¿½ 
-        if (ni == 1)                 //iï¿½ï¿½Â° ï¿½ï¿½Æ®ï¿½ï¿½ 1ï¿½Ì¸ï¿½ to*t1ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Æ´Ï¸ï¿½ ï¿½×´ï¿½ï¿½
+        ni = get_jth_bit(power, j);  //Áö¼öÀÇ ÇÏÀ§ i¹øÂ° ºñÆ® È®ÀÎ
+        if (ni == 1)                 //i¹øÂ° ºñÆ®°¡ 1ÀÌ¸é to*t1ÁøÇà, ¾Æ´Ï¸é ±×´ë·Î
         {
             MUL_zxy(&tmp1, t0, t1);
-            bi_delete(&t0);
             bi_assign(&t0, tmp1);
         }
-        SQU_zxx(&tmp2, t1);               //t1^2ï¿½ï¿½ tmp2ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
-        bi_delete(&t1);
+        SQU_zxx(&tmp2, t1);               //t1^2¸¦ tmp2¿¡ ÀúÀå
         bi_assign(&t1, tmp2);
 
-        DIV(&Q, &R, t0, M);
-        bi_delete(&t0);
-        bi_assign(&t0, R);
-        bi_delete(&R);
-        bi_delete(&Q);
+        DIV(&Q, &R, t0, M);            //´Ü°è¸¶´Ù t0 mod ÁøÇà. 
+        bi_assign(&t0, R);             //RÀÌ mod °á°ú     
 
-        DIV(&Q, &R, t1, M);
-        bi_delete(&t1);
-        bi_assign(&t1, R);
-        bi_delete(&R);
-        bi_delete(&Q);
-
-
-        bi_delete(&tmp1);
-        bi_delete(&tmp2);
+        DIV(&Q, &R, t1, M);             //´Ü°è¸¶´Ù t1 mod ÁøÇà.
+        bi_assign(&t1, R);              //RÀÌ mod °á°ú
+        
     }
-    bi_assign(dst, t0);
+    bi_assign(dst, t0);             //ÃÖÁ¾°á°ú dst·Î ÀÔ·Â.
+    bi_delete(&R);
+    bi_delete(&Q);
+    bi_delete(&tmp1);
+    bi_delete(&tmp2);
     bi_delete(&t0);
     bi_delete(&t1);
 
 }
 
+/********MODExp_Montgomery*******
+Input: x and n 
+Output: x^n
+---------------
+1: t0,t1 ¡ç1,x
+2: for i ¡ç l ? 1 downto 0 do
+3:      t_{1?ni} ¡ç t0 ¡¿ t1
+4:      t_{n_i} ¡ç t^2_{n_i}
+5: end for 
+6: return t0
+**********************************/
 
 void MODExp_Montgomery(bigint** dst, const bigint* base, const bigint* power, const bigint* M)
 {
@@ -146,48 +150,39 @@ void MODExp_Montgomery(bigint** dst, const bigint* base, const bigint* power, co
     bigint* R = NULL;
     int ni;
 
-    bi_set_one(&t0);     //t0ï¿½ï¿½ 1ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
-    bi_assign(&t1, base);  //t1ï¿½ï¿½ xï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    bi_set_one(&t0);                 //t0¸¦ 1·Î ¼³Á¤
+    bi_assign(&t1, base);            //t1À» x·Î ¼³Á¤
 
-    int len = get_wordlen(power);
+    int len = get_wordlen(power);    // Áö¼öÀÇ ¿öµå±æÀÌ È®ÀÎ
     for (int j = (len * WORD_BITLEN) - 1; j >= 0; j--)
     {
         ni = get_jth_bit(power, j);
-        if (ni == 1)
+        if (ni == 1)                //Áö¼ö bit°¡ 1ÀÌ¸é to*t1À» t0·Î, t1Àº Á¦°ö
         {
-            MUL_zxy(&tmp1, t0, t1);
-            bi_delete(&t0);
+            MUL_zxy(&tmp1, t0, t1);  
             bi_assign(&t0, tmp1);
             SQU_zxx(&tmp2, t1);
-            bi_delete(&t1);
             bi_assign(&t1, tmp2);
         }
-        else
+        else                        //Áö¼ö bit°¡ 0ÀÌ¸é to*t1À» t1·Î,  t0´Â Á¦°ö
         {
             MUL_zxy(&tmp1, t0, t1);
-            bi_delete(&t1);
             bi_assign(&t1, tmp1);
             SQU_zxx(&tmp2, t0);
-            bi_delete(&t0);
             bi_assign(&t0, tmp2);
         }
 
-        DIV(&Q, &R, t0, M);
-        bi_delete(&t0);
+        DIV(&Q, &R, t0, M);  // mod M
         bi_assign(&t0, R);
-        bi_delete(&R);
-        bi_delete(&Q);
-
-        DIV(&Q, &R, t1, M);
-        bi_delete(&t1);
+    
+        DIV(&Q, &R, t1, M);  // mod M
         bi_assign(&t1, R);
-        bi_delete(&R);
-        bi_delete(&Q);
-        bi_delete(&tmp1);
-        bi_delete(&tmp2);
     }
-    bi_assign(dst, t0);
+    bi_assign(dst, t0);  // ÃÖÁ¾°á°ú
     bi_delete(&t0);
     bi_delete(&t1);
-
+    bi_delete(&R);
+    bi_delete(&Q);
+    bi_delete(&tmp1);
+    bi_delete(&tmp2);
 }

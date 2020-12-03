@@ -3,34 +3,33 @@
 //  test.h
 //  Changmin's library
 //
-//  Created by ï¿½Ö°ï¿½Ã¢ï¿½ï¿½ on 2020/11/09.
-//  Copyright 2020 ï¿½Ö°ï¿½Ã¢ï¿½ï¿½. All rights reserved.
+//  Created by ÃÖ°­Ã¢¹Î on 2020/11/09.
+//  Copyright 2020 ÃÖ°­Ã¢¹Î. All rights reserved.
 //
 
 #ifndef test_h
 #define test_h
 
 #include "changmin_library.h"
-#define MAX_COUNT 100 // ï¿½Ýºï¿½ï¿½ï¿½ï¿½ï¿½ È½ï¿½ï¿½ 
 
-void COMPARE_test();
+void COMPARE_test();            
 void SHIFT_test();
 void REDUCTION_test();
 
-void ADD_test(); // 0 
-void SUB_test(); // 0
-void MUL_test(); // 0
-void Karatsuba_test(); // x
- 
-void SQU_test(); // x
-void KaratsubaSQU_test();
+void ADD_test();                //ADD_zxy()
+void SUB_test();                //SUB_zxy()
+void MUL_test();                //MUL_zxy() 
+void Karatsuba_test();          //KaratsubaMUL()
+  
+void SQU_test();                //SQU_zxx()
+void KaratsubaSQU_test();       //KaratsubaSQU()
 
-void NAIVE_div_test();
-void BinaryLongDiv_test();
-void DIV_test(); // 0
+void NAIVE_div_test();          //NaiveDiv()
+void BinaryLongDiv_test();      //BinaryLongDiv()
+void DIV_test();                //DIV()
 
-void MODExp_L2R_test(); // 0
-void MODExp_R2L_test();
-void MODExp_Montgomery_test();
+void MODExp_L2R_test();         //MODExp_L2R()
+void MODExp_R2L_test();         //MODExp_R2L()
+void MODExp_Montgomery_test();  //MODExp_Montgomery
 
 #endif /* test_h */
