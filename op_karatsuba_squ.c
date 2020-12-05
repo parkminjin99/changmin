@@ -16,7 +16,7 @@ Input: A
 Output: C = A^2 
 1: procedure (KaratsubaSQU(A))
 2:      if f lag กร WordLen(A) then
-3:          return SQUC(A)
+3:          return SQU(A)
 4:      end if
 5:      l ก็ (WordLen(A)+1)กํ1
 6:      A1,A0 ก็ |A| กํ lw,|A| mod 2lw

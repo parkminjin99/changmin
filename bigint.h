@@ -43,6 +43,7 @@ int get_sign(const bigint* x);                                      // bigint 구
 void flip_sign(bigint* x);                                          // bigint 구조체의 부호를 바꾸는 함수
 
 void bi_set_one(bigint** x);                                        // bigint 구조체를 1로 설정하는 함수
+void bi_set_minus_one(bigint** x);
 void bi_set_zero(bigint** x);                                       // bigint 구조체를 0으로 설정하는 함수
 int bi_is_minus_one(const bigint* x);                               // bigint 구조체가 -1인지 확인하는 함수
 int bi_is_one(const bigint* x);                                     // bigint 구조체가 1인지 확인하는 함수

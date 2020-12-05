@@ -382,6 +382,13 @@ void bi_set_one(bigint** x)
     (*x)->a[0] = 0x1;
 }
 
+void bi_set_minus_one(bigint** x)     
+{
+    if (FAIL == bi_new(x, 1, NEGATIVE))
+        return;
+    (*x)->a[0] = 0x1;
+}
+
 /**********************
 bi_set_zero
 입력받은 주소에 해당하는 bignum을 양수 0으로 설정하는 함수. (0은 편의상 양수로 설정.)

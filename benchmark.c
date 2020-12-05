@@ -202,20 +202,25 @@ void MUL_FLINTvsCM(int wordlen)
 }
 
 
-void Kara_flag() 
+void Kara_flag(int wordlen) 
 {
     bigint* src1 = NULL;
     bigint* src2 = NULL;
     bigint* dst = NULL;
 
+    while(1)
+    {
+        bi_gen_rand(&src1, NON_NEGATIVE, wordlen); // src1, src2 임의로 생성 
+        bi_gen_rand(&src2, NON_NEGATIVE, wordlen);
+        if(src1->wordlen == wordlen && src2->wordlen == wordlen)
+            break;
+    }
+
     int cnt = 0, flag = 2; 
     clock_t start, end; 
     double result;
 
-    //bi_gen_rand(&src1, NON_NEGATIVE, 2*wordlen);        // src1, src2 임의로 생성    
-   // bi_gen_rand(&src2, NON_NEGATIVE, wordlen);
-/***
-    while(flag < wordlen/2)                           //flag를 변경하면서 KaratsubaMUL 시간측정
+    while(flag <= wordlen/2)                           //flag를 변경하면서 KaratsubaMUL 시간측정
     {
         cnt = 0;
         start = clock();
@@ -228,25 +233,24 @@ void Kara_flag()
         result = (double)(end - start) / (double)CLOCKS_PER_SEC;
         printf("[Karatsuba | CM] %f (flag = %d)\n", result, flag);
         flag++;
-    }***/
+    }
     bi_delete(&src1);
     bi_delete(&src2);
     bi_delete(&dst);
 }
-#if 0
-void MULvsKara() 
+
+void MULvsKara(int wordlen) 
 {
     bigint* src1 = NULL;
     bigint* src2 = NULL;
     bigint* dst = NULL;
-   // bi_gen_rand(&src1, NON_NEGATIVE, wordlen); // src1, src2 임의로 생성 
-   // bi_gen_rand(&src2, NON_NEGATIVE, wordlen);
-
-    bigint* src1_t = NULL;
-    bigint* src2_t = NULL;
-    bigint* dst_t = NULL;
-    bi_assign(&src1_t, src1); // src1_t에 src1 입력
-    bi_assign(&src2_t, src2); // src2_t에 src2 입력
+    while(1)
+    {
+        bi_gen_rand(&src1, NON_NEGATIVE, wordlen); // src1, src2 임의로 생성 
+        bi_gen_rand(&src2, NON_NEGATIVE, wordlen);
+        if(src1->wordlen == wordlen && src2->wordlen == wordlen)
+            break;
+    }
 
     clock_t start, end; 
     double result_mul, result_kara;
@@ -256,7 +260,7 @@ void MULvsKara()
     while(cnt < MAX_COUNT)
     {
         MUL_zxy(&dst, src1, src2);
-        MUL_zxy(&src2, dst, src1);
+        //MUL_zxy(&src2, dst, src1);
         cnt++;
     }
     end = clock(); 
@@ -266,8 +270,8 @@ void MULvsKara()
     start = clock();                //KaratsubaMUL 시간측정
     while(cnt < MAX_COUNT)
     {
-        KaratsubaMUL(&dst_t, src1_t, src2_t);
-        KaratsubaMUL(&src2_t, dst_t, src1_t);
+        KaratsubaMUL(&dst, src1, src2);
+        //KaratsubaMUL(&src2_t, dst_t, src1_t);
         cnt++;
     }
     end = clock(); 
@@ -277,20 +281,18 @@ void MULvsKara()
     bi_delete(&src1);
     bi_delete(&src2);
     bi_delete(&dst);
-    bi_delete(&src1_t);
-    bi_delete(&src2_t);
-    bi_delete(&dst_t);
 }
 
-void MULvsSQU() 
+void MULvsSQU(int wordlen) 
 {
     bigint* src = NULL;
     bigint* dst = NULL;
-    bi_gen_rand(&src, NON_NEGATIVE, wordlen); // src 임의로 생성
-
-    bigint* src_t = NULL;
-    bigint* dst_t = NULL;
-    bi_assign(&src_t, src); // src1_t에 src1 입력
+    while(1)
+    {
+        bi_gen_rand(&src, NON_NEGATIVE, wordlen);   //src 임의로 생성
+        if(src->wordlen == wordlen)
+            break;
+    }
 
     clock_t start, end; 
     double result_mul, result_squ;
@@ -310,7 +312,7 @@ void MULvsSQU()
     start = clock();            //제곱함수를 이용한 제곱연산 시간측정
     while(cnt < MAX_COUNT)
     {
-        SQU_zxx(&dst_t, src_t);
+        SQU_zxx(&dst, src);
         //SQU_zxx(&src_t, dst_t);
         cnt++;
     }
@@ -320,16 +322,18 @@ void MULvsSQU()
 
     bi_delete(&src);
     bi_delete(&dst);
-    bi_delete(&src_t);
-    bi_delete(&dst_t);
 }
 //////////////////////////////////////////////////////////////////////////////////////////
-void SQUvsKara() 
+void SQUvsKara(int wordlen) 
 {
     bigint* src = NULL;
     bigint* dst = NULL;
-
-    bi_gen_rand(&src, NON_NEGATIVE, wordlen);   //src 임의로 생성
+    while(1)
+    {
+        bi_gen_rand(&src, NON_NEGATIVE, wordlen);   //src 임의로 생성
+        if(src->wordlen == wordlen)
+            break;
+    }
 
     int cnt = 0;
     clock_t start, end;
@@ -361,20 +365,19 @@ void SQUvsKara()
 
 }
 
-void NAIVEvsBINARYLONGvsMULTIDIV() // Naive vs. binary long vs. multi-precision long
+void NAIVEvsBINARYLONGvsMULTIDIV(int wordlen) // Naive vs. binary long vs. multi-precision long
 {
     bigint* src1 = NULL;
     bigint* src2 = NULL;
     bigint* dstQ = NULL;
     bigint* dstR = NULL;
 
-    bi_gen_rand(&src1, NON_NEGATIVE, 2 * wordlen);      //src1, src2 임의로 생성
-    bi_gen_rand(&src2, NON_NEGATIVE, wordlen);          // 나눗셈이므로 src1는 src2의 두배 길이.
-
-    while (VALID != DIV(&dstQ, &dstR, src1, src2))      
+    while (1)      
     {
-        bi_gen_rand(&src1, NON_NEGATIVE, 2 * wordlen);
-        bi_gen_rand(&src2, NON_NEGATIVE, wordlen);
+        bi_gen_rand(&src1, NON_NEGATIVE, 2 * wordlen); // src1, src2 임의로 생성
+        bi_gen_rand(&src2, NON_NEGATIVE, wordlen); // 나눗셈이므로 src1는 src2의 두배 길이.
+        if(VALID == DIV(&dstQ, &dstR, src1, src2) && src1->wordlen == 2*wordlen && src2->wordlen == wordlen)
+            break;
     }
 
     int cnt = 0;
@@ -416,7 +419,51 @@ void NAIVEvsBINARYLONGvsMULTIDIV() // Naive vs. binary long vs. multi-precision 
     bi_delete(&src1);
     bi_delete(&src2);
 }
-#endif
+
+void BINARYLONGvsMULTIDIV(int wordlen) // Naive vs. binary long vs. multi-precision long
+{
+    bigint* src1 = NULL;
+    bigint* src2 = NULL;
+    bigint* dstQ = NULL;
+    bigint* dstR = NULL;
+    clock_t start, end;
+    double result_bin, result_mul;
+
+    while (1)      
+    {
+        bi_gen_rand(&src1, NON_NEGATIVE, 2 * wordlen); // src1, src2 임의로 생성
+        bi_gen_rand(&src2, NON_NEGATIVE, wordlen); // 나눗셈이므로 src1는 src2의 두배 길이.
+        if(VALID == DIV(&dstQ, &dstR, src1, src2) && src1->wordlen == 2*wordlen && src2->wordlen == wordlen)
+            break;
+    }
+
+    int cnt = 0;
+    start = clock();                                     //binarylongDiv 시간측정
+    while (cnt < MAX_COUNT)
+    {
+        BinaryLongDiv(&dstQ, &dstR, src1, src2);
+        cnt++;
+    }
+    end = clock();
+    result_bin = (double)(end - start) / CLOCKS_PER_SEC;
+
+    cnt = 0;            
+    start = clock();                                    //multi-precision Div 시간측정
+    while (cnt < MAX_COUNT)
+    {
+        DIV(&dstQ, &dstR, src1, src2);
+        cnt++;
+    }
+    end = clock();
+    result_mul = (double)(end - start) / CLOCKS_PER_SEC;
+
+    printf("[Binary vs Multi | CM] %f %f\n", result_bin, result_mul);
+    bi_delete(&dstQ);
+    bi_delete(&dstR);
+    bi_delete(&src1);
+    bi_delete(&src2);
+}
+
 void DIV_FLINTvsCM(int wordlen)
 {
     bigint* src1 = NULL;
@@ -539,23 +586,3 @@ void EXPMOD_FLINTvsCM(int wordlen)
     fmpz_clear(m);
 }
 
-
-// time.c // ?뜝?룞?삕?샇?뜝?떙怨ㅼ삕?뜝?룞?삕?뜝?룞?삕?뜝?떇?씛?삕?뜝?룞?삕?븙?뜝? ?뜝?뙂?벝?삕?뜝?룞?삕 -> 1024, 2048?뜝?룞?삕?듃
-// void mod_test() // ?뜝?룞?삕?뜝?룞?삕?뜝?룞?삕?뜝????
-// ?뜝?뙎琉꾩삕?뜝?룞?삕???? -> ?몴??? -> overleaf 
-
-// 1 : time.c ??? ?뜝?룞?삕?뜝?룞?삕 & ?뜝?뙇?눦?삕  -> ?뜝?떛怨ㅼ삕 ?뜝?룞?삕?뜝?룞?삕?뜝?떦源띿삕 
-// 2 : sage while?뜝?룞?삕 ?뜝?룞?삕?뜝?룞?삕 & ?뜝?뙇?눦?삕 -> ?뜝?룞?삕?뜝?룞?삕燁듿뜝? while()
-
-// ?뜝?룞?삕?뜝?룞?삕 : ?뜝?뙠諭꾩삕 ?뜝?룞?삕?뜝?룞?삕?뜝?룞?삕 ?뜝?뙓?벝?삕 ?뜝?룞?삕?뜝?룞?삕 
-
-///////////////// ?뜝?뙠諭꾩삕 ?뜝?떖?벝?삕? ?뜝?떦?슱?삕?뜝?룞?삕 2?뜝?룞?삕 ////////////////////////
-
-// 1: overleaf?뜝?룞?삕?뜝?뙐怨ㅼ삕 ?뜝?룞?삕?뜝? ?뜝?뙗?눦?삕(?뜝?룞?삕?샇?뜝?떙怨ㅼ삕?뜝?룞?삕?뜝?룞?삕?뜝?떇?씛?삕?뜝?룞?삕?븙?뜝? ?뜝?뙂?벝?삕?뜝?룞?삕 -> 1024, 2048?뜝?룞?삕?듃)
-// 2: overleaf ?뜝?떊?뙋?삕?뜝?룞?삕 ?뜝?뙗?눦?삕 & readme?뜝?뙗?눦?삕 
-
-/////////////////////// ?솕,?뜝?룞?삕?뜝?룞?삕 ?뜝?룞?삕?뜝?룞?삕?뜝?룞?삕 ?뜝?룞?삕 ////////////////////////
-
-// test code ?뜝?룞?삕?뜝?룞?삕?뜝? ?뜝?룞?삕?뜝?룞?삕?뜝?떦怨ㅼ삕 ?뜝?뙇?뒗怨ㅼ삕 -> ?뜝?룞?삕?뜝?룞?삕?뜝?룞?삕 appendix?뜝?룞?삕 ?뜝?룞?삕?뜝?떛源띿삕 
-
-// ?뜝?떦?슱?삕?뜝?떦?슱?삕?뜝?룞?삕 ?뜝?룞?삕?뜝?룜?룄 ?뜝?룞?삕?뜝?룞?삕 ?뜝?룞?삕?뜝?룞?삕... -> 15?뜝?룞?삕...?뜝?룞?삕 

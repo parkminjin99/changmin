@@ -9,11 +9,11 @@
 #ifndef changmin_library_h
 #define changmin_library_h
 
-#define MAX_COUNT 100            // 각 연산을 몇회 확인할지 
+#define MAX_COUNT 40          // 각 연산을 몇회 확인할지 
 
 #define KARA_FLAG 6
 
-#define WORD_BITLEN 64
+#define WORD_BITLEN 8
 #if WORD_BITLEN == 64
 typedef unsigned long long word;
 #define HALF_WORDBIT 0x00000000ffffffff

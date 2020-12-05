@@ -108,59 +108,39 @@ Output: A ← B ∈ Z
 void SUB_zxy(bigint** dst, const bigint* src1, const bigint* src2)   //src1과 src2 비교해서 SUBC로 조건에 맞게 입력
 {
     bigint* temp = NULL;
-    if(bi_is_zero(src1) == TRUE && bi_is_zero(src2) == TRUE)
-    {
+    if(bi_is_zero(src1) == TRUE && bi_is_zero(src2) == TRUE) // src1 = 0, src2 = 0
         bi_set_zero(dst);
-    }
     else if (TRUE == bi_is_zero(src1))  //  src1=0
     {
-        bi_assign(dst, src2); // bigint 구졸체를 복사
+        bi_assign(dst, src2); // bigint 구조체를 복사
         flip_sign(*dst);
-        //printf("#src1=0\n");
     }
     else if (TRUE == bi_is_zero(src2)) //  src2=0
-    {
         bi_assign(dst, src1);
-        //printf("#src2=0\n");
-    }
     else if (0 == bi_compare(src1, src2)) //  src1=src2
-    {
         bi_set_zero(dst);
-        //printf("#src2=src1\n");
-
-    }
     else if ((1 == bi_compare(src1, src2)) && (src2->sign == NON_NEGATIVE))  //  src1>src2>0
-    {
-        //printf("#src1>src2>0\n");
         SUBC(dst, src1, src2);
-    }
     else if ((-1 == bi_compare(src1, src2)) && (src1->sign == NON_NEGATIVE))  // src2>src1>0
     {
-        //printf("#src2>src1>0\n");
         SUBC(dst, src2, src1);
         flip_sign(*dst);
     }
     else if ((1 == bi_compare(src1, src2)) && (src1->sign == NEGATIVE))      // 0>src1>src2
-    {
-        //printf("#0>src1>src2\n");
         SUBC(dst, src2, src1);
-    }
     else if ((-1 == bi_compare(src1, src2)) && (src2->sign == NEGATIVE))   //   0>src2>src1
     {
-        //printf("# 0>src2>src1\n");
         SUBC(dst, src1, src2);
         flip_sign(*dst);
     }
     else if ((src1->sign == NON_NEGATIVE) && (src2->sign == NEGATIVE))    //  src1>0>src2
     {
-        //printf("# src1>0>src2\n");
         bi_assign(&temp, src2);
         flip_sign(temp);
         ADD_zxy(dst, src1, temp);
     }
     else                           // src2>0>src1
     {
-        //printf("#else\n");
         bi_assign(&temp,src1);
         flip_sign(temp);
         ADD_zxy(dst, temp, src2);

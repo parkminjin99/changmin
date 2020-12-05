@@ -83,7 +83,7 @@ void DIVC(word* Q, bigint** R, const bigint* src1, const bigint* src2, const int
 int DIV(bigint** Q, bigint** R, const bigint* src1, const bigint* src2)
 {
     bigint* temp = NULL;
-    if(bi_is_zero(src2) == TRUE || get_sign(src2) == NEGATIVE) // src2 < 0 또는 
+    if(bi_is_zero(src2) == TRUE || get_sign(src2) == NEGATIVE) // src2 < 0 또는 src = 0
         return INVALID;
     if(bi_compare(src1,src2) == -1) // src1 < src2
     {

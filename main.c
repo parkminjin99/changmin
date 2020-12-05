@@ -27,28 +27,29 @@ int main(int argc, const char* argv[])
     //SQU_test(); //0
     //KaratsubaSQU_test(); //0
 
-    //NAIVE_div_test();    
+    NAIVE_div_test();    
     //BinaryLongDiv_test(); //o
     //DIV_test(); // o
     
     //MODExp_L2R_test(); //o
     //MODExp_R2L_test(); //0
     //MODExp_Montgomery_test(); //0
-    for (int i =8;i<=100;i=i+4)
-    {   
-        printf("\n==================================\n");
-        printf("wordlen = %d\n",i); 
-        ADD_FLINTvsCM(i); //0
-        SUB_FLINTvsCM(i); //0 
-        MUL_FLINTvsCM(i); //0 
-    // Kara_flag(); //0
-    // MULvsKara(); //0
-    // MULvsSQU();    //0
 
-    //SQUvsKara(); //0
-    //NAIVEvsBINARYLONGvsMULTIDIV(); 
-        DIV_FLINTvsCM(i); //0
-        EXPMOD_FLINTvsCM(i); //0
-}
+    // for (int i = 8;i<=100;i=i+4)
+    // {   
+    //     printf("\n==================================\n");
+    //     printf("wordlen = %d\n",i); 
+    //     //ADD_FLINTvsCM(i); //0
+    //     //SUB_FLINTvsCM(i); //0 
+    //     //MUL_FLINTvsCM(i); //0 
+    //     Kara_flag(i); //0
+    //     MULvsKara(i); //0
+    //     MULvsSQU(i);    //0
+    //     SQUvsKara(i); //0
+    //     BINARYLONGvsMULTIDIV(i);
+    //     //NAIVEvsBINARYLONGvsMULTIDIV(); 
+    //     //DIV_FLINTvsCM(i); //0
+    //     //EXPMOD_FLINTvsCM(i); //0
+    // }
     return 0;
 }
