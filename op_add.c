@@ -2,40 +2,40 @@
 //  op_add.c
 //  Changmin's library
 //  
-//  Created by ÃÖ°­Ã¢¹Î on 2020/12/06.
-//  Copyright 2020 ÃÖ°­Ã¢¹Î. All rights reserved.
+//  Created by ìµœê°•ì°½ë¯¼ on 2020/12/06.
+//  Copyright 2020 ìµœê°•ì°½ë¯¼. All rights reserved.
 //  
 
 #include "operation.h"
 /******************* Additino *******************
- µÎ bigint¸¦ ÀÔ·ÂÇÏ¿© µ¡¼ÀÀ» ÁøÇàÇÏ´Â ÇÔ¼öÀÌ´Ù. 
- »ç¿ëÀÚ´Â ADD_zxy ADD_zzyÇÔ¼ö¸¸À» »ç¿ëÇÏ¿© »¬¼ÀÀÌ °¡´ÉÇÏ´Ù.
- (¿¹Á¦ ÄÚµå) ADD_zxy(&dst, src1, src2);  ADD_zzy(&dst, dst, src1);
+ ë‘ bigintë¥¼ ì…ë ¥í•˜ì—¬ ë§ì…ˆì„ ì§„í–‰í•˜ëŠ” í•¨ìˆ˜ì´ë‹¤. 
+ ì‚¬ìš©ìëŠ” ADD_zxy ADD_zzyí•¨ìˆ˜ë§Œì„ ì‚¬ìš©í•˜ì—¬ ëº„ì…ˆì´ ê°€ëŠ¥í•˜ë‹¤.
+ (ì˜ˆì œ ì½”ë“œ) ADD_zxy(&dst, src1, src2);  ADD_zzy(&dst, dst, src1);
 ******************************************************/
 /***** ADD_1word_zxyc(A, b, B) :  *****************
-Input: A, B (1 word), b ¡ô {0, 1}
-Output: b ¡ô {0, 1}, C ¡ô (1 word) such that A ? B = ?bW + C
+Input: A, B (1 word), b âˆˆ {0, 1}
+Output: b âˆˆ {0, 1}, C âˆˆ (1 word) such that A - B = -bW + C
 ------------------------------------------------------------------
-1: C ¡ç A - b
+1: C â† A - b
 2: if A < b then
-3:      b ¡ç 1
+3:      b â† 1
 4: else
-5:      b ¡ç 0
+5:      b â† 0
 6: end if
 7: if C < B then
-8:      b ¡ç b + 1
+8:      b â† b + 1
 9: end if
-10: C ¡ç C - B
+10: C â† C - B
 11: return b, C
 **********************/
 void ADD_1word_zxyc(word* dst, word* carry, const word* src1, const word* src2)
 {
     word new_carry = 0;
     *dst = (*src1) + (*src2);
-    if (*dst < *src1)           // carry ¹ß»ı
+    if (*dst < *src1)           // carry ë°œìƒ
         new_carry = 1;
     *dst += *carry;
-    if (*dst < *carry)          // carry ¹ß»ı
+    if (*dst < *carry)          // carry ë°œìƒ
         new_carry += 1;
     *carry = new_carry;
 }
@@ -44,23 +44,23 @@ void ADD_1word_zzyc(word* dst, word* carry, const word* src)
 {
     word new_carry = 0;
     *dst += *src;
-    if (*dst < *src)            // carry ¹ß»ı
+    if (*dst < *src)            // carry ë°œìƒ
         new_carry = 1;
     *dst += *carry;
-    if (*dst < *carry)          // carry ¹ß»ı
+    if (*dst < *carry)          // carry ë°œìƒ
         new_carry += 1;
     *carry = new_carry;
 }
 
-/************** ADDC(A, B) : µ¿ÀÏÇÑ ºÎÈ£ÀÇ µÎ Á¤¼ö µ¡¼À  *********************
+/************** ADDC(A, B) : ë™ì¼í•œ ë¶€í˜¸ì˜ ë‘ ì •ìˆ˜ ë§ì…ˆ  *********************
 Input: A = [Wn-1, Wn), B = [Wm-1, Wm)
-Output: A + B ¡ô Z
-1: Bj ¡ç 0 for j = m, m+1,..., n-1   |   7: if A < 0 and B > 0 then 
+Output: A + B âˆˆ Z
+1: Bj â† 0 for j = m, m+1,..., n-1   |   7: if A < 0 and B > 0 then 
 2: carry = 0                        |   8:     return SUB_zxy(B,|A|)
 3: for j = 0 to n-1 do              |   9: end if
-4:      carry, Cj ¡ç ADD_1word_zxyc()       |   10: if WordLen(A) >= WordLen(B) then
+4:      carry, Cj â† ADD_1word_zxyc()       |   10: if WordLen(A) >= WordLen(B) then
 5: end for                          |   11:     return ADDC(A,B)
-6: Cn ¡ç carry                       |   12: else
+6: Cn â† carry                       |   12: else
 ********************************************************************/
 void ADDC(bigint** dst, const bigint* src1, const bigint* src2)
 {
@@ -69,12 +69,12 @@ void ADDC(bigint** dst, const bigint* src1, const bigint* src2)
     bi_new(dst, src1Len + 1, get_sign(src1));
     word carry = 0; // carry
     for (i = 0; i < src2Len; i++)
-        ADD_1word_zxyc(&(*dst)->a[i], &carry, &src1->a[i], &src2->a[i]); // 1¿öµå µ¡¼À
+        ADD_1word_zxyc(&(*dst)->a[i], &carry, &src1->a[i], &src2->a[i]); // 1ì›Œë“œ ë§ì…ˆ
 
     for (i = src2Len; i < src1Len; i++)  
     {
         (*dst)->a[i] = src1->a[i] + carry;
-        if ((*dst)->a[i] < carry && carry == 1) // carry ¹ß»ı
+        if ((*dst)->a[i] < carry && carry == 1) // carry ë°œìƒ
             carry = 1;
         else
             carry = 0;
@@ -84,8 +84,8 @@ void ADDC(bigint** dst, const bigint* src1, const bigint* src2)
 }
 
 /************************* ADD_zxy(A, B) ****************************
-Input: A, B ¡ô Z
-Output: A + B ¡ô Z
+Input: A, B âˆˆ Z
+Output: A + B âˆˆ Z
 1: if A = 0 then              |   10: if A < 0 and B > 0 then 
 2:      return B              |   11:     return SUB_zxy(B,|A|)
 3: end if                     |   12: end if
