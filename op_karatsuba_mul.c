@@ -26,7 +26,7 @@ Output: C=AB
 8:      T1,T0 ก็ MULCKaratsuba(A1,B1),MULCKaratsuba(A0,B0)
 9:      Rก็(T1 ก์2lw)+T0
 10:     S1,S0 ก็SUB(A0,A1),SUB(B1,B0)
-11:     S ก็ (-1)Sign(S1)?Sign(S2)MULCKaratsuba(|S1|, |S0|)
+11:     S ก็ (-1)Sign(S1)-Sign(S2)MULCKaratsuba(|S1|, |S0|)
 12:     S ก็ ADD(S, T1)
 13:     S ก็ ADD(S, T0)
 14:     S ก็ S ก์ lw
