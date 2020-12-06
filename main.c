@@ -14,12 +14,13 @@
 int main(int argc, const char* argv[])
 {
     srand((unsigned int)time(NULL));
+    welcome();
     //BASIC_test(); 
     //COMPARE_test();
     //SHIFT_test();
     //REDUCTION_test();
       
-    //ADD_test(); //0
+    ADD_test(); //0
     //SUB_test(); //0
     //MUL_test();  //0
     //Karatsuba_test(); //0
@@ -34,15 +35,15 @@ int main(int argc, const char* argv[])
     //MODExp_R2L_test(); //0
     //MODExp_Montgomery_test(); //0
 
-     for (int i = 700;i<=1000;i=i+20)
+     //for (int i = 700;i<=1000;i=i+20)
      {   
     //     printf("\n==================================\n");
-        printf("wordlen = %d  ",i); 
+       // printf("wordlen = %d  ",i); 
         //ADD_FLINTvsCM(i); //0
         //SUB_FLINTvsCM(i); //0 
         //MUL_FLINTvsCM(i); //0 
     
-          Kara_flag(i); //0
+         // Kara_flag(i); //0
     //     MULvsKara(i); //0
     //     MULvsSQU(i);    //0
     //     SQUvsKara(i); //0

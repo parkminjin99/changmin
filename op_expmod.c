@@ -19,7 +19,9 @@ modn은 N에 해당하는 값으로, 만들어진 값을 입력받는다.
     - Left to Right (MODExp_L2R)
     - Right to Left (MODExp_R2L)
     - Montgomery    (MODExp_Montgomery)
-
+(예제 코드) MODExp_L2R(&dst, base, power, M);
+(예제 코드) MODExp_R2L(&dst, base, power, M);
+(예제 코드) MODExp_Montgomery(&dst, base, power, M);
 *********************************/
 
 /***********MODExp_L2R*************

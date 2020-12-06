@@ -12,9 +12,9 @@
 
 #include "changmin_library.h"
 
-void COMPARE_test();            
-void SHIFT_test();
-void REDUCTION_test();
+void COMPARE_test();            //bi_compare()
+void SHIFT_test();              //left_shift(), right_shift()
+void REDUCTION_test();          //reduction_2_r()
 
 void ADD_test();                //ADD_zxy()
 void SUB_test();                //SUB_zxy()

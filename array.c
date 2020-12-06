@@ -10,12 +10,12 @@
 
 void array_init(word* a, int len)                       // 배열을 0으로 초기화하는 함수
 {
-    memset(a, 0, sizeof(word) * len);
+    memset(a, 0, sizeof(word) * len);                   //배열의 원소 0으로 
 }
 
 void array_copy(word* dst, const word* src, int len)    // dst배열에 src배열을 복사하는 함수
 {
-    memcpy(dst, src, len * sizeof(word));
+    memcpy(dst, src, len * sizeof(word));               // 배열 복사
 }
 
 void array_rand(word* dst, int wordlen)                 // 배열에 랜덤하게 값을 입력하는 함수
@@ -24,7 +24,7 @@ void array_rand(word* dst, int wordlen)                 // 배열에 랜덤하게 값을 
     int cnt = wordlen * sizeof(word);
     while (cnt > 0)
     {
-        *p = rand() & 0xff;
+        *p = rand() & 0xff;                             //배열에 랜덤한 값 입력
         p++;
         cnt--;
     }

@@ -11,6 +11,7 @@
  하지만 flag에 따라 연산 속도가 달라지므로 사용자가 전역변수인 kara_flag를 설정하여 과정을 진행할수있고,
  최적의 flag를 제안하기위해 KaratsubaSQU_Flag 함수를 이용해서  실험을 진행한다. 
  따라서 사용자는 karatsubaSQU함수만을 사용하여 karatsuba제곱 사용이 가능하다.
+(예제 코드) KaratsubaSQU(&dst, src);
 ****************************************
 Input: A 
 Output: C = A^2 
@@ -31,7 +32,7 @@ Output: C = A^2
 
 void KaratsubaSQU(bigint** dst, const bigint* src)
 {
-    KaratsubaSQU_Flag(dst, src, KARA_FLAG);
+    KaratsubaSQU_Flag(dst, src, KARA_FLAG);             //이경우 사전에 설정한 KARA_FLAG를 flag로 사용
 }
 
 void KaratsubaSQU_Flag(bigint** dst, const bigint* src, const int flag)

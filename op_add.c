@@ -7,7 +7,11 @@
 //  
 
 #include "operation.h"
-
+/******************* Additino *******************
+ 두 bigint를 입력하여 덧셈을 진행하는 함수이다. 
+ 사용자는 ADD_zxy ADD_zzy함수만을 사용하여 뺄셈이 가능하다.
+ (예제 코드) ADD_zxy(&dst, src1, src2);  ADD_zzy(&dst, dst, src1);
+******************************************************/
 /***** ADD_1word_zxyc(A, b, B) :  *****************
 Input: A, B (1 word), b ∈ {0, 1}
 Output: b ∈ {0, 1}, C ∈ (1 word) such that A ? B = ?bW + C
@@ -28,10 +32,10 @@ void ADD_1word_zxyc(word* dst, word* carry, const word* src1, const word* src2)
 {
     word new_carry = 0;
     *dst = (*src1) + (*src2);
-    if (*dst < *src1) // carry 발생
+    if (*dst < *src1)           // carry 발생
         new_carry = 1;
     *dst += *carry;
-    if (*dst < *carry) // carry 발생
+    if (*dst < *carry)          // carry 발생
         new_carry += 1;
     *carry = new_carry;
 }
@@ -40,10 +44,10 @@ void ADD_1word_zzyc(word* dst, word* carry, const word* src)
 {
     word new_carry = 0;
     *dst += *src;
-    if (*dst < *src) // carry 발생
+    if (*dst < *src)            // carry 발생
         new_carry = 1;
     *dst += *carry;
-    if (*dst < *carry) // carry 발생
+    if (*dst < *carry)          // carry 발생
         new_carry += 1;
     *carry = new_carry;
 }

@@ -9,15 +9,15 @@
 #ifndef changmin_library_h
 #define changmin_library_h
 
-
+//================= 사용자 설정 변수===================
 #define MAX_COUNT 100        // 각 연산을 몇회 확인할지 
 
-#define KARA_FLAG 6
+#define KARA_FLAG 6          // Karatsuba의 flag
 
-#define WORD_BITLEN 64
+#define WORD_BITLEN 64       // 1word의 비트길이
 
-#define Wordlen 1
-
+#define Wordlen 16           // 전체 워드길이.
+//==================================================
 
 #if WORD_BITLEN == 64
 typedef unsigned long long word;
@@ -44,5 +44,7 @@ typedef struct {
 #include "operation.h"
 #include "test.h"
 #include "benchmark.h"
+
+void welcome();
 
 #endif /* changmin_library_h */

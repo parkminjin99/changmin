@@ -73,13 +73,13 @@ void bi_sage_show(const bigint* x, const int base)
             bi_new(&ten, 1, NON_NEGATIVE);
             ten->a[0] = 10;
             int i = 0;
-            while (1)
+            while (1)                               //10씩 나눠가면서 나머지는 출력할수, 몫은 다시나누기
             {
                 DIV(&q, &r, xtemp, ten);
                 str[i] = (int)(r->a[0]);
                 bi_assign(&xtemp, q);
                 i++;
-                if (-1 == bi_compare(xtemp, ten))
+                if (-1 == bi_compare(xtemp, ten))   // 해당과정은 맨앞자리만 남을때까지
                 {
                     str[i] = (int)(xtemp->a[0]);
                     break;
@@ -322,16 +322,16 @@ void bi_set_by_string(bigint** x, int sign, char* str, word base) // 입력된 문자
         st->a[0] = j;
         bi_assign(x, st);
         bi_assign(&b, ten);
-        for (int i = stln - 2; i >= 0; i--)
+        for (int i = stln - 2; i >= 0; i--)     //과정은 10의 n제곱을 해당 자리수와 곱하는 과정으로 진행.
         {
             temp = str[i];
             for (j = 0; j < 10; j++)
                 if (tm[j] == temp)
                     break;
             st->a[0] = j;
-            MUL_zzy(&st, ten);
+            MUL_zzy(&st, ten);                  // 자리수와 10의 n제곱 곱
             ADD_zzy(x, st);
-            MUL_zzy(&ten, b);
+            MUL_zzy(&ten, b);                   // 10의 n+1제곱으로 만들기
             bi_set_one(&st);
         }
 
@@ -381,7 +381,7 @@ int get_bitlen(const bigint* x)
     for (int i = WORD_BITLEN - 1; i > 0; i--)
     {
         if (((last >> i) | 0x0) == 1)
-            return (i + WORD_BITLEN* (get_wordlen(x)-1));
+            return (i + WORD_BITLEN* (get_wordlen(x)-1));       //전체 비트길이이므로
     }
     return FAIL;
 }
@@ -474,9 +474,9 @@ bi_is_minus_one
 int bi_is_minus_one(const bigint* x)
 {
     if ((get_sign(x) != NEGATIVE) || (x->a[0] != 0x1))
-        return FALSE;
+        return FALSE;                                           //부호가 양수거나 수가 1이아니면 거짓
     for (int j = get_wordlen(x) - 1; j > 0; j--)
-        if (x->a[j] != 0)
+        if (x->a[j] != 0)                                       // 1이외의 배열이 0이 아니면 거짓 
             return FALSE;
     return TRUE;
 }
@@ -491,12 +491,12 @@ bi_is_one
 int bi_is_one(const bigint* x)     
 {
     if ((get_sign(x) == NEGATIVE) || (x->a[0] != 0x1))
-    {
-        return FALSE;
+    {                                   
+        return FALSE;                                        //부호가 음수거나 수가 1이아니면 거짓
     }
     for (int j = get_wordlen(x) - 1; j > 0; j--)
     {
-        if (x->a[j] != 0)
+        if (x->a[j] != 0)                                   // 1이외의 배열이 0이 아니면 거짓
             return FALSE;
     }
     return TRUE;
@@ -512,7 +512,7 @@ bi_is_zero
 int bi_is_zero(const bigint* x)       
 {
     if (get_wordlen(x) == 0)
-        return TRUE;
+        return TRUE;                
     if ((get_sign(x) == 1) || (x->a[0] != 0x0))
         return FALSE;
     for (int j = get_wordlen(x) - 1; j > 0; j--)

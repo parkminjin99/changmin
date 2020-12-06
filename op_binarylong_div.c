@@ -11,6 +11,7 @@
  과정에서 src2가 0 이하이면 나눗셈을 진행할수없으므로 함수를 실행하지 않고, invalid를 리턴한다.
  src2가 0보다 큰 양수인 경우 binary long division을 이용하여 src1/src2를 진행하고 몫을 Q, 나머지를 R로 저장한다. 
  이러한 과정이 잘 진행된경우 valid를 리턴한다.
+ (예제 코드) BinaryLongDiv(&Q, &R, src1, src2);
  *****************************
  Input: A, B (A≥B>0)
  Output: (Q,R) such that A=BQ+R(0≤R<B).

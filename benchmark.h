@@ -5,16 +5,17 @@
 #include "time.h"
 #include "changmin_library.h"
 
-void ADD_FLINTvsCM(int wordlen);
-void SUB_FLINTvsCM(int wordlen);
-void MUL_FLINTvsCM(int wordlen);
+void ADD_FLINTvsCM(int wordlen);                //µ¡¼À¿¬»êºñ±³
+void SUB_FLINTvsCM(int wordlen);                //»¬¼À¿¬»êºñ±³
+void MUL_FLINTvsCM(int wordlen);                //°ö¼À¿¬»êºñ±³
 
-void Kara_flag(int wordlen); // flag¿¡ µû¶ó ¼³Á¤ 
-void MULvsKara(int wordlen); // °ö¼À: schoolbook vs. Karatsuba
-void MULvsSQU(int wordlen);  // °ö¼À vs Á¦°ö
-void SQUvsKara(int wordlen); // Á¦°ö vs karaÁ¦°ö 
-void NAIVEvsBINARYLONGvsMULTIDIV(int wordlen);
-void BINARYLONGvsMULTIDIV(int wordlen);
+void Kara_flag(int wordlen);                    // wordlen¿¡ µû¸¥ Karatsuba ÃÖÀûÀÇ flag 
+void MULvsKara(int wordlen);                    // °ö¼À: schoolbook vs. Karatsuba
+void MULvsSQU(int wordlen);                     // °ö¼À vs Á¦°ö
+void SQUvsKara(int wordlen);                    // Á¦°ö vs karaÁ¦°ö 
+void karaMULvskaraSQU(int wordlen);             // KaratsuabaÁ¦°ö vs KaratsuabaÁ¦°ö
+void NAIVEvsBINARYLONGvsMULTIDIV(int wordlen);  // ³ª´°¼À Naive vs BinaryLongdiv vs MULtiprecisionDiv
+void BINARYLONGvsMULTIDIV(int wordlen);         // BinaryLongdiv vs MULtiprecisionDiv
 
-void DIV_FLINTvsCM(int wordlen);
-void EXPMOD_FLINTvsCM(int wordlen);
+void DIV_FLINTvsCM(int wordlen);                // ³ª´°¼À¿¬»êºñ±³
+void EXPMOD_FLINTvsCM(int wordlen);             // Áö¼ö½Â¸ðµâ·¯¿¬»êºñ±³

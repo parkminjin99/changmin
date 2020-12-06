@@ -13,6 +13,7 @@
  DIV함수는 조건에 맞춰 DIVC함수를 사용한다.
  DIVC함수에서는 DIVCC함수를 사용한다.
  DIVCC함수에서는 pseudo code의 Line 8의 연산에서 BinaryLongDiv_2word함수를 사용한다.
+ (예제 코드) DIV(&Q, &R, src1, src2);
 *********************************/
 
 /*******binary Long Division Algorithm (2-word version)*************

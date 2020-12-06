@@ -6,6 +6,11 @@
 //  Copyright 2020 최강창민. All rights reserved.
 //  
 #include "operation.h"
+/******************* Subtraction *******************
+ 두 bigint를 입력하여 뺄셈을 진행하는 함수이다. 
+ 사용자는 SUB_zxy SUB_zzy함수만을 사용하여 뺄셈이 가능하다.
+ (예제 코드) SUB_zxy(&dst, src1, src2);  SUB_zzy(&dst, dst, src1);
+******************************************************/
 
 /*********************
  1word사이에 A ≥ B > 0 일때, 뺄셈을 진행하는 함수이다. 
