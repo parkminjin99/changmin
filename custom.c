@@ -1,3 +1,10 @@
+//
+//  custom.c
+//  Changmin's library
+//
+//  Created by √÷∞≠√¢πŒ on 2020/12/06.
+//  Copyright 2020 √÷∞≠√¢πŒ. All rights reserved.
+//
 #include "changmin_library.h"
 
 void welcome()

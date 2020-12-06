@@ -2,33 +2,33 @@
 //  op_karatsuba_squ.c
 //  Changmin's library
 //  
-//  Created by 占쌍곤옙창占쏙옙 on 2020/11/09.
-//  Copyright 2020 占쌍곤옙창占쏙옙. All rights reserved.
+//  Created by 최강창민 on 2020/12/06.
+//  Copyright 2020 최강창민. All rights reserved.
 //  
 #include "operation.h"
-/*************KaratsubaSQU*************
+/************************** KaratsubaSQU ***************************************
  schoolbook 제곱의 발전 형태인 karatsubaSQU은 flag를 이용하여 제곱을 고속화한다.
  하지만 flag에 따라 연산 속도가 달라지므로 사용자가 전역변수인 kara_flag를 설정하여 과정을 진행할수있고,
  최적의 flag를 제안하기위해 KaratsubaSQU_Flag 함수를 이용해서  실험을 진행한다. 
  따라서 사용자는 karatsubaSQU함수만을 사용하여 karatsuba제곱 사용이 가능하다.
 (예제 코드) KaratsubaSQU(&dst, src);
-****************************************
+*******************************************************************************
 Input: A 
 Output: C = A^2 
 1: procedure (KaratsubaSQU(A))
-2:      if f lag ≥ WordLen(A) then
+2:      if flag ≥ WordLen(A) then
 3:          return SQU(A)
 4:      end if
 5:      l ← (WordLen(A)+1)≫1
 6:      A1,A0 ← |A| ≫ lw,|A| mod 2lw
 7:      T1, T0 ← KaratsubaSQU(A1), KaratsubaSQU(A0)
-8:      R←(T1 ≪2lw)+T0
+8:      R ← (T1 ≪2lw)+T0
 9:      S ← KaratsubaMUL(A1, A0)
 10:     S ← S≪(lw+1)
 11:     R ← ADDC(R, S)
 12:     return R
 13: end procedure
-**************************************/
+*********************************************************************************/
 
 void KaratsubaSQU(bigint** dst, const bigint* src)
 {

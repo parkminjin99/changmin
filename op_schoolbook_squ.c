@@ -2,7 +2,7 @@
 //  op_schoolbook_squ.c
 //  Changmin's library
 //  
-//  Created by ÃÖ°­Ã¢¹Î on 2020/11/09.
+//  Created by ÃÖ°­Ã¢¹Î on 2020/12/06.
 //  Copyright 2020 ÃÖ°­Ã¢¹Î. All rights reserved.
 //  
 #include "operation.h"
@@ -27,7 +27,7 @@ void SQUC_1Word_zxx(word* dst, const word* src)
 {
     word A[2], temp, carry = 0;
     A[1] = (*src)>>(WORD_BITLEN/2);
-    A[0] = (*src)&HALF_WORDBIT;
+    A[0] = (*src)&HALF_BITMASK;
 
     temp = A[0]*A[1];
     dst[1] = A[1]*A[1];

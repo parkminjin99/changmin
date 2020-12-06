@@ -2,7 +2,7 @@
 //  test.c
 //  Changmin's library
 //
-//  Created by 최강창민 on 2020/11/09.
+//  Created by 최강창민 on 2020/12/06.
 //  Copyright 2020 최강창민. All rights reserved.
 //
 #include "test.h"
@@ -63,25 +63,32 @@ void BASIC_test()                   // 기본적인 bigint 입출력 확인
 #endif
     bigint* a = NULL;
     bigint* b = NULL;
+    bigint* c = NULL;
     bigint* b_copy = NULL;
     char chr2[100] = "0101010101010101010101010101010101010101";
+    char chr10[100] = "1234567890";
     char chr16[100] = "123456789abcdef0";
 
     printf("\nstring A = \"%s\"\n", chr2);
-    bi_set_by_string(&a, NON_NEGATIVE, chr2, 2);            // 문자열 구조체에 입력
+    bi_set_by_string(&a, NON_NEGATIVE, chr2, 2);            // 문자열 구조체에 입력 (2진수)
     printf("A -> bigint a = ");      bi_show(a, 2);
 
-    printf("\nstring B = \"%s\"\n", chr16);
+    printf("\nstring B = \"%s\"\n", chr16);                 // 문자열 구조체에 입력 (16진수)
     bi_set_by_string(&b, NON_NEGATIVE, chr16, 16);
     printf("B -> bigint b = ");     bi_show(b, 16);
 
-    bi_assign(&b_copy, b);                                  //구조체 복사
+    bi_assign(&b_copy, b);                                   // 구조체 복사
     printf("bigint b's copy = ");   bi_show(b_copy, 16);
+
+    printf("\nstring C = \"%s\"\n", chr10);                 // 문자열 구조체에 입력 (10진수)
+    bi_set_by_string(&c, NON_NEGATIVE, chr10, 10);            
+    printf("C -> bigint c = ");      bi_show(c, 10);
 
     bi_delete(&x);
     bi_delete(&y);
     bi_delete(&a);
     bi_delete(&b);
+    bi_delete(&c);
     bi_delete(&b_copy);
 }
 
@@ -112,8 +119,8 @@ void COMPARE_test()         //bi_compare()
     if (cnt != MAX_COUNT)                                   //다른 결과가 생긴경우
     { 
         printf("False %dth calculation\n", cnt + 1);
-        printf("A = ");         bi_show(src[0], 16);
-        printf("B = ");         bi_show(src[1], 16);
+        printf("A = ");         bi_show(src[0], 10);
+        printf("B = ");         bi_show(src[1], 10);
         printf("cal = ");
         if(ans_cm == 1)             printf("A > B\n");
         else if(ans_cm == 0)        printf("A = B\n");
@@ -138,17 +145,24 @@ void SHIFT_test()           //left_shift(), right_shift()
     bigint* srctemp = NULL;
 
     fmpz_t x, cal;
-    fmpz_init(x);           fmpz_init(cal);
-    int cnt = 0;
+    fmpz_init(x);           fmpz_init(cal);     fmpz_zero(cal);
+    int cnt = 0, lshift, rshift;
     printf("\n< bigint left shift >\n");
     while(cnt < MAX_COUNT)
     {
         bi_gen_rand(&src, NON_NEGATIVE, Wordlen);       bi_assign(&srctemp, src);   // 임의의 bigint생성
-        int lshift = rand()%(Wordlen*WORD_BITLEN/2);
+        lshift = rand()%(Wordlen*WORD_BITLEN/2);
         fmpz_set_ui_array(x, (const mp_limb_t*)src->a, (src->wordlen+(64/WORD_BITLEN -1))/(64/WORD_BITLEN));        // shift이전 bigint 입력
 
         left_shift(src, lshift);            // 최강창민 leftshift
         fmpz_mul_2exp(x,x,lshift);          // FLINT   letfshift
+        
+        if(src->wordlen % 2 != 0)           // WORD_BITLEN = 32일 경우 예외처리 
+        {
+            src->wordlen += 1;
+            src->a = (word*)realloc(src->a,sizeof(word) * get_wordlen(src));
+            src->a[src->wordlen-1] = 0;
+        }
         fmpz_set_ui_array(cal, (const mp_limb_t*)src->a, (src->wordlen+(64/WORD_BITLEN -1))/(64/WORD_BITLEN));
         if ((fmpz_equal(x, cal) != 1))      break;          // 결과 확인
         cnt++;
@@ -156,9 +170,9 @@ void SHIFT_test()           //left_shift(), right_shift()
     if (cnt != MAX_COUNT)                                   //다른 결과 있는경우
     {
         printf("False %dth calculation\n", cnt + 1);
-        printf("A = ");         bi_show(srctemp, 16);
-        printf("cal = ");       bi_show(src, 16);
-        printf("real = ");      fmpz_print(x);        printf("\n");
+        printf("A = ");                             bi_show(srctemp, 10);
+        printf("calA(A << %d) = ", lshift);         bi_show(src, 10);
+        printf("real(A << %d) = ", lshift);         fmpz_print(x);        printf("\n");
     }
     else                                                    //전부 같은 경우
     {
@@ -171,7 +185,7 @@ void SHIFT_test()           //left_shift(), right_shift()
     while(cnt < MAX_COUNT)
     {
         bi_gen_rand(&src, NON_NEGATIVE, Wordlen);       bi_assign(&srctemp, src);   // 임의의 bigint생성
-        int rshift = rand()%(Wordlen*WORD_BITLEN/2);
+        rshift = rand()%(Wordlen*WORD_BITLEN/2);
         fmpz_set_ui_array(x, (const mp_limb_t*)src->a, (src->wordlen+(64/WORD_BITLEN -1))/(64/WORD_BITLEN)); // shift이전 bigint 입력
 
         right_shift(src, rshift);           // 최강창민 leftshift
@@ -183,9 +197,9 @@ void SHIFT_test()           //left_shift(), right_shift()
     if (cnt != MAX_COUNT)       //다른 결과 있는경우
     {
         printf("False %dth calculation\n", cnt + 1);
-        printf("A = ");         bi_show(srctemp, 16);
-        printf("cal = ");       bi_show(src, 16);
-        printf("real = ");      fmpz_print(x);        printf("\n");
+        printf("A = ");                             bi_show(srctemp, 10);
+        printf("calA(A >> %d) = ", rshift);         bi_show(src, 10);
+        printf("real(A >> %d) = ", rshift);         fmpz_print(x);        printf("\n");
     }
     else                          //전부 같은 경우    
     {
@@ -221,8 +235,8 @@ void REDUCTION_test()           // fmpz_cdiv_r_2exp
     if (cnt != MAX_COUNT)               //다른결과 발생
     {
         printf("False %dth calculation\n", cnt + 1);
-        printf("A = ");         bi_show(srctemp, 16);
-        printf("cal = ");       bi_show(src, 16);
+        printf("A = ");         bi_show(srctemp, 10);
+        printf("cal = ");       bi_show(src, 10);
         printf("real = ");      fmpz_print(x);        printf("\n");
     }
     else                                //전부 동일
@@ -237,7 +251,7 @@ void REDUCTION_test()           // fmpz_cdiv_r_2exp
 
 void ADD_test()          //ADD_zxy()
 {
-    printf(" < bigint Addition > \n");
+    printf("\n< bigint Addition > \n");
     bigint* src[2];         src[0] = src[1] = NULL;
     bigint* dst[2];         dst[0] = dst[1] = NULL;
     int flag;
@@ -295,13 +309,12 @@ void ADD_test()          //ADD_zxy()
         cnt++;
         
     }
-    printf("\n");
     if (cnt != MAX_COUNT)                           //다른 결과 있는경우
     { 
         printf("False %dth calculation\n", cnt + 1);
-        printf("A = ");         bi_show(src[flag], 16);
-        printf("B = ");         bi_show(src[flag^1], 16);
-        printf("cal = ");       bi_show(dst[flag], 16);
+        printf("A = ");         bi_show(src[flag], 10);
+        printf("B = ");         bi_show(src[flag^1], 10);
+        printf("cal = ");       bi_show(dst[flag], 10);
         printf("real = ");      fmpz_print(z[flag]);        printf("\n");
     }
     else                                            //전부 동일
@@ -318,7 +331,7 @@ void ADD_test()          //ADD_zxy()
 
 void SUB_test()             //SUB_zxy()
 {
-    printf(" < bigint Subtraction > \n");
+    printf("\n< bigint Subtraction > \n");
     bigint* src[2];         src[0] = src[1] = NULL;
     bigint* dst[2];         dst[0] = dst[1] = NULL;
     int flag;
@@ -382,9 +395,9 @@ void SUB_test()             //SUB_zxy()
     if (cnt != MAX_COUNT)   // 다른 결과 발생
     {   
         printf("False %dth calculation\n", cnt + 1);
-        printf("A = ");         bi_show(src[flag], 16);
-        printf("B = ");         bi_show(src[flag^1], 16);
-        printf("cal = ");       bi_show(dst[flag], 16);
+        printf("A = ");         bi_show(src[flag], 10);
+        printf("B = ");         bi_show(src[flag^1], 10);
+        printf("cal = ");       bi_show(dst[flag], 10);
         printf("real = ");      fmpz_print(z[flag]);        printf("\n");
     }
     else    //결과 전부 동일
@@ -401,7 +414,7 @@ void SUB_test()             //SUB_zxy()
 
 void MUL_test()     //MUL_zxy() 
 {
-    printf(" < bigint Multiplication > \n");
+    printf("\n< bigint Multiplication > \n");
     bigint* src[2];         src[0] = src[1] = NULL;
     bigint* dst[2];         dst[0] = dst[1] = NULL;
     int flag;
@@ -457,13 +470,12 @@ void MUL_test()     //MUL_zxy()
 
         cnt++;
     }
-    printf("\n");
     if (cnt != MAX_COUNT)   //다른 결과 발생
     {
         printf("False %dth calculation\n", cnt + 1);
-        printf("A = ");         bi_show(src[flag], 16);
-        printf("B = ");         bi_show(src[flag^1], 16);
-        printf("cal = ");       bi_show(dst[flag], 16);
+        printf("A = ");         bi_show(src[flag], 10);
+        printf("B = ");         bi_show(src[flag^1], 10);
+        printf("cal = ");       bi_show(dst[flag], 10);
         printf("real = ");      fmpz_print(z[flag]);        printf("\n");
     }
     else  //결과 전부 동일
@@ -518,9 +530,9 @@ void Karatsuba_test()   //KaratsubaMUL()
     if (cnt != MAX_COUNT)   //다른 결과 발생
     {
         printf("False %dth calculation\n", cnt + 1);
-        printf("A = ");         bi_show(src[flag], 16);
-        printf("B = ");         bi_show(src[flag^1], 16);
-        printf("cal = ");       bi_show(dst[flag], 16);
+        printf("A = ");         bi_show(src[flag], 10);
+        printf("B = ");         bi_show(src[flag^1], 10);
+        printf("cal = ");       bi_show(dst[flag], 10);
         printf("real = ");      fmpz_print(z[flag]);        printf("\n");
     }
     else        //결과 전부 동일
@@ -591,7 +603,7 @@ void SQU_test()  //SQU_zxx()
 
 void KaratsubaSQU_test()     //KaratsubaSQU()
 {
-    printf("\n < bigint karatsuba Squaring > \n");
+    printf("\n< bigint karatsuba Squaring > \n");
     bigint* src = NULL;
     bigint* dst = NULL;
 
@@ -701,16 +713,16 @@ void NAIVE_div_test()   //NaiveDiv()
     if(flag_valid == 1) // 나눗셈의 조건에 맞지 않는 입력(음수. 나누는수 0)
     {
         printf("INVALID error\n");
-        printf("A = ");  bi_show(src[flag], 16);     printf("B = ");  bi_show(src[flag^1], 16);
+        printf("A = ");  bi_show(src[flag], 16);     printf("B = ");  bi_show(src[flag^1], 10);
         return;
     }
     if (cnt != MAX_COUNT)   //다른 결과 발생
     {
         printf("False %dth calculation\n", cnt + 1);
-        printf("A = ");         bi_show(src[flag], 16);
-        printf("B = ");         bi_show(src[flag^1], 16);
-        printf("calQ = ");      bi_show(dstQ[flag], 16);
-        printf("calR = ");      bi_show(dstR[flag], 16);
+        printf("A = ");         bi_show(src[flag], 10);
+        printf("B = ");         bi_show(src[flag^1], 10);
+        printf("calQ = ");      bi_show(dstQ[flag], 10);
+        printf("calR = ");      bi_show(dstR[flag], 10);
         printf("realQ = ");     fmpz_print(q[flag]); printf("\n");
         printf("realR = ");     fmpz_print(r[flag]); printf("\n");
     }
@@ -796,10 +808,10 @@ void BinaryLongDiv_test()       //BinaryLongDiv()
     {
         
         printf("False %dth calculation\n", cnt + 1);
-        printf("A = ");         bi_show(src[flag], 16);
-        printf("B = ");         bi_show(src[flag^1], 16);
-        printf("calQ = ");      bi_show(dstQ[flag], 16);
-        printf("calR = ");      bi_show(dstR[flag], 16);
+        printf("A = ");         bi_show(src[flag], 10);
+        printf("B = ");         bi_show(src[flag^1], 10);
+        printf("calQ = ");      bi_show(dstQ[flag], 10);
+        printf("calR = ");      bi_show(dstR[flag], 10);
         printf("realQ = ");     fmpz_print(q[flag]); printf("\n");
         printf("realR = ");     fmpz_print(r[flag]); printf("\n");
     }
@@ -886,10 +898,10 @@ void DIV_test()  //DIV()
     if (cnt != MAX_COUNT)       // 다른 결과 발생
     {
         printf("False %dth calculation\n", cnt + 1);
-        printf("A = ");         bi_show(src[flag], 16);
-        printf("B = ");         bi_show(src[flag^1], 16);
-        printf("calQ = ");      bi_show(dstQ[flag], 16);
-        printf("calR = ");      bi_show(dstR[flag], 16);
+        printf("A = ");         bi_show(src[flag], 10);
+        printf("B = ");         bi_show(src[flag^1], 10);
+        printf("calQ = ");      bi_show(dstQ[flag], 10);
+        printf("calR = ");      bi_show(dstR[flag], 10);
         printf("realQ = ");     fmpz_print(q[flag]); printf("\n");
         printf("realR = ");     fmpz_print(r[flag]); printf("\n");
     }
@@ -913,7 +925,7 @@ void DIV_test()  //DIV()
 
 void MODExp_L2R_test()      //MODExp_L2R()
 {
-    printf("\n #< bignum MODExp_L2R > \n");
+    printf("\n< bignum MODExp_L2R > \n");
     bigint* base = NULL;
     bigint* power = NULL;
     bigint* dst = NULL;
@@ -951,7 +963,6 @@ void MODExp_L2R_test()      //MODExp_L2R()
         cnt++;
 
     }
-    printf("\n");
     if (cnt != MAX_COUNT)       //다른 값이 있는 경우
     {
         printf("False %dth calculation\n", cnt + 1);
@@ -981,7 +992,7 @@ void MODExp_L2R_test()      //MODExp_L2R()
 
 void MODExp_R2L_test()           //MODExp_R2L()
 {
-    printf("\n #< bignum MODExp_R2L > \n");
+    printf("\n< bignum MODExp_R2L > \n");
     bigint* base = NULL;
     bigint* power = NULL;
     bigint* dst = NULL;
@@ -1019,7 +1030,6 @@ void MODExp_R2L_test()           //MODExp_R2L()
         cnt++;
 
     }
-    printf("\n");
     if (cnt != MAX_COUNT)       // 다른 값이 있는 경우
     {
         printf("False %dth calculation\n", cnt + 1);
@@ -1048,7 +1058,7 @@ void MODExp_R2L_test()           //MODExp_R2L()
 
 void MODExp_Montgomery_test()   //MODExp_Montgomery
 {
-    printf("\n #< bignum MODExp_Montgomery > \n");
+    printf("\n< bignum MODExp_Montgomery > \n");
     bigint* base = NULL;
     bigint* power = NULL;
     bigint* dst = NULL;
@@ -1087,7 +1097,6 @@ void MODExp_Montgomery_test()   //MODExp_Montgomery
         cnt++;
 
     }
-    printf("\n");
     if (cnt != MAX_COUNT)               // 다른 결과 있는 경우
     {
         printf("False %dth calculation\n", cnt + 1);

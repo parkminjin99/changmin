@@ -2,38 +2,37 @@
 //  op_div.c
 //  Changmin's library
 //  
-//  Created by 최강창민 on 2020/11/09.
+//  Created by 최강창민 on 2020/12/06.
 //  Copyright 2020 최강창민. All rights reserved.
 //  
 #include "operation.h"
-/**************************
+/***************************************************************************
  나눗셈 함수
- src1, src2 를 입력하여 Q=src1/src2, R=src1%src2를 계산하는 함수이다.
+ src1, src2 를 입력하여 Q = src1/src2, R = src1%src2를 계산하는 함수이다.
  사용자가 두 bigint의 나눗셈을 진행할때는 DIV함수에 bigint를 입력한다.
  DIV함수는 조건에 맞춰 DIVC함수를 사용한다.
  DIVC함수에서는 DIVCC함수를 사용한다.
  DIVCC함수에서는 pseudo code의 Line 8의 연산에서 BinaryLongDiv_2word함수를 사용한다.
  (예제 코드) DIV(&Q, &R, src1, src2);
-*********************************/
+***************************************************************************/
 
-/*******binary Long Division Algorithm (2-word version)*************
-2word의 src1을 1 word의 src2로 나누는 함수 
+/******* binary Long Division Algorithm (2-word version) : 2word의 src1을 1 word의 src2로 나누는 함수  *************
 Input: A=A1W+A0,B(A1,A0 ∈[0,W)
 Output: Q such that A=BQ+R (0≤R<B)
+---------------------------------------------------------------------------------------------------------------
 1: (Q,R)←(0,A1) 
-2: for j = w?1 downto 0 do
-3:      if R ≥ 2w?1 then
-4:          (Q,R)←(Q+2j,2R+aj ?B)
+2: for j = w-1 downto 0 do
+3:      if R ≥ 2^(w-1) then
+4:          (Q,R)←(Q + 2j, 2R + aj - B)
 5:      else
 6:          R ← 2R + aj
 7:          if R ≥ B then
-8:              (Q, R) ← (Q + 2j, R ? B) 
+8:              (Q, R) ← (Q + 2j, R - B) 
 9:          end if
 10:     end if
-11:end for
-12:return Q
-************************************************************/
-
+11: end for
+12: return Q
+**************************************************************************************************************/
 void BinaryLongDiv_2word(word* Q, const word* src11, const word* src10, const word* src2) // Q는 1워드, src1은 2워드, src2은 1워드
 {
     int i;
@@ -59,26 +58,26 @@ void BinaryLongDiv_2word(word* Q, const word* src11, const word* src10, const wo
 }
 
 
-/************DIVCC************
+/******************************** DIVCC ***********************************
 Input: A, B 
 Output: (Q, R) such that A = BQ + R (0 ≤ R < B, Q ∈ [0, W)).
------------------------------------
+---------------------------------------------------------------------------
 1: if n = m then
-2:      Q ←A_{m?1}/B_{m?1}
+2:      Q ←A_{m-1}/B_{m-1}
 3: end if
 4: if n = m + 1 then
-5:      if A_m = B_{m?1} then
+5:      if A_m = B_{m-1} then
 6:          Q ← W ? 1
 7:      else 
-8:          Q ←(A_{m}W+A_{m?1})/B_{m?1}
+8:          Q ← (A_{m}W + A_{m-1}) / B_{m-1}
 9:      end if
 10: end if
-11: R ← A ? BQ 
+11: R ← A - BQ 
 12: while R < 0 do 
-13:     (Q, R) ← (Q ? 1, R + B)
+13:     (Q, R) ← (Q - 1, R + B)
 14: end while
 15: return (Q, R)
-****************************/
+******************************************************************************/
 void DIVCC(word* Q, bigint** R, const bigint* src1, const bigint* src2)
 {
     bigint* temp = NULL;
@@ -106,18 +105,19 @@ void DIVCC(word* Q, bigint** R, const bigint* src1, const bigint* src2)
     bi_delete(&temp);
 }
 
-/***************DIVC*************
+/******************************* DIVC *********************************
 Input: A , B 
-Output: (Q, R) such that A = BQ + R (0 ≤ R < B, Q ∈ [0, W)).
+Output: (Q, R) such that A = BQ + R (0 ≤ R < B, Q ∈ [0, W))
+-----------------------------------------------------------------------
 1: if A < B then
 2:      return (0, A)
 3: end if
-4: Compute k ∈ Z≥0 such that 2^kBm?1 ∈ [2w?1, 2w)
-5: A0, B0 ← 2^kA, 2^kB
+4: Compute k ∈ Z≥0 such that 2^k*B_{m-1} ∈ [2w-1, 2w)
+5: A0, B0 ← 2^k*A, 2^k*B
 6: Q0, R0 ← DIVCC(A0, B0)
-7: Q, R ← Q0, 2?kR0
+7: Q, R ← Q0, 2^{-k}*R0
 8: return (Q, R)
-**************************************/
+**********************************************************************/
 void DIVC(word* Q, bigint** R, const bigint* src1, const bigint* src2, const int k)
 {
     if(bi_compare(src1,src2) == -1) // src1 < src2
@@ -140,9 +140,10 @@ void DIVC(word* Q, bigint** R, const bigint* src1, const bigint* src2, const int
     bi_delete(&src2_temp);
 }
 
-/*************DIV********************
-Input: A =, B (Aj ∈ [0, W))
-Output: (Q, R) such that A = BQ + R (0 ≤ R < B, Qj ∈ [0, W)).
+/******************************** DIV ***********************************
+Input: A , B 
+Output: (Q, R) such that A = BQ + R (0 ≤ R < B, Q_j ∈ [0, W)).
+-----------------------------------------------------------------------
 1: if B ≤ 0 then
 2:      return INVALID
 3: end if
@@ -150,12 +151,12 @@ Output: (Q, R) such that A = BQ + R (0 ≤ R < B, Qj ∈ [0, W)).
 5:      return (0, A)
 6: end if
 7: (Q, R) ← (0, 0) 
-8: for i = n ? 1 downto 0 do
-9:      R ← RW + Ai
-10: (Qi, R) ← DIVC(R, B) 
+8: for i = n - 1 downto 0 do
+9:      R ← RW + A_i
+10: (Q_i, R) ← DIVC(R, B) 
 11: end for
 12: return (Q, R)
-****************************************/
+***************************************************************************/
 int DIV(bigint** Q, bigint** R, const bigint* src1, const bigint* src2)
 {
     bigint* temp = NULL;

@@ -3,10 +3,9 @@
 //  bigint.h
 //  Changmin's library
 //  
-//  Created by 최강창민 on 2020/11/09.
+//  Created by 최강창민 on 2020/12/06.
 //  Copyright 2020 최강창민. All rights reserved.
 //  
-
 #ifndef bigint_h
 #define bigint_h
 
@@ -23,7 +22,6 @@
 
 #define VALID 0
 #define INVALID 1
-
 
 void bi_sage_show(const bigint* x, const int base);                 // bigint 구조체에 저장된 값을 sage형식에 맞게 원하는 진수로 출력하는 함수
 void bi_show(const bigint* x, const int base);                      // bigint 구조체에 저장된 값을 원하는 진수로 출력하는 함수

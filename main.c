@@ -2,7 +2,7 @@
 //  main.c
 //  Changmin's library
 //
-//  Created by √÷∞≠√¢πŒ on 2020/11/09.
+//  Created by √÷∞≠√¢πŒ on 2020/12/06.
 //  Copyright 2020 √÷∞≠√¢πŒ. All rights reserved.
 //
 
@@ -11,46 +11,47 @@
 #include <stdio.h>
 #include "changmin_library.h"
 
-int main(int argc, const char* argv[])
+
+int main()
 {
     srand((unsigned int)time(NULL));
     welcome();
     //BASIC_test(); 
-    //COMPARE_test();
-    //SHIFT_test();
-    //REDUCTION_test();
+    COMPARE_test();
+    SHIFT_test();
+    REDUCTION_test();
       
-    ADD_test(); //0
-    //SUB_test(); //0
-    //MUL_test();  //0
-    //Karatsuba_test(); //0
-    //SQU_test(); //0
-    //KaratsubaSQU_test(); //0
+    ADD_test(); 
+    SUB_test(); 
+    MUL_test();  
+    Karatsuba_test(); 
+    SQU_test(); 
+    KaratsubaSQU_test(); 
 
     //NAIVE_div_test();    
-    //BinaryLongDiv_test(); //o
-    // DIV_test(); // o
+    BinaryLongDiv_test(); 
+    DIV_test(); 
     
-    //MODExp_L2R_test(); //o
-    //MODExp_R2L_test(); //0
-    //MODExp_Montgomery_test(); //0
+    MODExp_L2R_test(); 
+    MODExp_R2L_test(); 
+    MODExp_Montgomery_test(); 
 
-     //for (int i = 700;i<=1000;i=i+20)
-     {   
-    //     printf("\n==================================\n");
-       // printf("wordlen = %d  ",i); 
-        //ADD_FLINTvsCM(i); //0
-        //SUB_FLINTvsCM(i); //0 
-        //MUL_FLINTvsCM(i); //0 
-    
-         // Kara_flag(i); //0
-    //     MULvsKara(i); //0
-    //     MULvsSQU(i);    //0
-    //     SQUvsKara(i); //0
-    //     BINARYLONGvsMULTIDIV(i);
-    //     //NAIVEvsBINARYLONGvsMULTIDIV(i); 
-         //DIV_FLINTvsCM(i); //0
-    //     //EXPMOD_FLINTvsCM(i); //0
-     }
+     // for (int i = 4; i <= 12; i=i+4)
+     // {   
+     //      printf("==================================\n");
+     //      printf("wordlen = %d\n",i); 
+     //      ADD_FLINTvsCM(i); 
+     //      SUB_FLINTvsCM(i); 
+     //      MUL_FLINTvsCM(i); 
+     //      DIV_FLINTvsCM(i); 
+     //      EXPMOD_FLINTvsCM(i); 
+     
+     //      Kara_flag(i); 
+     //      MULvsKara(i); 
+     //      MULvsSQU(i);    
+     //      SQUvsKara(i); 
+     //      BINARYLONGvsMULTIDIV(i);
+     //      //NAIVEvsBINARYLONGvsMULTIDIV(i); 
+     // }
     return 0;
 }

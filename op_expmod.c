@@ -2,12 +2,12 @@
 //  op_expmod.c
 //  Changmin's library
 //  
-//  Created by 최강창민 on 2020/11/09.
+//  Created by 최강창민 on 2020/12/06.
 //  Copyright 2020 최강창민. All rights reserved.
 //  
 #include "operation.h"
 
-/***************************************
+/***********************************************************************************************
 x^n mod N 에 대한 연산을 진행하는 함수이다. 
 
 각각의 함수는 (bigint** R, const bigint* base, const bigint* power, const int modn)를 입력으로 받는다.
@@ -22,19 +22,19 @@ modn은 N에 해당하는 값으로, 만들어진 값을 입력받는다.
 (예제 코드) MODExp_L2R(&dst, base, power, M);
 (예제 코드) MODExp_R2L(&dst, base, power, M);
 (예제 코드) MODExp_Montgomery(&dst, base, power, M);
-*********************************/
+**************************************************************************************************/
 
-/***********MODExp_L2R*************
+/***************** MODExp_L2R *******************
 Input: x and n
 Output: x^n
----------------------------
+--------------------------------------------------
 1: t ← 1
 2: for i ← l - 1 downto 0 do
 3:      t ← t^2
 4:      t ← tx^ni
 5: end for
 6: return t
-**************************/
+**************************************************/
 
 void MODExp_L2R(bigint** dst, const bigint* base, const bigint* power, const bigint* M)
 {
@@ -75,17 +75,17 @@ void MODExp_L2R(bigint** dst, const bigint* base, const bigint* power, const big
 
 }
 
-/*********MODExp_R2L************
+/*************** MODExp_R2L ***************
 Input: x and n
 Output: x^n
----------------------------
+-----------------------------------------
 1: t0, t1 ← 1, x
 2: for i ← 0 to l - 1 do
 3:      t0 ← t0*t1^ni
 4:      t1 ← t1^2
 5: end for
 6: return t0
-***********************/
+********************************************/
 
 void MODExp_R2L(bigint** dst, const bigint* base, const bigint* power, const bigint* M)
 {
@@ -130,17 +130,17 @@ void MODExp_R2L(bigint** dst, const bigint* base, const bigint* power, const big
 
 }
 
-/********MODExp_Montgomery*******
+/************** MODExp_Montgomery ****************
 Input: x and n 
 Output: x^n
----------------
+--------------------------------------------------
 1: t0,t1 ←1,x
-2: for i ← l ? 1 downto 0 do
-3:      t_{1?ni} ← t0 × t1
+2: for i ← l - 1 downto 0 do
+3:      t_{1-n_i} ← t0 × t1
 4:      t_{n_i} ← t^2_{n_i}
 5: end for 
 6: return t0
-**********************************/
+*************************************************/
 
 void MODExp_Montgomery(bigint** dst, const bigint* base, const bigint* power, const bigint* M)
 {
@@ -159,14 +159,14 @@ void MODExp_Montgomery(bigint** dst, const bigint* base, const bigint* power, co
     for (int j = (len * WORD_BITLEN) - 1; j >= 0; j--)
     {
         ni = get_jth_bit(power, j);
-        if (ni == 1)                //지수 bit가 1이면 to*t1을 t0로, t1은 제곱
+        if (ni == 1)                //지수 bit가 1이면 t0*t1을 t0로, t1은 제곱
         {
             MUL_zxy(&tmp1, t0, t1);  
             bi_assign(&t0, tmp1);
             SQU_zxx(&tmp2, t1);
             bi_assign(&t1, tmp2);
         }
-        else                        //지수 bit가 0이면 to*t1을 t1로,  t0는 제곱
+        else                        //지수 bit가 0이면 t0*t1을 t1로,  t0는 제곱
         {
             MUL_zxy(&tmp1, t0, t1);
             bi_assign(&t1, tmp1);

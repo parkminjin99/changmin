@@ -2,20 +2,20 @@
 //  op_karatsuba_mul.c
 //  Changmin's library
 //  
-//  Created by 최강창민 on 2020/11/09.
+//  Created by 최강창민 on 2020/12/06.
 //  Copyright 2020 최강창민. All rights reserved.
 //  
 #include "operation.h"
-/*************KaratsubaMUL*************
+/*************************** KaratsubaMUL ***************************************
  schoolbook 곱셈의 발전 형태인 karatsubaMUL은 flag를 이용하여 곱셈을 고속화한다.
  하지만 flag에 따라 연산 속도가 달라지므로 사용자가 전역변수인 kara_flag를 설정하여 과정을 진행할수있고,
  최적의 flag를 제안하기위해 KaratsubaMUL_Flag 함수를 이용해서 test.c 파일에서 실험을 진행한다. 
  따라서 사용자는 karatsubaMUL함수만을 사용하여 karatsuba곱셈 사용이 가능하다.
 (예제 코드) KaratsubaMUL(&dst, src1, src2);
-**************************************
+********************************************************************************
 Input: A,B
 Output: C=AB
-------------------------------------
+---------------------------------------------------------------------------------
 1: procedure (KaratsubaMUL(A, B))
 2:      if flag ≥ min(WordLen(A), WordLen(B)) then
 3:           return MUL(A, B)
@@ -26,14 +26,14 @@ Output: C=AB
 8:      T1,T0 ← MULCKaratsuba(A1,B1),MULCKaratsuba(A0,B0)
 9:      R←(T1 ≪2lw)+T0
 10:     S1,S0 ←SUB(A0,A1),SUB(B1,B0)
-11:     S ← (?1)Sign(S1)?Sign(S2)MULCKaratsuba(|S1|, |S0|)
+11:     S ← (-1)Sign(S1)?Sign(S2)MULCKaratsuba(|S1|, |S0|)
 12:     S ← ADD(S, T1)
 13:     S ← ADD(S, T0)
 14:     S ← S ≪ lw
 15:     R ← ADD(R, S)
 16:     return R
 17: end procedure
-******************************************/
+*********************************************************************************/
 
 void KaratsubaMUL(bigint** dst, const bigint* src1, const bigint* src2)   
 {

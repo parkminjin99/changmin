@@ -2,7 +2,7 @@
 //  op_sub.c
 //  Changmin's library
 //  
-//  Created by 최강창민 on 2020/11/09.
+//  Created by 최강창민 on 2020/12/06.
 //  Copyright 2020 최강창민. All rights reserved.
 //  
 #include "operation.h"
@@ -12,7 +12,7 @@
  (예제 코드) SUB_zxy(&dst, src1, src2);  SUB_zzy(&dst, dst, src1);
 ******************************************************/
 
-/*********************
+/********************************************************************
  1word사이에 A ≥ B > 0 일때, 뺄셈을 진행하는 함수이다. 
  pseudo code는 다음과 같다
  ******SUB_1word_zxy(A, b, B)*****************
@@ -30,7 +30,7 @@ Output: b ∈ {0, 1}, C ∈ (1 word) such that A - B = -bW + C
 9: end if
 10: C ← C - B
 11: return b, C
-**********************/
+*********************************************************************/
 
 void SUB_1word_zxy(word* dst, int* carry, const word* src1, const word* src2)    // src1과 src2, carry를 입력받아 1word에 대한 절댓값 출력
 {
@@ -47,12 +47,12 @@ void SUB_1word_zxy(word* dst, int* carry, const word* src1, const word* src2)   
     *dst = *dst - *src2;
 
 }
-/************************************
+/**************************************************************
 A ≥ B > 0 에 대해  A - B를 출력하는 함수이다. 
 결과는 항상 양수가 되고, 결과는 bigint의 주소를 입력받아 진행한다. 
 다음의 해당 과정의 pseudo code이다.
 
-*******SUBC(A, B)***A ≥ B > 0*******************
+******************** SUBC(A, B)***A ≥ B > 0 *******************
 Input: A = [Wn-1, Wn), B = [Wm-1, Wm), (A ≥ B > 0),
 Output: A - B = C∈ [0, Wn)
 1: Bj ← 0 for j = m, m + 1, . . . , n - 1
@@ -62,14 +62,13 @@ Output: A - B = C∈ [0, Wn)
 5: end for
 6: l ← min{j : Cn-1 = Cn-2 = · · · = Cj = 0}
 7: return  C
-*******************************/
-
+****************************************************************/
 void SUBC(bigint** dst, const bigint* src1, const bigint* src2)     // src1>src2로 입력받아 둘의 차를 dst에 저장
 {
     int new_wordlen = get_wordlen(src1);
     int y_wordlen = get_wordlen(src2);
 
-    bi_new(dst, new_wordlen, NON_NEGATIVE);//z는 src1, src2중 긴길이로 우선 할당
+    bi_new(dst, new_wordlen, NON_NEGATIVE);     //z는 src1, src2중 긴길이로 우선 할당
 
     bigint* temp = NULL;
     bi_assign(&temp, src2); //src2를 변형해야 하는 경우 
@@ -92,7 +91,7 @@ void SUBC(bigint** dst, const bigint* src1, const bigint* src2)     // src1>src2
     bi_delete(&temp);
 }
 
-/*********SUB_zxy(A, B) **************
+/************************ SUB_zxy(A, B) *********************************
 Input: A, B ∈ Z
 Output: A ← B ∈ Z
 1: if A = 0 then              |   13: return -SUBC(B, A)
@@ -107,9 +106,7 @@ Output: A ← B ∈ Z
 10: if 0 < B ≤ A then         |   22: else 
 11:     return SUBC(A, B)     |   23:     return -ADD_zxy(|A|, B)
 12: else if 0 < A < B then    |   24: end if
-****************************/
-
-
+************************************************************************/
 void SUB_zxy(bigint** dst, const bigint* src1, const bigint* src2)   //src1과 src2 비교해서 SUBC로 조건에 맞게 입력
 {
     bigint* temp = NULL;

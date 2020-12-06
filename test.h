@@ -12,6 +12,7 @@
 
 #include "changmin_library.h"
 
+void BASIC_test();              //bi_set_by_array(), bi_gen_rand(), 
 void COMPARE_test();            //bi_compare()
 void SHIFT_test();              //left_shift(), right_shift()
 void REDUCTION_test();          //reduction_2_r()

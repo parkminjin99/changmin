@@ -2,7 +2,7 @@
 //  op_schoolbook_mul.c
 //  Changmin's library
 //  
-//  Created by ÃÖ°­Ã¢¹Î on 2020/11/09.
+//  Created by ÃÖ°­Ã¢¹Î on 2020/12/06.
 //  Copyright 2020 ÃÖ°­Ã¢¹Î. All rights reserved.
 //  
 #include "operation.h"
@@ -27,9 +27,9 @@ void MUL_1word_zxy(word* dst, const word* src1, const word* src2)
 {
     word A[2], B[2], temp[2], t;
     A[1] = (*src1)>>(WORD_BITLEN/2);        // A1 = src1 >> w/2
-    A[0] = (*src1)&HALF_WORDBIT;            // A0 = src1 & 2^(w/2)
+    A[0] = (*src1)&HALF_BITMASK;            // A0 = src1 & 2^(w/2)
     B[1] = (*src2)>>(WORD_BITLEN/2);        // B1 = src2 >> w/2
-    B[0] = (*src2)&HALF_WORDBIT;            // B0 = src2 & 2^(w/2)
+    B[0] = (*src2)&HALF_BITMASK;            // B0 = src2 & 2^(w/2)
 
     temp[1] = A[1]*B[0];
     temp[0] = (A[0]*B[1])+(temp[1]);        // temp0 = A1*B0 + A0*B1

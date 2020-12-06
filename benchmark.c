@@ -1,5 +1,12 @@
+//
+//  benchmark.c
+//  Changmin's library
+//
+//  Created by 최강창민 on 2020/12/06.
+//  Copyright 2020 최강창민. All rights reserved.
+//
 #include "benchmark.h"
-/******************************
+/************************************************************************
  benchmark.c
  구현한 함수와 FLINT라이브러리의 속도 차이를 비교한다.
  속도차이는 다음의 함수를 비교했다.
@@ -25,7 +32,7 @@
  -------------
  Kara_flag()
 
- *****************************/
+ ***********************************************************************/
 
 void ADD_FLINTvsCM(int wordlen)                                     //덧셈연산비교
 {
@@ -180,6 +187,133 @@ void MUL_FLINTvsCM(int wordlen)                                     //곱셈연산비
     fmpz_clear(z);
 }
 
+void DIV_FLINTvsCM(int wordlen)                         //나눗셈연산비교
+{
+    bigint* src1 = NULL;
+    bigint* src2 = NULL;
+    bigint* dstQ = NULL;
+    bigint* dstR = NULL;
+
+    while (1)      
+    {
+        bi_gen_rand(&src1, NON_NEGATIVE, 2 * wordlen);  // src1, src2 임의로 생성
+        bi_gen_rand(&src2, NON_NEGATIVE, wordlen);      // 나눗셈이므로 src1는 src2의 두배 길이.
+        if(VALID == DIV(&dstQ, &dstR, src1, src2) && src1->wordlen == 2*wordlen && src2->wordlen == wordlen)
+            break;
+    }
+
+    fmpz_t f, s, g, h;
+    fmpz_init(f);
+    fmpz_init(s);
+    fmpz_init(g);
+    fmpz_init(h);
+
+    fmpz_set_ui_array(g, (const mp_limb_t*)src1->a, src1->wordlen); //g에 src1 입력
+    fmpz_set_ui_array(h, (const mp_limb_t*)src2->a, src2->wordlen); //h에 src2 입력
+
+    clock_t start, end;
+    double result_dc, result_df;
+
+    int cnt = 0;
+
+    start = clock();
+    while (cnt < MAX_COUNT)                                         //구현한 나눗셈 시간측정
+    {
+        DIV(&dstQ, &dstR, src1, src2);
+        cnt++;
+    }
+    end = clock();
+    result_dc = (double)(end - start) / CLOCKS_PER_SEC;
+
+
+    cnt = 0;
+    start = clock();                                                //FLINT 나눗셈 시간측정
+    while (cnt < MAX_COUNT)
+    {
+        fmpz_fdiv_qr(f, s, g, h);
+        cnt++;
+    }
+    end = clock();
+    result_df = (double)(end - start) / CLOCKS_PER_SEC;
+    printf("[DIV | CM vs FLINT] %f %f\n", result_dc, result_df);
+
+    bi_delete(&src1);
+    bi_delete(&src2);
+    bi_delete(&dstQ);
+    bi_delete(&dstR);
+
+    fmpz_clear(f);
+    fmpz_clear(s);
+    fmpz_clear(g);
+    fmpz_clear(h);
+}
+
+void EXPMOD_FLINTvsCM(int wordlen)                      //지수승모듈러연산비교
+{
+    bigint* base = NULL;
+    bigint* power = NULL;
+    bigint* dst = NULL;
+    bigint* M = NULL;
+
+    bi_gen_rand(&base, NON_NEGATIVE, wordlen);          //base, power, M 임의로 생성
+    bi_gen_rand(&power,  NON_NEGATIVE, wordlen);
+    bi_gen_rand(&M, NON_NEGATIVE, wordlen);
+    while (!bi_is_zero(M))
+        bi_gen_rand(&M, NON_NEGATIVE, wordlen);
+    while(1)
+    {
+        bi_gen_rand(&base, NON_NEGATIVE, wordlen);      
+        bi_gen_rand(&power, NON_NEGATIVE, wordlen);
+        bi_gen_rand(&M, NON_NEGATIVE, wordlen);
+        if((base->wordlen==wordlen)&&(power->wordlen==wordlen)&&(M->wordlen==wordlen))
+            break;
+    }
+    fmpz_t f, g, e, m;
+    fmpz_init(f);
+    fmpz_init(g);
+    fmpz_init(e);
+    fmpz_init(m);
+    fmpz_set_ui_array(g, (const mp_limb_t*)base->a, base->wordlen);     // g에 base입력
+    fmpz_set_ui_array(e, (const mp_limb_t*)power->a, power->wordlen);   // e에 power입력
+    fmpz_set_ui_array(m, (const mp_limb_t*)M->a, M->wordlen);           // m에 M입력
+
+    clock_t start, end;
+    double result_ec, result_ef;
+
+    int cnt = 0;
+
+    start = clock();                                                    //구현한 modexp 시간측정
+    while (cnt < MAX_COUNT)
+    {
+        MODExp_L2R(&dst, base, power, M);
+        cnt++;
+    }
+    end = clock();
+    result_ec = (double)(end - start) / CLOCKS_PER_SEC;
+
+
+    cnt = 0;
+    start = clock();                                                    //FLINT MODExp시간측정
+    while (cnt < MAX_COUNT)
+    {
+        fmpz_powm(f, g, e, m);
+        cnt++;
+    }
+    end = clock();
+    result_ef = (double)(end - start) / CLOCKS_PER_SEC;
+
+    printf("[EXPMOD | CM vs FLINT] %f %f\n", result_ec, result_ef);
+    bi_delete(&base);
+    bi_delete(&power);
+    bi_delete(&M);
+    bi_delete(&dst);
+    fmpz_clear(f);
+    fmpz_clear(g);
+    fmpz_clear(e);
+    fmpz_clear(m);
+}
+
+
 void Kara_flag(int wordlen)                                          // wordlen에 따른 Karatsuba 최적의 flag 
 {
     bigint* src1 = NULL;
@@ -194,11 +328,11 @@ void Kara_flag(int wordlen)                                          // wordlen�
             break;
     }
 
-    int cnt = 0, flag = 2, ans_flag = 2; 
+    int cnt = 0, flag = 1, ans_flag = 1; 
     clock_t start, end; 
     double result, min_result = DBL_MAX;
 
-    while(flag <= wordlen/4)                                        //flag를 변경하면서 KaratsubaMUL 시간측정
+    while(flag <= wordlen)                                        //flag를 변경하면서 KaratsubaMUL 시간측정
     {
         cnt = 0;
         start = clock();
@@ -481,130 +615,3 @@ void BINARYLONGvsMULTIDIV(int wordlen)                      // Naive vs. binary 
     bi_delete(&src1);
     bi_delete(&src2);
 }
-
-void DIV_FLINTvsCM(int wordlen)                         //나눗셈연산비교
-{
-    bigint* src1 = NULL;
-    bigint* src2 = NULL;
-    bigint* dstQ = NULL;
-    bigint* dstR = NULL;
-
-    while (1)      
-    {
-        bi_gen_rand(&src1, NON_NEGATIVE, 2 * wordlen);  // src1, src2 임의로 생성
-        bi_gen_rand(&src2, NON_NEGATIVE, wordlen);      // 나눗셈이므로 src1는 src2의 두배 길이.
-        if(VALID == DIV(&dstQ, &dstR, src1, src2) && src1->wordlen == 2*wordlen && src2->wordlen == wordlen)
-            break;
-    }
-
-    fmpz_t f, s, g, h;
-    fmpz_init(f);
-    fmpz_init(s);
-    fmpz_init(g);
-    fmpz_init(h);
-
-    fmpz_set_ui_array(g, (const mp_limb_t*)src1->a, src1->wordlen); //g에 src1 입력
-    fmpz_set_ui_array(h, (const mp_limb_t*)src2->a, src2->wordlen); //h에 src2 입력
-
-    clock_t start, end;
-    double result_dc, result_df;
-
-    int cnt = 0;
-
-    start = clock();
-    while (cnt < MAX_COUNT)                                         //구현한 나눗셈 시간측정
-    {
-        DIV(&dstQ, &dstR, src1, src2);
-        cnt++;
-    }
-    end = clock();
-    result_dc = (double)(end - start) / CLOCKS_PER_SEC;
-
-
-    cnt = 0;
-    start = clock();                                                //FLINT 나눗셈 시간측정
-    while (cnt < MAX_COUNT)
-    {
-        fmpz_fdiv_qr(f, s, g, h);
-        cnt++;
-    }
-    end = clock();
-    result_df = (double)(end - start) / CLOCKS_PER_SEC;
-    printf("[DIV | CM vs FLINT] %f %f\n", result_dc, result_df);
-
-    bi_delete(&src1);
-    bi_delete(&src2);
-    bi_delete(&dstQ);
-    bi_delete(&dstR);
-
-    fmpz_clear(f);
-    fmpz_clear(s);
-    fmpz_clear(g);
-    fmpz_clear(h);
-}
-
-void EXPMOD_FLINTvsCM(int wordlen)                      //지수승모듈러연산비교
-{
-    bigint* base = NULL;
-    bigint* power = NULL;
-    bigint* dst = NULL;
-    bigint* M = NULL;
-
-    bi_gen_rand(&base, NON_NEGATIVE, wordlen);          //base, power, M 임의로 생성
-    bi_gen_rand(&power,  NON_NEGATIVE, wordlen);
-    bi_gen_rand(&M, NON_NEGATIVE, wordlen);
-    while (!bi_is_zero(M))
-        bi_gen_rand(&M, NON_NEGATIVE, wordlen);
-    while(1)
-    {
-        bi_gen_rand(&base, NON_NEGATIVE, wordlen);      
-        bi_gen_rand(&power, NON_NEGATIVE, wordlen);
-        bi_gen_rand(&M, NON_NEGATIVE, wordlen);
-        if((base->wordlen==wordlen)&&(power->wordlen==wordlen)&&(M->wordlen==wordlen))
-            break;
-    }
-    fmpz_t f, g, e, m;
-    fmpz_init(f);
-    fmpz_init(g);
-    fmpz_init(e);
-    fmpz_init(m);
-    fmpz_set_ui_array(g, (const mp_limb_t*)base->a, base->wordlen);     // g에 base입력
-    fmpz_set_ui_array(e, (const mp_limb_t*)power->a, power->wordlen);   // e에 power입력
-    fmpz_set_ui_array(m, (const mp_limb_t*)M->a, M->wordlen);           // m에 M입력
-
-    clock_t start, end;
-    double result_ec, result_ef;
-
-    int cnt = 0;
-
-    start = clock();                                                    //구현한 modexp 시간측정
-    while (cnt < MAX_COUNT)
-    {
-        MODExp_L2R(&dst, base, power, M);
-        cnt++;
-    }
-    end = clock();
-    result_ec = (double)(end - start) / CLOCKS_PER_SEC;
-
-
-    cnt = 0;
-    start = clock();                                                    //FLINT MODExp시간측정
-    while (cnt < MAX_COUNT)
-    {
-        fmpz_powm(f, g, e, m);
-        cnt++;
-    }
-    end = clock();
-    result_ef = (double)(end - start) / CLOCKS_PER_SEC;
-
-    printf("[EXPMOD | CM vs FLINT] %f %f\n", result_ec, result_ef);
-    bi_delete(&base);
-    bi_delete(&power);
-    bi_delete(&M);
-    bi_delete(&dst);
-    fmpz_clear(f);
-    fmpz_clear(g);
-    fmpz_clear(e);
-    fmpz_clear(m);
-}
-
