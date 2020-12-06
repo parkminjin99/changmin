@@ -25,41 +25,18 @@
  Kara_flag()
  *****************************/
 
-// fmpz_powm(z,x,y,a);
-// fmpz_print(z);
-// flint_printf("\n");
-
-//fmpz_add(z,x,y); add 
-//fmpz_sub(z,x,y); sub 
-//fmpz_mul(z,x,y); mul
-    
-//fmpz_print(z);
-//flint_printf("\n");
-    
-// fmpz_fdiv_qr(q,r,x,y); div
-
-// fmpz_print(q);
-// flint_printf("\n");
-// fmpz_print(r);
-// flint_printf("\n");
-// gcc -Wall -O2 *.c -I /usr/local/include/flint/ -lflint -lmpfr -lgmp -lpthread
-
-//int wordlen = 10; // 512-> 8, 1024 -> 16, 2048 -> 32, 3072 -> 48, 4096 -> 64
-// RSA PARAMETER?뜝?룞?삕 ?몴?뜝?룞?삕 ?뜝?뙎琉꾩삕?뜝?룞?삕? ?뜝?뙇源띿삕
-// PARAMETER ?겕?뜝?뜦蹂꾢뜝?룞?삕 ?뜝?룞?삕? -> ?뜝?뙎琉꾩삕?뜝?룞?삕?뜝?룞?삕 ?뜝?뙇怨ㅼ삕 ?뜝????눦?삕?뜝?룞?삕 ?뜝?룞?삕?뜝?룞?삕?뜝?떢怨ㅼ삕?뜝?룞?삕?뜝?룞?삕... // 
-// wordlen -> karatsuba?뜝?룞?삕?뜝?룞?삕(8-100) ->  4?뜝?룞?삕?뜝?룞?삕?뜝?룞?삕!
-
-// iso?뜝?룞?삕?뜝?룞?삕? bin ?겕?뜝?룞?삕 ?뜝?룞?삕 ? 
-
-
 void ADD_FLINTvsCM(int wordlen)
 {
     bigint* src1 = NULL;
     bigint* src2 = NULL;
     bigint* dst = NULL;
-    bi_gen_rand(&src1, NON_NEGATIVE, wordlen); // src1, src2 임의로 생성
-    bi_gen_rand(&src2, NON_NEGATIVE, wordlen);
-
+    while(1)
+    {
+        bi_gen_rand(&src1, NON_NEGATIVE, wordlen); // src1, src2 임의로 생성 
+        bi_gen_rand(&src2, NON_NEGATIVE, wordlen);
+        if(src1->wordlen == wordlen && src2->wordlen == wordlen)
+            break;
+    }
     fmpz_t x,y,z;
     fmpz_init(x);
     fmpz_init(y);
@@ -75,7 +52,7 @@ void ADD_FLINTvsCM(int wordlen)
     while(cnt < MAX_COUNT)
     {
         ADD_zxy(&dst, src1, src2);
-        ADD_zxy(&src2, dst, src1);
+        //ADD_zxy(&src2, dst, src1);
         cnt++;
     }
     end = clock(); 
@@ -86,7 +63,7 @@ void ADD_FLINTvsCM(int wordlen)
     while(cnt < MAX_COUNT)
     {
         fmpz_add(z,x,y);
-        fmpz_add(y,z,x);
+        //fmpz_add(y,z,x);
         cnt++;
     }
     end = clock(); 
@@ -106,9 +83,13 @@ void SUB_FLINTvsCM(int wordlen)
     bigint* src1 = NULL;
     bigint* src2 = NULL;
     bigint* dst = NULL;
-    bi_gen_rand(&src1, NON_NEGATIVE, wordlen);  // src1, src2 임의로 생성
-    bi_gen_rand(&src2, NON_NEGATIVE, wordlen);
-
+    while(1)
+    {
+        bi_gen_rand(&src1, NON_NEGATIVE, wordlen); // src1, src2 임의로 생성 
+        bi_gen_rand(&src2, NON_NEGATIVE, wordlen);
+        if(src1->wordlen == wordlen && src2->wordlen == wordlen)
+            break;
+    }
     fmpz_t x,y,z;
     fmpz_init(x);
     fmpz_init(y);
@@ -124,7 +105,7 @@ void SUB_FLINTvsCM(int wordlen)
     while(cnt < MAX_COUNT)
     {
         SUB_zxy(&dst, src1, src2);
-        SUB_zxy(&src2, dst, src1);
+        //SUB_zxy(&src2, dst, src1);
         cnt++;
     }
     end = clock(); 
@@ -135,7 +116,7 @@ void SUB_FLINTvsCM(int wordlen)
     while(cnt < MAX_COUNT)
     {
         fmpz_sub(z,x,y);
-        fmpz_sub(y,z,x);
+        //fmpz_sub(y,z,x);
         cnt++;
     }
     end = clock(); 
@@ -155,9 +136,13 @@ void MUL_FLINTvsCM(int wordlen)
     bigint* src1 = NULL;
     bigint* src2 = NULL;
     bigint* dst = NULL;
-    bi_gen_rand(&src1, NON_NEGATIVE, wordlen); // src1, src2 임의로 생성
-    bi_gen_rand(&src2, NON_NEGATIVE, wordlen);
-
+    while(1)
+    {
+        bi_gen_rand(&src1, NON_NEGATIVE, wordlen); // src1, src2 임의로 생성 
+        bi_gen_rand(&src2, NON_NEGATIVE, wordlen);
+        if((src1->wordlen == wordlen) && (src2->wordlen == wordlen))
+            break;
+    }
     fmpz_t x,y,z;
     fmpz_init(x);
     fmpz_init(y);
@@ -175,7 +160,7 @@ void MUL_FLINTvsCM(int wordlen)
         //MUL_zxy(&dst, src1, src2);
         //MUL_zxy(&src2, dst, src1);
         KaratsubaMUL(&dst, src1, src2);
-        KaratsubaMUL(&src2, dst, src1);
+        //KaratsubaMUL(&src2, dst, src1);
         cnt++;
     }
     end = clock(); 
@@ -186,7 +171,7 @@ void MUL_FLINTvsCM(int wordlen)
     while(cnt < MAX_COUNT)
     {
         fmpz_mul(z,x,y);
-        fmpz_mul(y,z,x);
+        //fmpz_mul(y,z,x);
         cnt++;
     }
     end = clock(); 
@@ -200,7 +185,6 @@ void MUL_FLINTvsCM(int wordlen)
     fmpz_clear(y);
     fmpz_clear(z);
 }
-
 
 void Kara_flag(int wordlen) 
 {
@@ -216,11 +200,11 @@ void Kara_flag(int wordlen)
             break;
     }
 
-    int cnt = 0, flag = 2; 
+    int cnt = 0, flag = 2, ans_flag = 2; 
     clock_t start, end; 
-    double result;
+    double result, min_result = DBL_MAX;
 
-    while(flag <= wordlen/2)                           //flag를 변경하면서 KaratsubaMUL 시간측정
+    while(flag <= wordlen/6)                           //flag를 변경하면서 KaratsubaMUL 시간측정
     {
         cnt = 0;
         start = clock();
@@ -231,9 +215,14 @@ void Kara_flag(int wordlen)
         }
         end = clock(); 
         result = (double)(end - start) / (double)CLOCKS_PER_SEC;
-        printf("[Karatsuba | CM] %f (flag = %d)\n", result, flag);
+        if(min_result > result)
+        {
+            min_result = result;
+            ans_flag = flag;
+        }
         flag++;
     }
+    printf("[Karatsuba | CM] %f (flag = %d)\n", min_result, ans_flag);
     bi_delete(&src1);
     bi_delete(&src2);
     bi_delete(&dst);
@@ -471,13 +460,12 @@ void DIV_FLINTvsCM(int wordlen)
     bigint* dstQ = NULL;
     bigint* dstR = NULL;
 
-    bi_gen_rand(&src1, NON_NEGATIVE, 2 * wordlen);  //src1, src2 임의로 생성
-    bi_gen_rand(&src2, NON_NEGATIVE, wordlen);      // 나눗셈이므로 src1는 src2의 두배 길이.
-
-    while (VALID != DIV(&dstQ, &dstR, src1, src2))
+    while (1)      
     {
-        bi_gen_rand(&src1, NON_NEGATIVE, 2 * wordlen);
-        bi_gen_rand(&src2, NON_NEGATIVE, wordlen);
+        bi_gen_rand(&src1, NON_NEGATIVE, 2 * wordlen); // src1, src2 임의로 생성
+        bi_gen_rand(&src2, NON_NEGATIVE, wordlen); // 나눗셈이므로 src1는 src2의 두배 길이.
+        if(VALID == DIV(&dstQ, &dstR, src1, src2) && src1->wordlen == 2*wordlen && src2->wordlen == wordlen)
+            break;
     }
 
     fmpz_t f, s, g, h;
@@ -538,7 +526,14 @@ void EXPMOD_FLINTvsCM(int wordlen)
     bi_gen_rand(&M, NON_NEGATIVE, wordlen);
     while (!bi_is_zero(M))
         bi_gen_rand(&M, NON_NEGATIVE, wordlen);
-
+    while(1)
+    {
+        bi_gen_rand(&base, NON_NEGATIVE, wordlen); // src1, src2 임의로 생성
+        bi_gen_rand(&power, NON_NEGATIVE, wordlen);
+        bi_gen_rand(&M, NON_NEGATIVE, wordlen);
+        if((base->wordlen==wordlen)&&(power->wordlen==wordlen)&&(M->wordlen==wordlen))
+            break;
+    }
     fmpz_t f, g, e, m;
     fmpz_init(f);
     fmpz_init(g);

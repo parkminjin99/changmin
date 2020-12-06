@@ -7,7 +7,6 @@
 //
 #include "test.h"
 
-int Wordlen = 2;
 
 void BASIC_test()
 {
@@ -218,6 +217,17 @@ void ADD_test()
 
         ADD_zxy(&dst[0], src[0], src[1]);
         ADD_zxy(&dst[1], src[1], src[0]);
+        if(0==cnt%(MAX_COUNT/4))
+            printf("case : %d\n",cnt%(MAX_COUNT/4)+1);
+        printf("\n=======\n");
+        printf("src1 : ");  bi_sage_show(src[0],16); printf("\n");
+        printf("src2 : ");  bi_sage_show(src[1],16); printf("\n");
+        printf("dst  : ");  bi_sage_show(dst[0],16); printf("\n");
+        printf("\n--------\n");
+        printf("src1 : ");  bi_sage_show(src[1],16); printf("\n");
+        printf("src2 : ");  bi_sage_show(src[0],16); printf("\n");
+        printf("dst  : ");  bi_sage_show(dst[1],16); printf("\n");
+        
         fmpz_set_ui_array(x, (const mp_limb_t*)src[0]->a, (src[0]->wordlen+(64/WORD_BITLEN -1))/(64/WORD_BITLEN));
         fmpz_set_ui_array(y, (const mp_limb_t*)src[1]->a, (src[1]->wordlen+(64/WORD_BITLEN -1))/(64/WORD_BITLEN));
         if(NEGATIVE == get_sign(src[0]))  fmpz_sub(x,zero,x); 
@@ -279,8 +289,8 @@ void SUB_test()
     {
         if(cnt < MAX_COUNT/5)
         {
-            bi_set_zero(&src[0]);
-            bi_set_zero(&src[1]);
+            bi_gen_rand(&src[0], NEGATIVE, Wordlen);
+            bi_gen_rand(&src[1], NON_NEGATIVE, Wordlen);
         }
         else if(cnt < (MAX_COUNT/5)*2)
         {
@@ -304,7 +314,17 @@ void SUB_test()
         }
         
         SUB_zxy(&dst[0], src[0], src[1]);  
-        SUB_zxy(&dst[1], src[1], src[0]);  
+        SUB_zxy(&dst[1], src[1], src[0]); 
+        if(0==cnt%(MAX_COUNT/5))
+            printf("case : %d\n",cnt%(MAX_COUNT/4)+1);
+        printf("\n=======\n");
+        printf("src1 : ");  bi_sage_show(src[0],16); printf("\n");
+        printf("src2 : ");  bi_sage_show(src[1],16); printf("\n");
+        printf("dst  : ");  bi_sage_show(dst[0],16); printf("\n");
+        printf("\n--------\n");
+        printf("src1 : ");  bi_sage_show(src[1],16); printf("\n");
+        printf("src2 : ");  bi_sage_show(src[0],16); printf("\n");
+        printf("dst  : ");  bi_sage_show(dst[1],16); printf("\n"); 
         fmpz_set_ui_array(x, (const mp_limb_t*)src[0]->a, (src[0]->wordlen+(64/WORD_BITLEN -1))/(64/WORD_BITLEN));
         fmpz_set_ui_array(y, (const mp_limb_t*)src[1]->a, (src[1]->wordlen+(64/WORD_BITLEN -1))/(64/WORD_BITLEN));
         if(NEGATIVE == get_sign(src[0]))  fmpz_sub(x,zero,x); 
@@ -368,12 +388,12 @@ void MUL_test()
         }
         else if(cnt < ((MAX_COUNT/4) * 2))
         {
-            bi_gen_rand(&src[0], NON_NEGATIVE, Wordlen);
+            bi_set_one(&src[0]);
             bi_gen_rand(&src[1], NEGATIVE, Wordlen);
         }
         else if(cnt < ((MAX_COUNT/4)*3))
         {   
-            bi_gen_rand(&src[0], NON_NEGATIVE, Wordlen);
+            bi_set_minus_one(&src[0]);
             bi_gen_rand(&src[1], NON_NEGATIVE, Wordlen);
         }
         else
@@ -384,6 +404,16 @@ void MUL_test()
         
         MUL_zxy(&dst[0], src[0], src[1]);
         MUL_zxy(&dst[1], src[1], src[0]);
+        if(0==cnt%(MAX_COUNT/4))
+            printf("case : %d\n",cnt%(MAX_COUNT/4)+1);
+        printf("\n=======\n");
+        printf("src1 : ");  bi_sage_show(src[0],16); printf("\n");
+        printf("src2 : ");  bi_sage_show(src[1],16); printf("\n");
+        printf("dst  : ");  bi_sage_show(dst[0],16); printf("\n");
+        printf("\n--------\n");
+        printf("src1 : ");  bi_sage_show(src[1],16); printf("\n");
+        printf("src2 : ");  bi_sage_show(src[0],16); printf("\n");
+        printf("dst  : ");  bi_sage_show(dst[1],16); printf("\n");
         
         fmpz_set_ui_array(x, (const mp_limb_t*)src[0]->a, (src[0]->wordlen+(64/WORD_BITLEN -1))/(64/WORD_BITLEN));
         fmpz_set_ui_array(y, (const mp_limb_t*)src[1]->a, (src[1]->wordlen+(64/WORD_BITLEN -1))/(64/WORD_BITLEN));
@@ -504,6 +534,16 @@ void SQU_test() //FLINT °ö¼ÀÀÇ ÀÔ·Â¿¡ °°Àº°ªÀ» ³Ö´Â°ÍÀ¸·Î Á¦°öÀ» °ËÁõ
             bi_gen_rand(&src, rand()%2, Wordlen);
 
         SQU_zxx(&dst, src);
+
+        if(0==cnt%(MAX_COUNT/4))
+            printf("case : %d\n",cnt%(MAX_COUNT/4)+1);
+        printf("\n=======\n");
+        printf("src : ");  bi_sage_show(src,16); printf("\n");
+        printf("dst : ");  bi_sage_show(dst,16); printf("\n");
+        printf("\n--------\n");
+        printf("src : ");  bi_sage_show(src,16); printf("\n");
+        printf("dst : ");  bi_sage_show(dst,16); printf("\n");
+
         fmpz_set_ui_array(x, (const mp_limb_t*)src->a, (src->wordlen+(64/WORD_BITLEN -1))/(64/WORD_BITLEN));
         if(NEGATIVE == get_sign(src))  fmpz_sub(x,zero,x); 
 
@@ -781,14 +821,14 @@ void DIV_test()
     int cnt = 0;
     while (cnt < MAX_COUNT)
     { 
-        if(cnt < MAX_COUNT/5) // src2 = 0
+        if(cnt < MAX_COUNT/3) // src2 = 0
         {
             bi_gen_rand(&src[0], rand()%2, 2 * Wordlen);
             bi_set_zero(&src[1]);
             if(INVALID != BinaryLongDiv(&dstQ[0], &dstR[0], src[0], src[1])){   flag = 0;    flag_valid = 1;     break;     }
             else{   cnt++; continue;}
         }
-        else if(cnt < (MAX_COUNT/5)*2) // src2 < 0
+        else if(cnt < (MAX_COUNT/3)*2) // src2 < 0
         {
             bi_gen_rand(&src[0], NON_NEGATIVE, 2 * Wordlen);
             bi_gen_rand(&src[1], NEGATIVE, Wordlen);
@@ -805,6 +845,20 @@ void DIV_test()
                     break;
             }
         }
+        if(0==cnt%(MAX_COUNT/3))
+            printf("case : %d\n",cnt%(MAX_COUNT/3)+1);
+        printf("\n=======\n");
+        printf("src1 : ");  bi_sage_show(src[0],16); printf("\n");
+        printf("src2 : ");  bi_sage_show(src[1],16); printf("\n");
+        printf("Q    : ");  bi_sage_show(dstQ[0],16); printf("\n");
+        printf("R    : ");  bi_sage_show(dstR[0],16); printf("\n");
+
+        printf("\n--------\n");
+        printf("src1 : ");  bi_sage_show(src[1],16); printf("\n");
+        printf("src2 : ");  bi_sage_show(src[0],16); printf("\n");
+        printf("Q    : ");  bi_sage_show(dstQ[1],16); printf("\n");
+        printf("R    : ");  bi_sage_show(dstR[1],16); printf("\n");
+
         fmpz_set_ui_array(x, (const mp_limb_t*)src[0]->a, (src[0]->wordlen+(64/WORD_BITLEN -1))/(64/WORD_BITLEN));
         fmpz_set_ui_array(y, (const mp_limb_t*)src[1]->a, (src[1]->wordlen+(64/WORD_BITLEN -1))/(64/WORD_BITLEN));
 
@@ -879,14 +933,20 @@ void MODExp_L2R_test()
             bi_gen_rand(&M, NON_NEGATIVE, Wordlen);
 
         MODExp_L2R(&dst, base, power, M);
-
-        fmpz_set_ui_array(g, (const mp_limb_t*)base->a, (((base->wordlen)+1)/8)*8/(64/WORD_BITLEN)); // x = src1
-        fmpz_set_ui_array(e, (const mp_limb_t*)power->a, (((power->wordlen)+1)/8)*8/(64/WORD_BITLEN)); // y = src2
-        fmpz_set_ui_array(m, (const mp_limb_t*)M->a, (((M->wordlen)+1)/8)*8/(64/WORD_BITLEN)); // y = src2
+        if(0==cnt%(MAX_COUNT/5))
+            printf("case : %d\n",cnt%(MAX_COUNT/4)+1);
+        printf("\n=======\n");
+        printf("base  : ");  bi_sage_show(base,16); printf("\n");
+        printf("power : ");  bi_sage_show(power,16); printf("\n");
+        printf("M     : ");  bi_sage_show(M,16); printf("\n");
+        printf("dst   : ");  bi_sage_show(dst,16); printf("\n");
+        fmpz_set_ui_array(g, (const mp_limb_t*)base->a, (base->wordlen+(64/WORD_BITLEN -1))/(64/WORD_BITLEN)); // x = src1
+        fmpz_set_ui_array(e, (const mp_limb_t*)power->a, (power->wordlen+(64/WORD_BITLEN -1))/(64/WORD_BITLEN)); // y = src2
+        fmpz_set_ui_array(m, (const mp_limb_t*)M->a, (M->wordlen+(64/WORD_BITLEN -1))/(64/WORD_BITLEN)); // y = src2
 
         fmpz_powm(f, g, e, m);
 
-        fmpz_set_ui_array(cal, (const mp_limb_t*)dst->a, (((dst->wordlen)+1)/8)*8/(64/WORD_BITLEN));
+        fmpz_set_ui_array(cal, (const mp_limb_t*)dst->a, (dst->wordlen+(64/WORD_BITLEN -1))/(64/WORD_BITLEN));
 
         if ((fmpz_equal(f, cal) != 1)) // ï¿½ï¿½ï¿½ï¿½ï¿? trueï¿½Ï¶ï¿½1 ï¿½ï¿½ï¿½ï¿½
             break; // ï¿½Ù¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿? while ï¿½ï¿½ï¿½ï¿½
@@ -950,13 +1010,13 @@ void MODExp_R2L_test()
 
         MODExp_R2L(&dst, base, power, M);
 
-        fmpz_set_ui_array(g, (const mp_limb_t*)base->a, (((base->wordlen)+1)/8)*8/(64/WORD_BITLEN)); // x = src1
-        fmpz_set_ui_array(e, (const mp_limb_t*)power->a, (((power->wordlen)+1)/8)*8/(64/WORD_BITLEN)); // y = src2
-        fmpz_set_ui_array(m, (const mp_limb_t*)M->a, (((M->wordlen)+1)/8)*8/(64/WORD_BITLEN)); // y = src2
+        fmpz_set_ui_array(g, (const mp_limb_t*)base->a, (base->wordlen+(64/WORD_BITLEN -1))/(64/WORD_BITLEN)); // x = src1
+        fmpz_set_ui_array(e, (const mp_limb_t*)power->a, (power->wordlen+(64/WORD_BITLEN -1))/(64/WORD_BITLEN)); // y = src2
+        fmpz_set_ui_array(m, (const mp_limb_t*)M->a, (M->wordlen+(64/WORD_BITLEN -1))/(64/WORD_BITLEN)); // y = src2
 
         fmpz_powm(f, g, e, m);
 
-        fmpz_set_ui_array(cal, (const mp_limb_t*)dst->a, (((dst->wordlen)+1)/8)*8/(64/WORD_BITLEN));
+        fmpz_set_ui_array(cal, (const mp_limb_t*)dst->a, (dst->wordlen+(64/WORD_BITLEN -1))/(64/WORD_BITLEN));
 
         if ((fmpz_equal(f, cal) != 1)) // ï¿½ï¿½ï¿½ï¿½ï¿? trueï¿½Ï¶ï¿½1 ï¿½ï¿½ï¿½ï¿½
             break; // ï¿½Ù¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿? while ï¿½ï¿½ï¿½ï¿½
@@ -1018,14 +1078,15 @@ void MODExp_Montgomery_test()
             bi_gen_rand(&M, NON_NEGATIVE, Wordlen);
 
         MODExp_Montgomery(&dst, base, power, M);
+        
 
-        fmpz_set_ui_array(g, (const mp_limb_t*)base->a, (((base->wordlen)+1)/8)*8/(64/WORD_BITLEN)); // x = src1
-        fmpz_set_ui_array(e, (const mp_limb_t*)power->a, (((power->wordlen)+1)/8)*8/(64/WORD_BITLEN)); // y = src2
-        fmpz_set_ui_array(m, (const mp_limb_t*)M->a, (((M->wordlen)+1)/8)*8/(64/WORD_BITLEN)); // y = src2
+        fmpz_set_ui_array(g, (const mp_limb_t*)base->a, (base->wordlen+(64/WORD_BITLEN -1))/(64/WORD_BITLEN)); // x = src1
+        fmpz_set_ui_array(e, (const mp_limb_t*)power->a, (power->wordlen+(64/WORD_BITLEN -1))/(64/WORD_BITLEN)); // y = src2
+        fmpz_set_ui_array(m, (const mp_limb_t*)M->a, (M->wordlen+(64/WORD_BITLEN -1))/(64/WORD_BITLEN)); // y = src2
 
         fmpz_powm(f, g, e, m);
 
-        fmpz_set_ui_array(cal, (const mp_limb_t*)dst->a, (((dst->wordlen)+1)/8)*8/(64/WORD_BITLEN));
+        fmpz_set_ui_array(cal, (const mp_limb_t*)dst->a, (dst->wordlen+(64/WORD_BITLEN -1))/(64/WORD_BITLEN));
 
         if ((fmpz_equal(f, cal) != 1)) // ï¿½ï¿½ï¿½ï¿½ï¿? trueï¿½Ï¶ï¿½1 ï¿½ï¿½ï¿½ï¿½
             break; // ï¿½Ù¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿? while ï¿½ï¿½ï¿½ï¿½

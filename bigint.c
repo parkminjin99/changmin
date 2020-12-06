@@ -25,14 +25,23 @@ void bi_sage_show(const bigint* x, const int base)
         printf("-");               // 음수인경우 앞에 - 붙이기
     if (base == 16)                //16진수인 경우
     {
+        int enter=0;
         printf("0x");              //숫자가 출력되기전 0x를 출력하게 해서 sage가 16진수임을 알도록설정
         if(bi_is_zero(x) == TRUE)
             printf("0");           // 0이면 0출력
         else                       // 0이아니면 해당 구조체에 저장된 값 출력
         { 
             for (i = get_wordlen(x) - 1; i >= 0; i--)
+            {
                 for (j = WORD_BITLEN - 4; j >= 0; j = j - 4)
+                {
                     printf("%x", (int)(((x->a[i]) >> j) & 0xf));
+                    enter=enter+1;
+                    if(enter%119==117)
+                        printf("\n       ");
+                        
+                }
+            }
         }
     }
     else if (base == 2)             //2진수인경우
@@ -64,7 +73,7 @@ void bi_sage_show(const bigint* x, const int base)
             bi_new(&ten, 1, NON_NEGATIVE);
             ten->a[0] = 10;
             int i = 0;
-            while (TRUE)
+            while (1)
             {
                 DIV(&q, &r, xtemp, ten);
                 str[i] = (int)(r->a[0]);
@@ -85,7 +94,7 @@ void bi_sage_show(const bigint* x, const int base)
                 printf("%d", str[j]);
         }
     }
-    printf(")\n");
+    //printf(")\n");
 }
 
 /********************************
