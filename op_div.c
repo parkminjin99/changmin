@@ -67,7 +67,7 @@ Output: (Q, R) such that A = BQ + R (0 ¡Â R < B, Q ¡ô [0, W)).
 3: end if
 4: if n = m + 1 then
 5:      if A_m = B_{m-1} then
-6:          Q ¡ç W ? 1
+6:          Q ¡ç W - 1
 7:      else 
 8:          Q ¡ç (A_{m}W + A_{m-1}) / B_{m-1}
 9:      end if
