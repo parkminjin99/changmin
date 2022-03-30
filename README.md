@@ -1,36 +1,36 @@
 
-========================== ÃÖ°­Ã¢¹Î library ==========================
+========================== ìµœê°•ì°½ë¯¼ library ==================================
  
-   Created by ÃÖ°­Ã¢¹Î on 2020/12/6.
-   Copyright 2020 ÃÖ°­Ã¢¹Î. All rights reserved.
+   Created by ìµœê°•ì°½ë¯¼ on 2020/12/6.
+   Copyright 2020 ìµœê°•ì°½ë¯¼. All rights reserved.
  
 =====================================================================
 
- º» ¶óÀÌºê·¯¸®´Â C ±â¹ÝÀÇ bignum ¿¬»êÀÌ °¡´ÉÇÑ ¶óÀÌºê·¯¸®ÀÌ´Ù. ÀÌ¶§ bignumÀÌ¶õ 8/32/64bit ´ÜÀ§·Î ÀÌ·ç¾îÁø word¿¡ ´ëÇØ ÇØ´ç 1word·Î´Â Ç¥ÇöÀÌ ºÒ°¡´ÉÇÑ Å« ¼ö¸¦ ÀÇ¹ÌÇÑ´Ù. Áï, ±âÁ¸ÀÇ CÀÇ ÇÔ¼ö·Î´Â ÇØ°áÇÒ ¼ö ¾ø¾ú´ø Å« Á¤¼ö¿¡ ´ëÇÑ ¿¬»êÀ» °¡´ÉÇÏ°Ô ÇÑ´Ù. ÇÑÆí º» ¶óÀÌºê·¯¸®´Â Window/Linux/Mac OS¸¦ Áö¿øÇÑ´Ù.
+ ë³¸ ë¼ì´ë¸ŒëŸ¬ë¦¬ëŠ” C ê¸°ë°˜ì˜ bignum ì—°ì‚°ì´ ê°€ëŠ¥í•œ ë¼ì´ë¸ŒëŸ¬ë¦¬ì´ë‹¤. ì´ë•Œ bignumì´ëž€ 8/32/64bit ë‹¨ìœ„ë¡œ ì´ë£¨ì–´ì§„ wordì— ëŒ€í•´ í•´ë‹¹ 1wordë¡œëŠ” í‘œí˜„ì´ ë¶ˆê°€ëŠ¥í•œ í° ìˆ˜ë¥¼ ì˜ë¯¸í•œë‹¤. ì¦‰, ê¸°ì¡´ì˜ Cì˜ í•¨ìˆ˜ë¡œëŠ” í•´ê²°í•  ìˆ˜ ì—†ì—ˆë˜ í° ì •ìˆ˜ì— ëŒ€í•œ ì—°ì‚°ì„ ê°€ëŠ¥í•˜ê²Œ í•œë‹¤. í•œíŽ¸ ë³¸ ë¼ì´ë¸ŒëŸ¬ë¦¬ëŠ” Window/Linux/Mac OSë¥¼ ì§€ì›í•œë‹¤.
 
-°³¹ß¿¡´Â ±¹¹Î´ëÇÐ±³ Á¤º¸º¸¾È¾ÏÈ£¼öÇÐ°ú ¹Ú¹ÎÁø, ÀüÃ¢¿­ÀÌ Âü¿©ÇÏ¿´´Ù.
+ê°œë°œì—ëŠ” êµ­ë¯¼ëŒ€í•™êµ ì •ë³´ë³´ì•ˆì•”í˜¸ìˆ˜í•™ê³¼ ë°•ë¯¼ì§„, ì „ì°½ì—´ì´ ì°¸ì—¬í•˜ì˜€ë‹¤.
 
-¶óÀÌºê·¯¸®¸¦ µ¿ÀÛ½Ã »ç¿ëÀÚ´Â ´ÙÀ½ÀÇ Ç×¸ñÀ» changmin_library.h ÆÄÀÏ¿¡¼­ ¼³Á¤ °¡´ÉÇÏ´Ù.
-- 1wordÀÇ bit±æÀÌ (WORD_BITLEN)
-    8/32/64Áß ¼±ÅÃ (default WORD_BITLEN = 64)
-- ÀüÃ¼ wordÀÇ ±æÀÌ (Wordlen)
+ë¼ì´ë¸ŒëŸ¬ë¦¬ë¥¼ ë™ìž‘ì‹œ ì‚¬ìš©ìžëŠ” ë‹¤ìŒì˜ í•­ëª©ì„ changmin_library.h íŒŒì¼ì—ì„œ ì„¤ì • ê°€ëŠ¥í•˜ë‹¤.
+- 1wordì˜ bitê¸¸ì´ (WORD_BITLEN)
+    8/32/64ì¤‘ ì„ íƒ (default WORD_BITLEN = 64)
+- ì „ì²´ wordì˜ ê¸¸ì´ (Wordlen)
     (defalut Wordlen = 16)
-- karatsuba ÀÌ¿ë½Ã flagÀÇ word±æÀÌ(KARA_FLAG)
-    (defalut KARA_FLAG = 8, ±ÇÀåÇÏ´Â KARA_FLAG´Â 6-10)
-- TEST, ½Ã°£ÃøÁ¤ ÀÌ¿ë½Ã ¹Ýº¹È½¼ö (MAX_COUNT)
+- karatsuba ì´ìš©ì‹œ flagì˜ wordê¸¸ì´(KARA_FLAG)
+    (defalut KARA_FLAG = 8, ê¶Œìž¥í•˜ëŠ” KARA_FLAGëŠ” 6-10)
+- TEST, ì‹œê°„ì¸¡ì • ì´ìš©ì‹œ ë°˜ë³µíšŸìˆ˜ (MAX_COUNT)
     (defalut MAX_COUNT = 1000)
 
-FLINT¸¦ »ç¿ëÇÏ¿© ÄÄÆÄÀÏ ½Ã ÄÄÆÄÀÏ ¿É¼ÇÀ¸·Î -I /usr/local/include/flint/ -lflint -lmpfr -lgmp -lpthreadÀ» Ãß°¡ÇØ¾ß ÇÑ´Ù. 
-¼Óµµ ÃøÁ¤ ½Ã ÄÄÆÄÀÏÀº ´ÙÀ½°ú °°´Ù.
+FLINTë¥¼ ì‚¬ìš©í•˜ì—¬ ì»´íŒŒì¼ ì‹œ ì»´íŒŒì¼ ì˜µì…˜ìœ¼ë¡œ -I /usr/local/include/flint/ -lflint -lmpfr -lgmp -lpthreadì„ ì¶”ê°€í•´ì•¼ í•œë‹¤. 
+ì†ë„ ì¸¡ì • ì‹œ ì»´íŒŒì¼ì€ ë‹¤ìŒê³¼ ê°™ë‹¤.
 gcc -Wall -O2 *.c -I /usr/local/include/flint/ -lflint -lmpfr -lgmp -lpthread
 
-º» ¶óÀÌºê·¯¸®¿¡¼­ Á¦°øÇÏ´Â ¿¬»ê 
- - µÎ ¼öÀÇ Å©±âºñ±³ 
+ë³¸ ë¼ì´ë¸ŒëŸ¬ë¦¬ì—ì„œ ì œê³µí•˜ëŠ” ì—°ì‚° 
+ - ë‘ ìˆ˜ì˜ í¬ê¸°ë¹„êµ 
  - left_shift, right_shift
- - ¸ðµâ·¯ 2^n
- - µ¡¼À
- - »¬¼À
- - °ö¼À
- - Á¦°ö
- - ³ª´°¼À
- - Áö¼ö½Â ¸ðµâ·¯
+ - ëª¨ë“ˆëŸ¬ 2^n
+ - ë§ì…ˆ
+ - ëº„ì…ˆ
+ - ê³±ì…ˆ
+ - ì œê³±
+ - ë‚˜ëˆ—ì…ˆ
+ - ì§€ìˆ˜ìŠ¹ ëª¨ë“ˆëŸ¬
